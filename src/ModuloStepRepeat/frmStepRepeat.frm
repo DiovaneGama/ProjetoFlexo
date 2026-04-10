@@ -29,7 +29,7 @@ Option Explicit
 ' ============================================================
 Private ultimoLabelAtivo As MSForms.Label
 Private ultimaCaptionOriginal As String
-Private mCameronFilePath As String   ' caminho do .cdr do Cameron
+Private mCameronFilePath As String
 
 ' ============================================================
 ' CONTROLES ESPERADOS NO FORM (.frm designer):
@@ -471,20 +471,7 @@ Private Sub txtGapPistas_Change()
 End Sub
 
 Private Sub chkCameron_Click()
-    If chkCameron.Value Then
-        ' Abrir file dialog ao marcar Cameron
-        Dim sPath As String
-        sPath = modConfig.SelecionarArquivoCDR()
-        If Len(sPath) > 0 Then
-            mCameronFilePath = sPath
-            chkCameron.Caption = "Cameron  [" & GetFileName(sPath) & "]"
-        Else
-            ' Usuario cancelou — desmarcar
-            chkCameron.Value = False
-            chkCameron.Caption = "Cameron"
-        End If
-    Else
-        mCameronFilePath = ""
+    If Not chkCameron.Value Then
         chkCameron.Caption = "Cameron"
     End If
     ' Mostrar Cameron Central so com >= 2 pistas
@@ -626,7 +613,7 @@ Private Sub ExecutarMontagemDoForm()
     cfg.Passo = cfg.Desenvolvimento - cfg.Reducao
     cfg.IncluirCameron = chkCameron.Value
     cfg.CameronCentral = chkCameronCenter.Value
-    cfg.CameronFilePath = mCameronFilePath
+
     cfg.GerarRelatorio = chkRelatorio.Value
     
     ' Executar
