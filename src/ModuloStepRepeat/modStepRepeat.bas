@@ -83,16 +83,38 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
         grpFinal.SizeHeight = alturaAtual - cfg.Reducao
     End If
 
-    ' Cameron
+    ' Cameron + agrupar tudo + centralizar
+    Dim tudo As New ShapeRange
+    tudo.Add grpFinal
+
     If cfg.IncluirCameron Then
-        modCameron.InserirCameron cfg, grpFinal
+        Dim camShapes As ShapeRange
+        Set camShapes = modCameron.InserirCameron(cfg, grpFinal)
+        Dim i As Long
+        For i = 1 To camShapes.Count
+            tudo.Add camShapes(i)
+        Next i
     End If
-    
+
+    ' Agrupar montagem + cameron num unico grupo
+    Dim grpTotal As Shape
+    If tudo.Count > 1 Then
+        Set grpTotal = tudo.Group
+    Else
+        Set grpTotal = grpFinal
+    End If
+
+    ' Centralizar na pagina ativa
+    Dim pgW As Double, pgH As Double
+    pgW = ActivePage.SizeWidth
+    pgH = ActivePage.SizeHeight
+    grpTotal.SetPosition (pgW - grpTotal.SizeWidth) / 2, (pgH - grpTotal.SizeHeight) / 2
+
     ' Relatorio
     If cfg.GerarRelatorio Then
         modRelatorio.GerarRelatorio cfg
     End If
-    
+
     ' Finalizar
     ActiveDocument.EndCommandGroup
     Application.Optimization = False

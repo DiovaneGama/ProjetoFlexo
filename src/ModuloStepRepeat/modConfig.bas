@@ -27,7 +27,6 @@ Public Const RED_170_10      As Double = 10#
 ' ============================================================
 ' CAMERON
 ' ============================================================
-Public Const CAMERON_OFFSET      As Double = 1.5   ' mm
 Public Const CAMERON_ESPESSURA   As Double = 1#     ' mm
 
 ' ============================================================
