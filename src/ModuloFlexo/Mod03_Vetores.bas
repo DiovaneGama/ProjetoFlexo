@@ -14,7 +14,7 @@ Public Sub ConverterTextosEmCurvas()
     Set srTextos = CreateShapeRange
     Dim s As Shape
 
-    For Each s In ActivePage.Shapes
+    For Each s In ActivePage.shapes
         CrawlerBuscaTexto s, srTextos
     Next s
 
@@ -49,10 +49,10 @@ Private Sub CrawlerBuscaTexto(s As Shape, ByRef sacola As ShapeRange)
     On Error GoTo 0
     
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerBuscaTexto subS, sacola: Next subS
+        For Each subS In s.shapes: CrawlerBuscaTexto subS, sacola: Next subS
     End If
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerBuscaTexto subS, sacola: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerBuscaTexto subS, sacola: Next subS
     End If
 End Sub
 
@@ -61,7 +61,7 @@ End Sub
 ' ============================================================
 Public Sub InspecionarNos()
     ' Trava: Verifica se o operador selecionou algo para inspecionar
-    If ActiveSelection.Shapes.Count = 0 Then
+    If ActiveSelection.shapes.Count = 0 Then
         MsgBox "Selecione os objetos ou o grupo que você deseja inspecionar primeiro!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
@@ -75,7 +75,7 @@ Public Sub InspecionarNos()
     Dim s As Shape
     
     ' Muda a varredura: Agora olha SÓ para o que o operador selecionou!
-    For Each s In ActiveSelection.Shapes
+    For Each s In ActiveSelection.shapes
         CrawlerBuscaNos s, maxNos, srNos
     Next s
     
@@ -96,7 +96,7 @@ End Sub
 ' ============================================================
 Public Sub ReduzirNosSeguro()
     ' Trava de segurança
-    If ActiveSelection.Shapes.Count = 0 Then
+    If ActiveSelection.shapes.Count = 0 Then
         MsgBox "Selecione as curvas que deseja suavizar primeiro!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
@@ -110,7 +110,7 @@ Public Sub ReduzirNosSeguro()
     Dim fatorSuavizacao As Double: fatorSuavizacao = 0.005
     
     ' Inicia a varredura blindada APENAS na seleção
-    For Each s In ActiveSelection.Shapes
+    For Each s In ActiveSelection.shapes
         CrawlerReduzirNos s, fatorSuavizacao, totalNosAntes, totalNosDepois, curvasAfetadas
     Next s
     
@@ -152,12 +152,12 @@ Private Sub CrawlerReduzirNos(s As Shape, fator As Double, ByRef nosAntes As Lon
     
     ' 2. Mergulha nos Grupos
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
+        For Each subS In s.shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
     End If
     
     ' 3. Mergulha nos PowerClips
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
     End If
 End Sub
 
@@ -173,10 +173,10 @@ Private Sub CrawlerBuscaNos(s As Shape, limite As Long, ByRef sacola As ShapeRan
     On Error GoTo 0
     
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
+        For Each subS In s.shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
     End If
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
     End If
 End Sub
 
@@ -194,7 +194,7 @@ Public Sub InspecionarEspessuraMinima()
     Dim s As Shape
     
     ' Inicia a varredura
-    For Each s In ActivePage.Shapes
+    For Each s In ActivePage.shapes
         CrawlerEspessura s, limiteMinimo, srFinos
     Next s
     
@@ -216,7 +216,7 @@ Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeR
     On Error Resume Next
     
     If s.Type <> cdrGroupShape And s.Type <> cdrGuidelineShape Then
-        Dim w As Double: w = s.SizeWidth
+        Dim W As Double: W = s.SizeWidth
         Dim H As Double: H = s.SizeHeight
         Dim outW As Double: outW = 0
         Dim sinalizar As Boolean: sinalizar = False
@@ -254,10 +254,10 @@ Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeR
     
     ' Mergulhos
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerEspessura subS, limit, sacola: Next subS
+        For Each subS In s.shapes: CrawlerEspessura subS, limit, sacola: Next subS
     End If
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerEspessura subS, limit, sacola: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerEspessura subS, limit, sacola: Next subS
     End If
 End Sub
 ' ============================================================
@@ -271,7 +271,7 @@ Public Sub PadronizarContornosFinos()
     Dim unidadeOriginal As cdrUnit: unidadeOriginal = ActiveDocument.Unit
     ActiveDocument.Unit = cdrMillimeter
 
-    For Each s In ActivePage.Shapes
+    For Each s In ActivePage.shapes
         CrawlerBuscaContornos s, srProblemas
     Next s
 
@@ -330,12 +330,12 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
     
     ' Mergulha em Grupos
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerBuscaContornos subS, sacola: Next subS
+        For Each subS In s.shapes: CrawlerBuscaContornos subS, sacola: Next subS
     End If
     
     ' Mergulha em PowerClips
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerBuscaContornos subS, sacola: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerBuscaContornos subS, sacola: Next subS
     End If
     On Error GoTo 0
 End Sub
@@ -348,7 +348,7 @@ Public Sub DesbloquearObjetos()
     Dim desbloqueados As Integer: desbloqueados = 0
 
     On Error Resume Next
-    For Each s In ActivePage.Shapes
+    For Each s In ActivePage.shapes
         CrawlerDesbloquear s, desbloqueados
     Next s
     On Error GoTo 0
@@ -368,10 +368,10 @@ Private Sub CrawlerDesbloquear(s As Shape, ByRef contador As Integer)
         contador = contador + 1
     End If
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerDesbloquear subS, contador: Next subS
+        For Each subS In s.shapes: CrawlerDesbloquear subS, contador: Next subS
     End If
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerDesbloquear subS, contador: Next subS
+        For Each subS In s.PowerClip.shapes: CrawlerDesbloquear subS, contador: Next subS
     End If
     On Error GoTo 0
 End Sub

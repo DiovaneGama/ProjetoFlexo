@@ -10,7 +10,7 @@ Option Explicit
 ' 1. INSERIR TEXTOS CAMEROM (Rotacionados, Recuados e Coloridos)
 ' ------------------------------------------------------------
 Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
-    If ActiveSelection.Shapes.Count = 0 Then
+    If ActiveSelection.shapes.Count = 0 Then
         MsgBox "Selecione a arte primeiro para ter uma referência de posicionamento.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
@@ -29,8 +29,8 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
     Dim srOriginal As ShapeRange
     Set srOriginal = ActiveSelectionRange
     
-    Dim X As Double, Y As Double, w As Double, H As Double
-    srOriginal.GetBoundingBox X, Y, w, H
+    Dim X As Double, Y As Double, W As Double, H As Double
+    srOriginal.GetBoundingBox X, Y, W, H
     
     Application.Optimization = True
     Dim corReg As New Color: corReg.RegistrationAssign
@@ -75,7 +75,7 @@ End Sub
 ' FUNÇÃO INTELIGENTE: PINTA AS PALAVRAS DO TEXTO COM SUAS CORES
 ' ------------------------------------------------------------
 Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
-    Dim w As TextRange
+    Dim W As TextRange
     Dim txt As String
     Dim C As New Color
     Dim pularProxima As Boolean: pularProxima = False
@@ -95,22 +95,22 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
             GoTo ProximaPalavra
         End If
         
-        Set w = txtShape.Text.Story.Words(i)
-        txt = UCase(Trim(w.Text))
+        Set W = txtShape.Text.Story.Words(i)
+        txt = UCase(Trim(W.Text))
         corAplicada = False
         
         ' 1. TRATAMENTO CMYK
         If InStr(txt, "CIANO") > 0 Or InStr(txt, "CYAN") > 0 Then
-            w.Fill.ApplyUniformFill colCiano
+            W.Fill.ApplyUniformFill colCiano
             corAplicada = True
         ElseIf InStr(txt, "MAGENTA") > 0 Then
-            w.Fill.ApplyUniformFill colMagenta
+            W.Fill.ApplyUniformFill colMagenta
             corAplicada = True
         ElseIf InStr(txt, "AMARELO") > 0 Or InStr(txt, "YELLOW") > 0 Then
-            w.Fill.ApplyUniformFill colAmarelo
+            W.Fill.ApplyUniformFill colAmarelo
             corAplicada = True
         ElseIf InStr(txt, "PRETO") > 0 Or InStr(txt, "BLACK") > 0 Then
-            w.Fill.ApplyUniformFill colPreto
+            W.Fill.ApplyUniformFill colPreto
             corAplicada = True
             
         ' 2. TRATAMENTO PANTONE (NOVA ESTRATÉGIA BLINDADA)
@@ -166,14 +166,14 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
                 
                 ' SE ACHOU O PANTONE, APLICA!
                 If idCor > 0 Then
-                    w.Fill.ApplyUniformFill C
+                    W.Fill.ApplyUniformFill C
                     If pularProxima Then txtShape.Text.Story.Words(i + 1).Fill.ApplyUniformFill C
                     corAplicada = True
                 Else
                     ' ESTRATÉGIA C (Trava de Segurança): Se o Corel não tiver essa cor de jeito nenhum,
                     ' pinta de Laranja para tirar do "Registro" e não sujar as outras chapas do cliente.
                     C.CMYKAssign 0, 70, 80, 0
-                    w.Fill.ApplyUniformFill C
+                    W.Fill.ApplyUniformFill C
                     If pularProxima Then txtShape.Text.Story.Words(i + 1).Fill.ApplyUniformFill C
                     corAplicada = True
                 End If
@@ -182,7 +182,7 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
         
         ' 3. REGRA DE OURO: O que sobrar (Dados do cliente, traços, etc) ganha Cor de Registro!
         If Not corAplicada Then
-            w.Fill.ApplyUniformFill colReg
+            W.Fill.ApplyUniformFill colReg
         End If
         
 ProximaPalavra:
@@ -190,7 +190,7 @@ ProximaPalavra:
 End Sub
 
 Public Sub AjustarTrimBoxEBorda()
-    If ActiveSelection.Shapes.Count = 0 Then
+    If ActiveSelection.shapes.Count = 0 Then
         MsgBox "Selecione a arte que definirá o tamanho final do TrimBox.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
@@ -243,10 +243,10 @@ Public Sub AjustarTrimBoxEBorda()
     Set sr = CreateShapeRange
     sr.Add grpArte
 
-    Dim X As Double, Y As Double, w As Double, H As Double
-    sr.GetBoundingBox X, Y, w, H
+    Dim X As Double, Y As Double, W As Double, H As Double
+    sr.GetBoundingBox X, Y, W, H
 
-    Dim novaLargura As Double: novaLargura = w + (margem * 2)
+    Dim novaLargura As Double: novaLargura = W + (margem * 2)
     Dim novaAltura As Double: novaAltura = H + (margem * 2)
 
     ' [T37/T38/T39] Redimensiona a pagina primeiro

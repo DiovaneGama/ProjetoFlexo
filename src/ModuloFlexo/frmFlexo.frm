@@ -2,9 +2,9 @@ VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmFlexo 
    Caption         =   "Console Flexo v2.0"
    ClientHeight    =   10284
-   ClientLeft      =   108
-   ClientTop       =   456
-   ClientWidth     =   4608
+   ClientLeft      =   105
+   ClientTop       =   450
+   ClientWidth     =   4605
    OleObjectBlob   =   "frmFlexo.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -14,6 +14,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 
 Option Explicit
 
@@ -50,7 +51,7 @@ Private Function H(R As Long, G As Long, B As Long) As Long
 End Function
 
 ' ============================================================
-' INICIALIZAÇÃO
+' INICIALIZAï¿½ï¿½O
 ' ============================================================
 Private Sub UserForm_Initialize()
     On Error Resume Next
@@ -112,10 +113,10 @@ Private Sub AplicarTemaFrames()
 End Sub
 
 ' ============================================================
-' TEMA - TODAS AS LABELS/BOTÕES
+' TEMA - TODAS AS LABELS/BOTï¿½ES
 ' ============================================================
 Private Sub AplicarTemaLabels()
-    Dim lbls(16) As MSForms.Label
+    Dim lbls(17) As MSForms.Label
     Set lbls(0) = Me.btnBranco
     Set lbls(1) = Me.btnPretoSujo
     Set lbls(2) = Me.btnSpot
@@ -133,9 +134,10 @@ Private Sub AplicarTemaLabels()
     Set lbls(14) = Me.btnPadronizarImagens
     Set lbls(15) = Me.btnInserirTextos
     Set lbls(16) = Me.btnTrimBox
+    Set lbls(17) = Me.btnMicropontos
 
     Dim i As Integer
-    For i = 0 To 16
+    For i = 0 To 17
         AplicarEstiloLabelPadrao lbls(i)
     Next i
 
@@ -143,7 +145,7 @@ Private Sub AplicarTemaLabels()
     With Me.btnDesfazer
         .Enabled = False
         .BackColor = H(30, 42, 58)
-        .ForeColor = H(52, 82, 118)
+        .ForeColor = H(30, 55, 95)
         .Font.Name = "Segoe UI"
         .Font.Size = 8
         .Font.Bold = True
@@ -152,7 +154,7 @@ Private Sub AplicarTemaLabels()
         .Caption = vbCrLf & ChrW(8635) & "  Desfazer " & ChrW(250) & "ltima a" & ChrW(231) & ChrW(227) & "o"
     End With
 
-    ' Botão Reset
+    ' Botï¿½o Reset
     With Me.btnReset
         .BackColor = H(30, 42, 58)
         .ForeColor = H(106, 125, 150)
@@ -186,8 +188,9 @@ Private Sub AplicarTooltips()
     Me.btnCorrigirContornos.ControlTipText = "Esse bot" & ChrW(227) & "o corrige contornos abaixo de 0,1mm"
     Me.btnPadronizarImagens.ControlTipText = "Esse bot" & ChrW(227) & "o localiza e converte imagens para CMYK 600dpi"
     Me.btnInserirTextos.ControlTipText = "Esse bot" & ChrW(227) & "o insere os dados do camerom na arte"
-    Me.btnDesbloquear.ControlTipText = "Desbloqueia todos os objetos bloqueados da página ativa"
+    Me.btnDesbloquear.ControlTipText = "Desbloqueia todos os objetos bloqueados da pï¿½gina ativa"
     Me.btnTrimBox.ControlTipText = "Esse bot" & ChrW(227) & "o aplica o offset de cada lado da arte e cria o trimbox(Escolha entre 5mm e 7mm)"
+    Me.btnMicropontos.ControlTipText = "Insere 4 micropontos ao redor do objeto selecionado (offset 1,5 mm)"
 End Sub
 
 Private Sub AplicarEstiloLabelPadrao(lbl As MSForms.Label)
@@ -242,7 +245,7 @@ Private Sub AplicarTemaInputs()
 End Sub
 
 ' ============================================================
-' SISTEMA DE ESTADO — MARCAR CONCLUÍDO
+' SISTEMA DE ESTADO ï¿½ MARCAR CONCLUï¿½DO
 ' ============================================================
 Private Sub MarcarConcluido(lbl As MSForms.Label, captionOrig As String, nomeAcao As String, apenasSelecao As Boolean)
     With lbl
@@ -269,7 +272,7 @@ Private Sub MarcarConcluido(lbl As MSForms.Label, captionOrig As String, nomeAca
 End Sub
 
 ' ============================================================
-' RESETAR DESFAZER — reseta APENAS o último botão clicado
+' RESETAR DESFAZER ï¿½ reseta APENAS o ï¿½ltimo botï¿½o clicado
 ' ============================================================
 Private Sub ResetarDesfazer()
     If Not ultimoLabelAtivo Is Nothing Then
@@ -294,16 +297,16 @@ Private Sub ResetarDesfazer()
 End Sub
 
 ' ============================================================
-' HOVER — MOUSE ENTER / LEAVE
+' HOVER ï¿½ MOUSE ENTER / LEAVE
 ' ============================================================
 Private Sub AplicarHover(lbl As MSForms.Label)
-    If lbl.ForeColor = H(58, 78, 98) Then Exit Sub ' Não aplica hover em done
+    If lbl.ForeColor = H(58, 78, 98) Then Exit Sub ' Nï¿½o aplica hover em done
     lbl.BackColor = H(36, 50, 68)
     lbl.ForeColor = H(192, 212, 232)
 End Sub
 
 Private Sub RemoverHover(lbl As MSForms.Label)
-    If lbl.ForeColor = H(58, 78, 98) Then Exit Sub ' Não remove em done
+    If lbl.ForeColor = H(58, 78, 98) Then Exit Sub ' Nï¿½o remove em done
     lbl.BackColor = H(30, 42, 58)
     lbl.ForeColor = H(154, 176, 200)
 End Sub
@@ -315,7 +318,7 @@ Private Sub AplicarPress(lbl As MSForms.Label)
 End Sub
 
 ' ============================================================
-' EVENTOS — btnBranco
+' EVENTOS ï¿½ btnBranco
 ' ============================================================
 Private Sub btnBranco_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     AplicarHover Me.btnBranco
@@ -414,7 +417,7 @@ Private Sub btnTrimBox_MouseDown(ByVal Button As Integer, ByVal Shift As Integer
     AplicarPress Me.btnTrimBox
 End Sub
 ' ============================================================
-' BOTÕES — TRATAMENTO DE CORES
+' BOTï¿½ES ï¿½ TRATAMENTO DE CORES
 ' ============================================================
 Private Sub btnBranco_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.CorrigirBrancoOverprint
@@ -446,13 +449,13 @@ Private Sub btnConverterPantone_MouseUp(ByVal Button As Integer, ByVal Shift As 
     MarcarConcluido Me.btnConverterPantone, "Converter para Pantone", "Converter Pantone", False
 End Sub
 
-' ? apenasSelecao = True — não habilita Desfazer
+' ? apenasSelecao = True ï¿½ nï¿½o habilita Desfazer
 Private Sub btnSelPreenchimento_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.SelecionarMsmCor(1)
     MarcarConcluido Me.btnSelPreenchimento, "Seleciona Msm Cor Preenchimento", "Sel. Preenchimento", True
 End Sub
 
-' ? apenasSelecao = True — não habilita Desfazer
+' ? apenasSelecao = True ï¿½ nï¿½o habilita Desfazer
 Private Sub btnSelContorno_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.SelecionarMsmCor(2)
     MarcarConcluido Me.btnSelContorno, "Seleciona Msm Cor Contorno", "Sel. Contorno", True
@@ -469,14 +472,14 @@ Private Sub btnLimparSujeira_MouseUp(ByVal Button As Integer, ByVal Shift As Int
 End Sub
 
 ' ============================================================
-' BOTÕES — TRATAMENTO DE VETORES
+' BOTï¿½ES ï¿½ TRATAMENTO DE VETORES
 ' ============================================================
 Private Sub btnTextosEmCurvas_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.ConverterTextosEmCurvas
     MarcarConcluido Me.btnTextosEmCurvas, "Textos em Curvas", "Textos em Curvas", False
 End Sub
 
-' ? apenasSelecao = True — não habilita Desfazer
+' ? apenasSelecao = True ï¿½ nï¿½o habilita Desfazer
 Private Sub btnEspessuraMinima_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.InspecionarEspessuraMinima
     MarcarConcluido Me.btnEspessuraMinima, "Inspetor de Linhas Finas", "Linhas Finas", True
@@ -502,7 +505,7 @@ Private Sub btnDesbloquear_MouseUp(ByVal Button As Integer, ByVal Shift As Integ
 End Sub
 
 ' ============================================================
-' BOTÕES — TRATAMENTO DE BITMAPS
+' BOTï¿½ES ï¿½ TRATAMENTO DE BITMAPS
 ' ============================================================
 Private Sub btnPadronizarImagens_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod05_Imagens.PadronizarImagensCMYK600
@@ -510,7 +513,7 @@ Private Sub btnPadronizarImagens_MouseUp(ByVal Button As Integer, ByVal Shift As
 End Sub
 
 ' ============================================================
-' BOTÕES — MONTAGEM
+' BOTï¿½ES ï¿½ MONTAGEM
 ' ============================================================
 Private Sub btnInserirTextos_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod04_Montagem.InserirTextosCamerom(Me.txtDados.Text, Me.txtCores.Text)
@@ -525,8 +528,23 @@ Private Sub btnTrimBox_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, 
     MarcarConcluido Me.btnTrimBox, "Aplicar Trimbox", "Aplicar Trimbox", False
 End Sub
 
+Private Sub btnMicropontos_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    AplicarHover Me.btnMicropontos
+End Sub
+Private Sub btnMicropontos_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    AplicarPress Me.btnMicropontos
+End Sub
+Private Sub btnMicropontos_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Call Mod07_InserirMicropontos.InserirMicropontos
+    MarcarConcluido Me.btnMicropontos, "Inserir Micropontos", "Micropontos", False
+End Sub
+
 ' ============================================================
-' EVENTOS — btnDesfazer
+' LEAVE - restaura hover quando mouse sai do btnMicropontos
+' ============================================================
+
+' ============================================================
+' EVENTOS ï¿½ btnDesfazer
 ' ============================================================
 Private Sub btnDesfazer_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     If Not Me.btnDesfazer.Enabled Then Exit Sub
@@ -544,13 +562,13 @@ Private Sub btnDesfazer_MouseUp(ByVal Button As Integer, ByVal Shift As Integer,
     End If
 
     On Error Resume Next
-    ActiveDocument.Undo  ' ? 1 único Undo — BeginCommandGroup garante lote
+    ActiveDocument.Undo  ' ? 1 ï¿½nico Undo ï¿½ BeginCommandGroup garante lote
     On Error GoTo 0
     ResetarDesfazer
 End Sub
 
 ' ============================================================
-' LEAVE — restaura hover quando mouse sai dos botões
+' LEAVE ï¿½ restaura hover quando mouse sai dos botï¿½es
 ' ============================================================
 Private Sub frameTratamentoDeCores_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     RemoverHoverTodos

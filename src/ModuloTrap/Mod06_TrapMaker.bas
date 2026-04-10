@@ -1,6 +1,6 @@
 Attribute VB_Name = "Mod06_TrapMaker"
 ' =============================================================================
-' TRAPMAKER v1.9.0
+' TRAPMAKER v1.8.1
 ' CorelDRAW 2026 v27 - API: https://community.coreldraw.com/sdk/api/draw/27
 '
 ' HISTORICO:
@@ -127,7 +127,7 @@ Public Sub RunTrapMaker()
     End If
 
     sInput = InputBox( _
-        "TrapMaker v1.9.0" & vbCrLf & vbCrLf & _
+        "TrapMaker v1.8.1" & vbCrLf & vbCrLf & _
         "Valor de trapping (mm):" & vbCrLf & _
         "  Minimo : 0,05 mm" & vbCrLf & _
         "  Padrao : 0,10 mm" & vbCrLf & _
@@ -212,7 +212,7 @@ Public Sub RunTrapMaker()
         End If
     Next i
 
-    relatorio = "TrapMaker v1.9.0 - Relatorio" & vbCrLf
+    relatorio = "TrapMaker v1.8.1 - Relatorio" & vbCrLf
     relatorio = relatorio & String(40, "-") & vbCrLf
     relatorio = relatorio & "Valor    : " & Format(trapValorMm, "0.00") & " mm" & vbCrLf
     relatorio = relatorio & "Gerados  : " & totalProcessados & vbCrLf
@@ -233,15 +233,15 @@ Private Function ObjetoSuportado(obj As Shape) As Boolean
     Dim t As Integer
     t = obj.Type
     If t = CDR_BITMAP_TYPE Then ObjetoSuportado = False: Exit Function
-    If t = CDR_OLE_TYPE    Then ObjetoSuportado = False: Exit Function
+    If t = CDR_OLE_TYPE Then ObjetoSuportado = False: Exit Function
     ObjetoSuportado = True
 End Function
 
 
 ' =============================================================================
 Private Function CalcularTrap(objFrente As Shape, _
-                               objFundo  As Shape, _
-                               trapPt    As Double) As TrapResult
+                               objFundo As Shape, _
+                               trapPt As Double) As TrapResult
     Dim res       As TrapResult
     Dim fC As Double, fM As Double, fY As Double, fK As Double
     Dim bC As Double, bM As Double, bY As Double, bK As Double
@@ -299,131 +299,126 @@ End Function
 
 
 ' =============================================================================
-' =============================================================================
-' AplicarTrap v1.9.0
+' AplicarTrap v1.8.1
 '
-' FLUXO BASEADO NO PROCESSO MANUAL CONFIRMADO:
-'   1. CreateContour(direcao, offset_mm, etapas=1, cantos arredondados, cor)
-'      Equivalente a: Ferramenta Contorno no menu lateral
-'   2. BreakApart() — equivalente ao Ctrl+K (Separar Grupo de Contorno)
-'      Apos separacao, shapes ficam em ActiveSelectionRange
-'   3. Identificar trap (maior=SPREAD, menor=CHOKE), configurar, mover para TRAP
+' ESTRATEGIA CONFIRMADA POR TESTE MANUAL:
+'   CreateContour cria um shape filho "Contorno" dentro do shape pai.
+'   No Gerenciador de Objetos aparece como:
+'     Retangulo (pai/controle)
+'       Contorno (filho - o shape expandido)
 '
-' API v27 (community.coreldraw.com/sdk/api/draw/27):
-'   Shape.CreateContour(Direction, Offset, Steps, ..., CornerType) -> Effect
-'   Shape.BreakApart() -> Sub  [Ctrl+K]
-'   cdrContourDirection: cdrContourOutside=2, cdrContourInside=0
-'   cdrContourCornerType: arredondado=1
+'   O shape filho e acessivel via efeito.Shape.Shapes(1) antes de separar,
+'   ou via Shape.ClearEffect que quebra o grupo deixando ambos independentes.
+'
+'   FLUXO:
+'   1. Duplicate baseShape
+'   2. ConvertToCurves (garante compatibilidade)
+'   3. CreateContour(Outside/Inside, trapMm, Steps:=1, FillColor:=corTrap)
+'   4. Capturar o shape filho ANTES de separar: efeito.Shape.Shapes(1)
+'      - Shapes(1) e o "Contorno" (shape expandido/contraido)
+'   5. ClearEffect no baseShape para separar o grupo
+'   6. Configurar o trapShape (filho capturado)
+'   7. Deletar o baseShape (residuo original)
+'
+'   Ref API v27:
+'     Shape.CreateContour() -> Effect
+'     Effect.Shape -> Shape (o shape pai/controle)
+'     Shape.Shapes -> colecao de shapes filhos
+'     Shape.ClearEffect(cdrContour) -> void  [cdrContour=6, API v27]
+'     cdrContourDirection: cdrContourInside=0, cdrContourOutside=2
 '
 ' Retorna True se o objeto trap foi criado com sucesso.
 ' =============================================================================
 Private Function AplicarTrap(objFrente As Shape, _
-                              objFundo  As Shape, _
-                              res       As TrapResult, _
+                              objFundo As Shape, _
+                              res As TrapResult, _
                               trapLayer As Layer) As Boolean
-    Dim baseShape As Shape
-    Dim trapShape As Shape
-    Dim origShape As Shape
-    Dim corTrap   As Color
-    Dim trapMm    As Double
-    Dim direcao   As Long
-    Dim selApos   As ShapeRange
-    Dim area1     As Double
-    Dim area2     As Double
-    Dim k         As Integer
+    Dim baseShape  As Shape
+    Dim efeito     As Effect
+    Dim trapShape  As Shape
+    Dim corTrap    As Color
+    Dim trapMm     As Double
+    Dim direcao    As Long
 
     AplicarTrap = False
 
-    ' 1 pt = 0.352778 mm
+    ' Converter trapPt para mm (1pt = 0.352778mm)
     trapMm = res.ValorPt * 0.352778
 
-    ' Shape base e direcao
+    ' Shape base e direcao do contorno
+    ' SPREAD/NEUTRO: expande para FORA (cdrContourOutside = 2)
+    ' CHOKE: contrai para DENTRO (cdrContourInside = 0)
     Select Case res.TipoTrap
         Case "SPREAD", "NEUTRO"
             Set baseShape = objFrente.Duplicate()
-            direcao = 2   ' cdrContourOutside
+            direcao = 2
         Case "CHOKE"
             Set baseShape = objFundo.Duplicate()
-            direcao = 0   ' cdrContourInside
+            direcao = 0
         Case Else
             Exit Function
     End Select
 
     If baseShape Is Nothing Then Exit Function
 
+    ' Cor do trap
     Set corTrap = CreateCMYKColor(res.CorTrapC, res.CorTrapM, res.CorTrapY, res.CorTrapK)
 
-    ' -----------------------------------------------------------------------
-    ' PASSO 1: CreateContour — mesmo fluxo da ferramenta manual
-    ' Direction, Offset(mm), Steps=1, BlendType, OutlineColor, FillColor,
-    ' FillColor2, SpacingAccel, ColorAccel, EndCapType, CornerType=1(Round)
-    ' -----------------------------------------------------------------------
+    ' ConvertToCurves para garantir compatibilidade com CreateContour
     On Error Resume Next
-    baseShape.CreateContour direcao, trapMm, 1, , , corTrap, , , , , 1
+    baseShape.ConvertToCurves
     On Error GoTo 0
 
-    ' -----------------------------------------------------------------------
-    ' PASSO 2: BreakApart — equivalente ao Ctrl+K
-    ' Separa o grupo. Os shapes resultantes ficam em ActiveSelectionRange.
-    ' -----------------------------------------------------------------------
+    ' CreateContour: gera o shape filho "Contorno" dentro de baseShape
+    ' Offset em mm, Steps=1, FillColor=corTrap
+    ' Ref: Shape.CreateContour(Direction, Offset, Steps, ..., FillColor), API v27
     On Error Resume Next
-    baseShape.BreakApart
-    Set selApos = ActiveSelectionRange
+    Set efeito = baseShape.CreateContour(direcao, trapMm, 1, , , corTrap)
     On Error GoTo 0
 
-    If selApos Is Nothing Then
-        On Error Resume Next: baseShape.Delete: On Error GoTo 0
-        Exit Function
-    End If
-
-    If selApos.Count < 2 Then
+    If efeito Is Nothing Then
         On Error Resume Next
-        For k = 1 To selApos.Count
-            selApos(k).Delete
-        Next k
+        baseShape.Delete
         On Error GoTo 0
         Exit Function
     End If
 
-    ' -----------------------------------------------------------------------
-    ' PASSO 3: Identificar trap pela area da bounding box
-    ' Outside (SPREAD/NEUTRO): trap = shape MAIOR
-    ' Inside  (CHOKE)        : trap = shape MENOR
-    ' -----------------------------------------------------------------------
-    area1 = selApos(1).SizeWidth * selApos(1).SizeHeight
-    area2 = selApos(2).SizeWidth * selApos(2).SizeHeight
+    ' Capturar o shape filho (o "Contorno") ANTES de separar o grupo
+    ' efeito.Shape = o shape pai (baseShape)
+    ' efeito.Shape.Shapes(1) = o shape filho gerado ("Contorno")
+    On Error Resume Next
+    Set trapShape = efeito.Shape.shapes(1)
+    On Error GoTo 0
 
-    If direcao = 2 Then
-        If area1 >= area2 Then
-            Set trapShape = selApos(1): Set origShape = selApos(2)
-        Else
-            Set trapShape = selApos(2): Set origShape = selApos(1)
-        End If
-    Else
-        If area1 <= area2 Then
-            Set trapShape = selApos(1): Set origShape = selApos(2)
-        Else
-            Set trapShape = selApos(2): Set origShape = selApos(1)
-        End If
+    If trapShape Is Nothing Then
+        On Error Resume Next
+        baseShape.ClearEffect cdrContour
+        baseShape.Delete
+        On Error GoTo 0
+        Exit Function
     End If
 
-    On Error Resume Next: origShape.Delete: On Error GoTo 0
-
-    If trapShape Is Nothing Then Exit Function
-
-    ' Configurar objeto trap final
+    ' ClearEffect separa o grupo: baseShape e trapShape ficam independentes
+    ' Ref: Shape.ClearEffect(), API v27
     On Error Resume Next
+    baseShape.ClearEffect cdrContour
+    On Error GoTo 0
+
+    ' Configurar o objeto trap final
     trapShape.Fill.ApplyUniformFill corTrap
     trapShape.Outline.SetNoOutline
     trapShape.OverprintFill = True
     trapShape.Layer = trapLayer
     trapShape.Name = "TRAP_" & res.TipoTrap & "_" & _
                      Format(res.ValorPt / 2.8346, "0.00") & "mm"
+
+    ' Deletar o baseShape residual (duplicado original)
+    On Error Resume Next
+    baseShape.Delete
     On Error GoTo 0
 
     AplicarTrap = True
 End Function
-
 
 
 ' =============================================================================
@@ -496,7 +491,7 @@ Public Sub DiagnosticarContour()
     ElseIf efeito Is Nothing Then
         msg = msg & "RETORNOU Nothing" & vbCrLf
     Else
-        msg = msg & "OK | efeito.Shape.Shapes.Count=" & efeito.Shape.Shapes.Count & vbCrLf
+        msg = msg & "OK | efeito.Shape.Shapes.Count=" & efeito.Shape.shapes.Count & vbCrLf
     End If
 
     If efeito Is Nothing Then
@@ -506,7 +501,7 @@ Public Sub DiagnosticarContour()
 
     ' Etapa 4: Capturar Shapes(1)
     On Error Resume Next
-    Set trapShape = efeito.Shape.Shapes(1)
+    Set trapShape = efeito.Shape.shapes(1)
     errNum = Err.Number: errDesc = Err.Description: Err.Clear
     On Error GoTo 0
     msg = msg & "E4 efeito.Shape.Shapes(1): "
@@ -665,9 +660,9 @@ Private Function ObterOuCriarLayerTrap() As Layer
     If lyr Is Nothing Then
         On Error GoTo ErroLayer
         Set lyr = pg.CreateLayer(TRAP_LAYER_NAME)
-        lyr.Visible   = True
+        lyr.Visible = True
         lyr.Printable = True
-        lyr.Editable  = True
+        lyr.Editable = True
         On Error Resume Next
         lyr.Color.RGBAssign 83, 74, 183
         On Error GoTo 0
@@ -746,9 +741,9 @@ Public Sub DiagnosticarConvertToObject()
     ' Outline.Width e Outline.Color funcionam quando Type=0 (cdrOutlineNone)
     Set corTeste = CreateCMYKColor(0, 100, 0, 0)
     On Error Resume Next
-    dupShape.Outline.Width          = 2
-    dupShape.Outline.Color          = corTeste
-    dupShape.Outline.BehindFill     = CDR_FALSE
+    dupShape.Outline.Width = 2
+    dupShape.Outline.Color = corTeste
+    dupShape.Outline.BehindFill = CDR_FALSE
     dupShape.Outline.ScaleWithShape = CDR_FALSE
     errNum = Err.Number: errDesc = Err.Description: Err.Clear
     On Error GoTo 0
@@ -811,7 +806,7 @@ Public Sub TestarCalculoLuminancia()
     Dim l3f As Double, l3b As Double
     Dim l4f As Double, l4b As Double
 
-    sRes = "TESTE - TrapMaker v1.9.0" & vbCrLf
+    sRes = "TESTE - TrapMaker v1.8.1" & vbCrLf
     sRes = sRes & String(40, "=") & vbCrLf & vbCrLf
 
     l1f = CalcLuma(0, 0, 100, 0)
@@ -842,7 +837,7 @@ End Sub
 Public Sub SobreOTrapMaker()
 ' =============================================================================
     Dim s As String
-    s = "TrapMaker v1.9.0" & vbCrLf
+    s = "TrapMaker v1.8.1" & vbCrLf
     s = s & String(38, "-") & vbCrLf
     s = s & "Macro de trapping semi-automatico" & vbCrLf
     s = s & "para CorelDRAW 2026 v27 ou superior." & vbCrLf & vbCrLf
@@ -861,4 +856,4 @@ Public Sub SobreOTrapMaker()
     MsgBox s, vbInformation, "Sobre o TrapMaker"
 End Sub
 
-' === FIM TrapMaker v1.9.0 ===
+' === FIM TrapMaker v1.8.1 ===

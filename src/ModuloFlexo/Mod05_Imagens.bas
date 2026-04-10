@@ -27,7 +27,7 @@ Public Sub PadronizarImagensCMYK600()
     Set sacola = CreateShapeRange
 
     Dim s As Shape
-    For Each s In ActivePage.Shapes
+    For Each s In ActivePage.shapes
         CrawlerPadronizar s, sacola
     Next s
 
@@ -131,14 +131,14 @@ Private Sub CrawlerPadronizar(s As Shape, ByRef sacola As ShapeRange)
 
     ' Mergulho em Grupos
     If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes
+        For Each subS In s.shapes
             CrawlerPadronizar subS, sacola
         Next subS
     End If
 
     ' Mergulho em PowerClips
     If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes
+        For Each subS In s.PowerClip.shapes
             CrawlerPadronizar subS, sacola
         Next subS
     End If

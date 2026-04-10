@@ -31,7 +31,7 @@ Public Sub ExecutarScanner()
         .QtdImgRGB = 0: .QtdFontesVivas = 0: .QtdGradBloqueado = 0
     End With
 
-    ' ? Varre apenas a página ativa — não todo o documento
+    ' ? Varre apenas a pï¿½gina ativa ï¿½ nï¿½o todo o documento
     CrawlerMergulhoProfundo ActivePage.shapes
 
     frmPreFlight.Show vbModeless
@@ -125,7 +125,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' PANTONE - conta e lista cores únicas, excluindo cores técnicas
+    ' PANTONE - conta e lista cores ï¿½nicas, excluindo cores tï¿½cnicas
     If C.IsSpot Then
         Dim nomeCor As String: nomeCor = Trim(C.Name)
         If nomeCor <> "" Then
@@ -138,7 +138,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' CORES TÉCNICAS - conta e lista cores únicas
+    ' CORES Tï¿½CNICAS - conta e lista cores ï¿½nicas
     Dim nTec As String: nTec = LCase(Trim(C.Name))
     If EhCorTecnica(nTec) Then
         Dim nomeTec As String: nomeTec = Trim(C.Name)
@@ -166,6 +166,7 @@ Private Sub AnalisarGradiente(s As Shape)
     maxC = 0: maxM = 0: maxY = 0: maxK = 0: maxTint = 0
     Dim temSpot As Boolean: temSpot = False
     Dim temBrancoCMYK As Boolean: temBrancoCMYK = False
+    Dim temRGB As Boolean: temRGB = False
     Dim cores() As Color
     Dim totalCores As Integer
     totalCores = 2 + s.Fill.Fountain.Colors.Count
@@ -185,8 +186,11 @@ Private Sub AnalisarGradiente(s As Shape)
         ElseIf cores(K).Type = cdrColorSpot Then
             If cores(K).Tint > maxTint Then maxTint = cores(K).Tint
             If cores(K).Tint > 0 Then temSpot = True
+        ElseIf cores(K).Type = cdrColorRGB Then
+            temRGB = True
         End If
     Next K
+    If temRGB Then relatorio.QtdRGB = relatorio.QtdRGB + 1
     For K = 1 To totalCores
         If cores(K).Type = cdrColorCMYK Then
             If maxC > 0 And cores(K).CMYKCyan = 0 Then temBordaDura = True: Exit For
@@ -245,7 +249,7 @@ Private Function EhCorTecnica(nCorLower As String) As Boolean
 End Function
 
 ' ============================================================
-' Função auxiliar: busca índice de uma cor Spot na paleta PANTONE
+' Funï¿½ï¿½o auxiliar: busca ï¿½ndice de uma cor Spot na paleta PANTONE
 ' ============================================================
 Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Long
     BuscarIndicePaleta = -1
@@ -265,7 +269,7 @@ Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
     ActiveDocument.BeginCommandGroup "Corre" & ChrW(231) & ChrW(227) & "o Autom" & ChrW(225) & "tica PreFlight"
     On Error GoTo FimErro
 
-    ' ? Corrige apenas a página ativa
+    ' ? Corrige apenas a pï¿½gina ativa
     CrawlerCorrecoes ActivePage.shapes, minDot
 
 FimErro:
@@ -280,7 +284,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
         If s.Type <> cdrGuidelineShape And Not s.Layer Is Nothing Then
             If s.Layer.IsSpecialLayer = False And s.Layer.Printable = True And Not s.Locked And s.Layer.Editable Then
 
-                ' 1. CORREÇÃO DE PREENCHIMENTOS UNIFORMES
+                ' 1. CORREï¿½ï¿½O DE PREENCHIMENTOS UNIFORMES
                 If s.Fill.Type = cdrUniformFill Then
                     If s.Fill.UniformColor.Type = cdrColorRGB Then s.Fill.UniformColor.ConvertToCMYK
                     If EhBranco(s.Fill.UniformColor) And s.OverprintFill = True Then s.OverprintFill = False
@@ -292,7 +296,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                     End If
                 End If
 
-                ' 2. CORREÇÃO DE GRADIENTES (BORDA DURA)
+                ' 2. CORREï¿½ï¿½O DE GRADIENTES (BORDA DURA)
                 If s.Fill.Type = cdrFountainFill And minDot > 0 Then
                     Dim maxC As Long, maxM As Long, maxY As Long, maxK As Long, maxTint As Long
                     Dim newC As Long, newM As Long, newY As Long, newK As Long
@@ -314,7 +318,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                         Set cores(3 + K) = s.Fill.Fountain.Colors(K).Color
                     Next K
 
-                    ' FASE 1: Lê o DNA do gradiente
+                    ' FASE 1: Lï¿½ o DNA do gradiente
                     For K = 1 To totalCores
                         If cores(K).Type = cdrColorCMYK Then
                             If cores(K).CMYKCyan > maxC Then maxC = cores(K).CMYKCyan
@@ -330,7 +334,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                                 temSpot = True
                                 If nomePantone = "" Then
                                     nomePantone = cores(K).Name
-                                    ' Busca índice na paleta PANTONE para reconstrução Spot
+                                    ' Busca ï¿½ndice na paleta PANTONE para reconstruï¿½ï¿½o Spot
                                     Dim palPantone As Palette
                                     Set palPantone = Palettes.OpenFixed(cdrPANTONECoated)
                                     idxPantone = BuscarIndicePaleta(palPantone, nomePantone)
@@ -339,10 +343,10 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                         End If
                     Next K
 
-                    ' FASE 2: Aplica correção nó a nó
+                    ' FASE 2: Aplica correï¿½ï¿½o nï¿½ a nï¿½
                     For K = 1 To totalCores
                         If cores(K).Type = cdrColorCMYK Then
-                            ' Detecta branco CMYK que é Pantone 0% disfarçado
+                            ' Detecta branco CMYK que ï¿½ Pantone 0% disfarï¿½ado
                             ehBrancoPantone = False
                             If temSpot And temBrancoCMYK Then
                                 If (cores(K).CMYKCyan + cores(K).CMYKMagenta + cores(K).CMYKYellow + cores(K).CMYKBlack) = 0 Then
@@ -351,7 +355,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                             End If
 
                             If ehBrancoPantone And idxPantone > 0 And Not palPantone Is Nothing Then
-                                ' REGRA 2: Reconstrói nó como Spot via paleta + Tint
+                                ' REGRA 2: Reconstrï¿½i nï¿½ como Spot via paleta + Tint
                                 If K = 1 Then
                                     s.Fill.Fountain.StartColor.CopyAssign palPantone.Color(idxPantone)
                                     s.Fill.Fountain.StartColor.Tint = minDot
@@ -363,7 +367,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                                     s.Fill.Fountain.Colors(K - 3).Color.Tint = minDot
                                 End If
                             ElseIf Not ehBrancoPantone Then
-                                ' REGRA 1: Gradiente CMYK — zero em canal ativo = borda dura
+                                ' REGRA 1: Gradiente CMYK ï¿½ zero em canal ativo = borda dura
                                 newC = cores(K).CMYKCyan
                                 newM = cores(K).CMYKMagenta
                                 newY = cores(K).CMYKYellow
@@ -389,7 +393,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                             End If
 
                         ElseIf cores(K).Type = cdrColorSpot Then
-                            ' REGRA 3: Spot com Tint abaixo do mínimo = borda dura
+                            ' REGRA 3: Spot com Tint abaixo do mï¿½nimo = borda dura
                             If cores(K).Tint < minDot Then
                                 If K = 1 Then
                                     s.Fill.Fountain.StartColor.Tint = minDot
@@ -403,7 +407,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                     Next K
                 End If
 
-                ' 3. CORREÇÃO DE CONTORNOS E LINHAS FINAS
+                ' 3. CORREï¿½ï¿½O DE CONTORNOS E LINHAS FINAS
                 If s.Outline.Type = cdrOutline Then
                     If s.Outline.Color.Type = cdrColorRGB Then s.Outline.Color.ConvertToCMYK
                     If EhBranco(s.Outline.Color) And s.OverprintOutline = True Then s.OverprintOutline = False
@@ -436,7 +440,7 @@ Private Sub CrawlerCorrecoes(shps As shapes, ByVal minDot As Integer)
                     End If
                 End If
 
-                ' 4. CORREÇÃO DE BITMAPS E IMAGENS
+                ' 4. CORREï¿½ï¿½O DE BITMAPS E IMAGENS
                 If s.Type = cdrBitmapShape Then
                     If s.Bitmap.Mode <> cdrCMYKColorImage And s.Bitmap.Mode <> cdrGrayscaleImage And s.Bitmap.Mode <> cdrBlackAndWhiteImage Then
                         s.Bitmap.ConvertTo cdrCMYKColorImage
