@@ -122,7 +122,12 @@ COMO EXECUTAR
 ================================================================
 1. Depois de importar tudo, no CorelDRAW:
    Menu > Ferramentas > Macros > Executar Macro
-2. Selecione: GlobalMacros.frmStepRepeat.Show
-3. O docker aparecera na lateral
-4. Selecione um objeto, preencha os campos e clique MONTAR
+2. Em "Macros em:", selecione o GMS onde importou os modulos
+3. Selecione: modStepRepeat.MostrarStepRepeat
+4. Clique em Executar — o formulario abre em modo modeless
+5. Selecione um objeto, preencha os campos e clique MONTAR
+
+NOTA: "frmStepRepeat.Show" NAO aparece no dialogo de macros porque
+UserForms nao sao listados — apenas Public Sub de modulos .bas sao
+exibidos. Por isso o ponto de entrada e MostrarStepRepeat em modStepRepeat.
 

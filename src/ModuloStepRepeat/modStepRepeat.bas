@@ -14,7 +14,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
         MsgBox "Nenhum documento aberto.", vbExclamation, "Step & Repeat"
         Exit Sub
     End If
-    If ActiveSelection.Shapes.Count = 0 Then
+    If ActiveDocument.Selection.Shapes.Count = 0 Then
         MsgBox "Selecione um objeto (faca/arte) antes de montar.", vbExclamation, "Step & Repeat"
         Exit Sub
     End If
@@ -27,7 +27,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
     End If
     
     ' Salvar estado
-    Dim oldUnit As Long
+    Dim oldUnit As cdrUnit
     oldUnit = ActiveDocument.Unit
     ActiveDocument.Unit = cdrMillimeter
     
@@ -42,7 +42,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
     
     Dim origemX As Double, origemY As Double
     origemX = shpOriginal.LeftX
-    origemY = shpOriginal.TopY
+    origemY = shpOriginal.BottomY
     
     Dim allShapes As New ShapeRange
     allShapes.Add shpOriginal
@@ -75,7 +75,14 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
     Else
         Set grpFinal = shpOriginal
     End If
-    
+
+    ' Aplicar reducao na altura do grupo
+    If cfg.Reducao > 0 Then
+        Dim alturaAtual As Double
+        alturaAtual = grpFinal.SizeHeight
+        grpFinal.SizeHeight = alturaAtual - cfg.Reducao
+    End If
+
     ' Cameron
     If cfg.IncluirCameron Then
         modCameron.InserirCameron cfg, grpFinal
@@ -90,6 +97,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
     ActiveDocument.EndCommandGroup
     Application.Optimization = False
     ActiveDocument.Unit = oldUnit
+    ActiveWindow.Refresh
     
     ' Feedback
     MsgBox "Montagem concluida!" & vbCrLf & _
@@ -104,5 +112,14 @@ ErrHandler:
     ActiveDocument.EndCommandGroup
     Application.Optimization = False
     ActiveDocument.Unit = oldUnit
+    ActiveWindow.Refresh
     MsgBox "Erro durante a montagem: " & Err.Description, vbCritical, "Step & Repeat"
+End Sub
+
+' ============================================================
+' PONTO DE ENTRADA — aparece no dialogo "Executar Macro"
+' Ferramentas > Macros > Executar Macro > StepRepeat.MostrarStepRepeat
+' ============================================================
+Public Sub MostrarStepRepeat()
+    frmStepRepeat.Show 0   ' 0 = vbModeless (nao bloqueia o CorelDRAW)
 End Sub
