@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"c:/Users/diova/Documents/Projetos\" status)",
+      "Bash(git -C \"c:/Users/diova/Documents/Projetos\" remote -v)",
+      "Bash(git -C \"c:/Users/diova/Documents/Projetos\" log --oneline -5)"
+    ]
+  }
+}

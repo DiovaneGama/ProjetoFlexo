@@ -1,0 +1,92 @@
+' ============================================================
+' MÓDULO: Mod05_Imagens (AUDITORIA E TRATAMENTO DE BITMAPS)
+' DESCRIÇÃO: Padronização Absoluta (CMYK + 600 DPI em 1 Clique)
+' ============================================================
+
+Option Explicit
+
+Public Sub PadronizarImagensCMYK600()
+    Dim s As Shape
+    Dim srProblemas As ShapeRange: Set srProblemas = CreateShapeRange
+    Dim img As Shape, novaImg As Shape
+    Dim alteracoes As Integer: alteracoes = 0
+    Dim i As Integer
+    
+    Dim resposta As VbMsgBoxResult
+    resposta = MsgBox("Deseja padronizar automaticamente todas as imagens da página para CMYK e 600 DPI?", _
+                      vbYesNo + vbQuestion, "Console Flexo")
+    If resposta = vbNo Then Exit Sub
+    
+    ' Varredura e Coleta
+    For Each s In ActivePage.Shapes
+        CrawlerPadronizar s, srProblemas
+    Next s
+    
+    If srProblemas.Count = 0 Then
+        MsgBox "Aprovado! Todas as imagens já estão no padrão (CMYK/Grayscale/1-bit e 600 DPI).", vbInformation, "Console Flexo"
+        Exit Sub
+    End If
+
+    ' ? CORREÇÃO: BeginCommandGroup para Desfazer funcionar
+    ' Optimization = False mantido pois ConvertToBitmapEx
+    ' precisa da tela ativa para referenciar os objetos corretamente
+    ActiveDocument.BeginCommandGroup "Padronizar Imagens CMYK 600"
+    On Error GoTo FimErro
+
+    Dim oW As Double, oH As Double, oX As Double, oY As Double
+    
+    For i = 1 To srProblemas.Count
+        Set img = srProblemas(i)
+        On Error Resume Next
+        oW = img.SizeWidth: oH = img.SizeHeight
+        oX = img.LeftX: oY = img.TopY
+        Set novaImg = img.ConvertToBitmapEx(5, False, True, 600, 1, True)
+        If Not novaImg Is Nothing Then
+            novaImg.SetSize oW, oH
+            novaImg.SetPosition oX, oY
+            alteracoes = alteracoes + 1
+        End If
+        On Error GoTo FimErro
+    Next i
+
+    ActiveDocument.EndCommandGroup
+    Application.Refresh
+
+    MsgBox "Sucesso! " & alteracoes & " imagem(ns) foram reconstruídas para o padrão CMYK @ 600 DPI.", vbInformation, "Console Flexo"
+    Exit Sub
+
+FimErro:
+    ActiveDocument.EndCommandGroup
+    Application.Refresh
+    MsgBox "Erro ao padronizar imagens: " & Err.Description, vbCritical, "Console Flexo"
+End Sub
+
+' ------------------------------------------------------------
+' CRAWLER UNIFICADO (Caçador de Problemas)
+' ------------------------------------------------------------
+Private Sub CrawlerPadronizar(s As Shape, ByRef sacola As ShapeRange)
+    Dim subS As Shape
+    On Error Resume Next
+    
+    If s.Type = cdrBitmapShape Then
+        Dim modo As Long: modo = s.Bitmap.Mode
+        Dim dX As Long: dX = s.Bitmap.ResolutionX
+        
+        ' Critério Letal:
+        ' Se NÃO for CMYK(5), Tons de Cinza(2) ou 1-bit(1) OU se tiver menos de 599 DPI
+        If (modo <> 5 And modo <> 2 And modo <> 1) Or dX < 599 Then
+            sacola.Add s
+        End If
+    End If
+    
+    ' Mergulho em Grupos
+    If s.Type = cdrGroupShape Then
+        For Each subS In s.Shapes: CrawlerPadronizar subS, sacola: Next subS
+    End If
+    
+    ' Mergulho em PowerClips
+    If Not s.PowerClip Is Nothing Then
+        For Each subS In s.PowerClip.Shapes: CrawlerPadronizar subS, sacola: Next subS
+    End If
+    On Error GoTo 0
+End Sub

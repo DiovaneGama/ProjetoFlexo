@@ -1,0 +1,421 @@
+============================================================
+PLANO DE TESTES COMPLETO — CONSOLE FLEXO v2.0
+Testes de Lancamento + Regressao
+CorelDRAW 2026 | Abril 2026
+============================================================
+
+------------------------------------------------------------
+PREPARACAO — ARQUIVOS DE TESTE
+------------------------------------------------------------
+
+ARQUIVO A — Cores e Gradientes
+  A01 - Retangulo preenchimento RGB puro (255,0,0)
+  A02 - Retangulo preenchimento Pantone 485 C
+  A03 - Retangulo preenchimento CMYK branco (0,0,0,0) com Overprint ativado
+  A04 - Retangulo preenchimento Preto Rico (C100 M100 Y100 K100)
+  A05 - Retangulo preenchimento Preto Sujo (C30 M20 Y10 K90)
+  A06 - Retangulo gradiente CMYK C100 para C0 (borda dura)
+  A07 - Retangulo gradiente Pantone 485 para branco CMYK 0000
+  A08 - Retangulo gradiente CMYK correto (C100 para C2)
+  A09 - Retangulo cor de registro aplicada
+  A10 - Retangulo preenchimento com sujeira de cor (C1 M0 Y0 K100)
+  A11 - Copia do A06 BLOQUEADO
+
+ARQUIVO B — Contornos e Vetores
+  B01 - Retangulo contorno BRANCO 0.05mm sem preenchimento
+  B02 - Retangulo contorno PRETO 0.05mm sem preenchimento
+  B03 - Retangulo contorno PRETO 0.05mm COM preenchimento vermelho
+  B04 - Retangulo contorno preto 0.08mm
+  B05 - B02 convertido via Ctrl+Shift+Q (contorno em objeto)
+  B06 - Texto artistico "TESTE" fonte Arial 12pt nao convertido
+  B07 - Texto artistico convertido em curvas
+  B08 - Retangulo com contorno 0.05mm BRANCO com preenchimento (intencional)
+
+ARQUIVO C — Bitmaps
+  C01 - Imagem CMYK 600 DPI (padrao correto)
+  C02 - Imagem RGB 72 DPI (deve ser corrigida)
+  C03 - Imagem Grayscale 300 DPI (padrao correto)
+  C04 - Imagem CMYK 150 DPI (resolucao baixa)
+
+ARQUIVO D — Montagem
+  D01 - Arte com multiplos objetos para TrimBox
+  D02 - Arte unica centralizada para TrimBox
+
+------------------------------------------------------------
+BLOCO 1 — INTERFACE E DESIGN
+------------------------------------------------------------
+
+T01 - Abertura do Console Flexo
+  1. Execute a macro AbrirPainelFlexo
+  Esperado: Console abre em modo modeless (nao bloqueia o CorelDRAW)
+  Esperado: Tema dark aplicado em todos os elementos
+  Esperado: Secoes visiveis: Cores, Vetores, Bitmaps, Montagem
+
+T02 - Hover em todos os botoes
+  1. Passe o mouse sobre cada botao das 4 secoes
+  Esperado: todos os botoes mudam de cor ao receber o mouse
+  Esperado: ao tirar o mouse o botao volta ao estado padrao
+
+T03 - Press nos botoes
+  1. Clique e segure em qualquer botao
+  Esperado: botao fica mais escuro enquanto pressionado
+
+T04 - Estado concluido persiste
+  1. Execute qualquer acao (ex: Converter RGB)
+  2. Execute outra acao diferente
+  Esperado: primeiro botao continua com check azul (nao reseta ao executar outro)
+  Esperado: segundo botao recebe check azul tambem
+
+T05 - Botao Desfazer — estado padrao
+  1. Abra o Console sem executar nenhuma acao
+  Esperado: Desfazer visivel em azul com caption "Desfazer ultima acao"
+
+T06 - Botao Desfazer — apos acao
+  1. Execute Converter RGB
+  Esperado: Desfazer mostra "Desfazer: Converter RGB"
+
+T07 - Botao Reset
+  1. Execute 3 acoes diferentes
+  2. Clique no botao Reset (simbolo de reiniciar ao lado do Desfazer)
+  Esperado: todos os botoes voltam ao estado padrao sem check
+  Esperado: nenhuma alteracao no arquivo
+
+T08 - Abertura sem documento
+  1. Feche todos os arquivos no CorelDRAW
+  2. Execute o PreFlight
+  Esperado: MsgBox "Nenhum documento aberto" — sem crash
+
+T09 - Tooltips dos botoes
+  1. Posicione o mouse sobre cada botao por 1 segundo
+  Esperado: tooltip aparece descrevendo a funcao do botao
+
+------------------------------------------------------------
+BLOCO 2 — TRATAMENTO DE CORES
+------------------------------------------------------------
+
+T10 - Converter RGB para CMYK
+  1. Arquivo A com A01 selecionado
+  2. Clique em Converter RGB p/ CMYK
+  Esperado: cor convertida para CMYK equivalente
+  Esperado: botao recebe check azul
+  Esperado: Desfazer habilitado com nome da acao
+
+T11 - Desfazer Converter RGB
+  1. Apos T10 clique em Desfazer
+  Esperado: cor volta para RGB original
+  Esperado: botao volta ao estado padrao
+
+T12 - Converter Spot para CMYK
+  1. Arquivo A com A02 selecionado
+  2. Clique em Converter Spot p/ CMYK
+  Esperado: Pantone convertido para CMYK equivalente
+
+T13 - Corrigir Branco Overprint
+  1. Arquivo A com A03 selecionado
+  2. Clique em Branco Overprint
+  Esperado: propriedade Overprint removida do objeto branco
+  Esperado: MsgBox confirmando correcao
+
+T14 - Detectar Preto Sujo
+  1. Arquivo A com A05 selecionado
+  2. Clique em Preto Composto
+  Esperado: preto sujo convertido para C0 M0 Y0 K100
+  Esperado: Preto Rico (A04) nao alterado pois e aceito
+
+T15 - Mudar para Cor de Registro
+  1. Arquivo A com A09 selecionado
+  2. Clique em Mudar p/ Cor de Registro
+  Esperado: cor convertida para Cor de Registro (All)
+  Esperado: objetos com outras cores nao sao afetados
+
+T16 - Converter para Pantone
+  1. Arquivo A com A01 (RGB vermelho) selecionado
+  2. Clique em Converter para Pantone
+  Esperado: cor convertida para Pantone Solid Coated mais proximo
+  Esperado: MsgBox informando conversao
+
+T17 - Selecionar mesma cor de preenchimento
+  1. Selecione A01
+  2. Clique em Selecionar Mesma Cor Preenchimento
+  Esperado: todos os objetos com a mesma cor selecionados
+  Esperado: botao Desfazer NAO habilitado (acao de selecao)
+
+T18 - Selecionar mesma cor de contorno
+  1. Selecione objeto com contorno
+  2. Clique em Selecionar Mesma Cor Contorno
+  Esperado: todos os objetos com mesmo contorno selecionados
+  Esperado: botao Desfazer NAO habilitado
+
+T19 - Corrigir Minimas Degrade — CMYK
+  1. Arquivo A com A06 selecionado
+  2. Clique em Corrigir Minimas Degrade
+  3. Digite 2 no InputBox
+  Esperado: no com valor 0 recebe 2% no canal correspondente
+  Esperado: A08 (ja correto) nao e alterado
+
+T20 - Corrigir Minimas Degrade — Pantone para branco
+  1. Arquivo A com A07 selecionado
+  2. Clique em Corrigir Minimas Degrade
+  3. Digite 2
+  Esperado: no branco CMYK recebe valores minimos do Pantone equivalente
+
+T21 - Corrigir Minimas Degrade — objeto bloqueado
+  1. Arquivo A com A11 (bloqueado) e A06 juntos
+  2. Clique em Corrigir Minimas Degrade
+  3. Digite 2
+  Esperado: A06 corrigido normalmente
+  Esperado: MsgBox informando 1 gradiente bloqueado ignorado
+
+T22 - Corrigir Minimas Degrade — todos bloqueados
+  1. Arquivo A com apenas A11 (bloqueado)
+  2. Clique em Corrigir Minimas Degrade
+  Esperado: acao abortada com MsgBox orientando a desbloquear
+  Esperado: nenhuma alteracao no arquivo
+
+T23 - Corrigir Minimas Degrade — valor invalido
+  1. Clique em Corrigir Minimas Degrade
+  2. Digite "abc" no InputBox
+  Esperado: MsgBox de valor invalido — sem crash
+
+T24 - Corrigir Minimas Degrade — valor fora do range
+  1. Clique em Corrigir Minimas Degrade
+  2. Digite 50 no InputBox
+  Esperado: MsgBox de valor fora do intervalo (1-10%)
+
+T25 - Limpar Sujeira de Cores
+  1. Arquivo A com A10 selecionado
+  2. Clique em Limpar Cores
+  Esperado: canal C zerado (era 1%, abaixo de 2%)
+  Esperado: K permanece 100% (acima de 2%)
+
+------------------------------------------------------------
+BLOCO 3 — TRATAMENTO DE VETORES
+------------------------------------------------------------
+
+T26 - Converter Textos em Curvas
+  1. Arquivo B com B06 na pagina
+  2. Clique em Textos em Curvas
+  Esperado: B06 convertido em curvas (nao e mais texto editavel)
+  Esperado: B07 (ja em curvas) nao e afetado
+  Esperado: MsgBox informando quantidade convertida
+
+T27 - Inspetor de Linhas Finas — contorno fino
+  1. Arquivo B com B02
+  2. Clique em Inspetor de Linhas Finas
+  Esperado: B02 selecionado
+  Esperado: botao Desfazer NAO habilitado (acao de selecao)
+
+T28 - Inspetor de Linhas Finas — branco intencional nao detectado
+  1. Arquivo B com B01 (branco 0.05mm)
+  2. Clique em Inspetor de Linhas Finas
+  Esperado: B01 NAO selecionado (excecao de branco intencional)
+
+T29 - Inspetor de Linhas Finas — com preenchimento detectado
+  1. Arquivo B com B03 (preto 0.05mm com preenchimento)
+  2. Clique em Inspetor de Linhas Finas
+  Esperado: B03 selecionado
+
+T30 - Inspetor de Linhas Finas — objeto convertido Ctrl+Shift+Q
+  1. Arquivo B com B05
+  2. Clique em Inspetor de Linhas Finas
+  Esperado: B05 selecionado
+
+T31 - Corrigir Contornos Finos
+  1. Arquivo B com B02 e B04
+  2. Clique em Corrigir Contornos Finos
+  Esperado: B02 (0.05mm) corrigido para 0.2mm
+  Esperado: B04 (0.08mm) corrigido para 0.2mm
+
+T32 - Corrigir Contornos nao altera objeto convertido
+  1. Arquivo B com B05 (objeto convertido)
+  2. Clique em Corrigir Contornos Finos
+  Esperado: B05 nao alterado (nao tem contorno ativo)
+
+T33 - Desbloquear Objetos — multiplos
+  1. Bloqueie A06, A07 e A11
+  2. Clique em Desbloquear Objetos
+  Esperado: MsgBox "3 objeto(s) desbloqueado(s)"
+  Esperado: todos editaveis novamente
+
+T34 - Desbloquear Objetos — sem bloqueados
+  1. Certifique que nenhum objeto esta bloqueado
+  2. Clique em Desbloquear Objetos
+  Esperado: MsgBox "Nenhum objeto bloqueado encontrado"
+
+------------------------------------------------------------
+BLOCO 4 — TRATAMENTO DE BITMAPS
+------------------------------------------------------------
+
+T35 - Padronizar Imagens CMYK 600 DPI
+  1. Arquivo C com C02 (RGB 72 DPI) e C04 (CMYK 150 DPI)
+  2. Clique em Padronizar Imagens
+  Esperado: C02 convertida para CMYK 600 DPI
+  Esperado: C04 convertida para 600 DPI mantendo CMYK
+  Esperado: C01 (ja correta) nao e afetada
+  Esperado: C03 (Grayscale correta) nao e afetada
+
+T36 - Desfazer Padronizar Imagens
+  1. Apos T35 clique em Desfazer
+  Esperado: imagens voltam ao estado anterior
+
+------------------------------------------------------------
+BLOCO 5 — MONTAGEM
+------------------------------------------------------------
+
+T37 - TrimBox Banda Larga (7mm)
+  1. Arquivo D com D02 selecionada
+  2. Clique em Aplicar Trimbox
+  3. Escolha Banda Larga (SIM)
+  Esperado: pagina redimensionada com 7mm de offset em cada lado
+  Esperado: retangulo de registro criado na cor de registro
+  Esperado: arte centralizada na pagina
+
+T38 - TrimBox Banda Estreita (5mm)
+  1. Arquivo D com D02 selecionada
+  2. Clique em Aplicar Trimbox
+  3. Escolha Banda Estreita (NAO)
+  Esperado: pagina redimensionada com 5mm de offset em cada lado
+
+T39 - TrimBox com multiplos objetos
+  1. Arquivo D com D01 (multiplos objetos) todos selecionados
+  2. Clique em Aplicar Trimbox
+  3. Escolha Banda Larga
+  Esperado: objetos agrupados automaticamente antes do TrimBox
+  Esperado: pagina ajustada ao grupo com 7mm de offset
+
+T40 - TrimBox cancelado
+  1. Selecione um objeto
+  2. Clique em Aplicar Trimbox
+  3. Clique em Cancelar no dialogo de banda
+  Esperado: nenhuma alteracao no arquivo
+
+T41 - Desfazer TrimBox
+  1. Apos T37 clique em Desfazer
+  Esperado: pagina volta ao tamanho original
+  Esperado: retangulo de registro removido
+  Esperado: tudo desfeito em um unico Ctrl+Z
+
+T42 - Inserir Dados do Camerom
+  1. Selecione a arte
+  2. Preencha campo Dados: "02-04-2026 Cliente Teste"
+  3. Preencha campo Cores: "CIANO MAGENTA"
+  4. Clique em Inserir Dados
+  Esperado: texto de dados inserido lateralmente na arte
+  Esperado: texto de cores inserido com CIANO em azul e MAGENTA em magenta
+  Esperado: campos de texto limpos apos insercao
+
+------------------------------------------------------------
+BLOCO 6 — PREFLIGHT SCANNER
+------------------------------------------------------------
+
+T43 - Varredura completa — arquivo com problemas
+  1. Arquivo A completo na pagina
+  2. Execute o PreFlight
+  Esperado: erros criticos detectados e exibidos em vermelho
+  Esperado: status "REVISAR: N ITENS CRITICOS"
+  Esperado: botao Corrigir habilitado em azul
+
+T44 - Varredura completa — arquivo OK
+  1. Arquivo sem nenhum problema
+  2. Execute o PreFlight
+  Esperado: status "ARQUIVO OK PARA PRODUCAO" em verde
+  Esperado: botao Corrigir desabilitado (cinza)
+
+T45 - Varredura apenas na pagina ativa
+  1. Documento com 2 paginas
+  2. Pagina 1 com erros, Pagina 2 limpa
+  3. Navegue para Pagina 2 e execute o PreFlight
+  Esperado: relatorio mostra 0 erros (varreu apenas a pagina ativa)
+
+T46 - Aviso de gradiente bloqueado
+  1. Arquivo com A11 (gradiente bloqueado)
+  2. Execute o PreFlight
+  Esperado: MsgBox informativo apos varredura sobre gradientes bloqueados
+  Esperado: instrucao para usar botao Desbloquear no Console
+
+T47 - Atualizar PreFlight
+  1. Execute o PreFlight com erros
+  2. Corrija manualmente um objeto
+  3. Clique em Atualizar
+  Esperado: relatorio atualizado refletindo a correcao
+
+T48 - Correcoes automaticas — minDot invalido
+  1. Execute o PreFlight com gradiente borda dura
+  2. Clique em Corrigir Erros
+  3. Digite "abc" no InputBox de ponto minimo
+  Esperado: MsgBox de valor invalido — sem crash
+
+T49 - Correcoes automaticas — fluxo completo
+  1. Arquivo A completo na pagina
+  2. Execute o PreFlight
+  3. Clique em Corrigir Erros e confirme
+  4. Digite 2 no InputBox de ponto minimo
+  Esperado: todos os erros criticos corrigidos automaticamente
+  Esperado: relatorio atualizado apos correcao
+  Esperado: status "ARQUIVO OK PARA PRODUCAO"
+
+T50 - Desfazer correcoes do PreFlight
+  1. Apos T49 clique em Desfazer no PreFlight
+  Esperado: correcoes desfeitas
+  Esperado: relatorio atualizado mostrando os erros novamente
+
+------------------------------------------------------------
+MATRIZ DE RESULTADOS
+------------------------------------------------------------
+
+  Teste | Bloco       | Descricao                                    | Resultado
+  ------|-------------|----------------------------------------------|----------
+  T01   | Interface   | Abertura do Console Flexo                    |Aprovado
+  T02   | Interface   | Hover em todos os botoes                     |Aprovado
+  T03   | Interface   | Press nos botoes                             |Aprovado
+  T04   | Interface   | Estado concluido persiste                    |Aprovado
+  T05   | Interface   | Botao Desfazer estado padrao                 |Aprovado
+  T06   | Interface   | Botao Desfazer apos acao                     |Aprovado
+  T07   | Interface   | Botao Reset                                  |Aprovado
+  T08   | Interface   | Abertura sem documento                       |Aprovado
+  T09   | Interface   | Tooltips dos botoes                          |Aprovado
+  T10   | Cores       | Converter RGB para CMYK                      |Aprovado (Teste Automatizado)
+  T11   | Cores       | Desfazer Converter RGB                       |Aprovado (Teste Automatizado)
+  T12   | Cores       | Converter Spot para CMYK                     |Aprovado (Teste Automatizado)
+  T13   | Cores       | Corrigir Branco Overprint                    |Aprovado (Teste Automatizado)
+  T14   | Cores       | Detectar Preto Sujo                          |Aprovado (Teste Automatizado)
+  T15   | Cores       | Mudar para Cor de Registro                   |Aprovado
+  T16   | Cores       | Converter para Pantone                       |Aprovado
+  T17   | Cores       | Selecionar mesma cor preenchimento           |Aprovado (Teste Automatizado)
+  T18   | Cores       | Selecionar mesma cor contorno                |Aprovado (Teste Automatizado)
+  T19   | Cores       | Corrigir Minimas Degrade CMYK                |Aprovado (Teste Automatizado)
+  T20   | Cores       | Corrigir Minimas Degrade Pantone             |Aprovado
+  T21   | Cores       | Corrigir Minimas Degrade obj bloqueado       |Aprovado (Teste Automatizado)
+  T22   | Cores       | Corrigir Minimas todos bloqueados            |Aprovado (Teste Automatizado)
+  T23   | Cores       | Corrigir Minimas valor invalido              |Aprovado
+  T24   | Cores       | Corrigir Minimas valor fora do range         |Aprovado
+  T25   | Cores       | Limpar Sujeira de Cores                      |Aprovado (Teste Automatizado)
+  T26   | Vetores     | Converter Textos em Curvas                   |Aprovado (Teste Automatizado)
+  T27   | Vetores     | Inspetor contorno fino                       |Aprovado (Teste Automatizado)
+  T28   | Vetores     | Inspetor branco intencional nao detectado    |Aprovado (Teste Automatizado)
+  T29   | Vetores     | Inspetor com preenchimento detectado         |Aprovado (Teste Automatizado)
+  T30   | Vetores     | Inspetor objeto convertido Ctrl+Shift+Q      |Aprovado (Teste Automatizado)
+  T31   | Vetores     | Corrigir Contornos Finos                     |Aprovado (Teste Automatizado)
+  T32   | Vetores     | Corrigir Contornos nao altera convertido     |Aprovado (Teste Automatizado)
+  T33   | Vetores     | Desbloquear multiplos objetos                |Aprovado (Teste Automatizado)
+  T34   | Vetores     | Desbloquear sem objetos bloqueados           |Aprovado (Teste Automatizado)
+  T35   | Bitmaps     | Padronizar Imagens CMYK 600 DPI              |Aprovado (Teste Automatizado)
+  T36   | Bitmaps     | Desfazer Padronizar Imagens                  |Aprovado
+  T37   | Montagem    | TrimBox Banda Larga 7mm                      |Aprovado
+  T38   | Montagem    | TrimBox Banda Estreita 5mm                   |Aprovado
+  T39   | Montagem    | TrimBox com multiplos objetos                |Aprovado
+  T40   | Montagem    | TrimBox cancelado                            |Aprovado
+  T41   | Montagem    | Desfazer TrimBox                             |Aprovado
+  T42   | Montagem    | Inserir Dados do Camerom                     |Aprovado
+  T43   | PreFlight   | Varredura completa com problemas             |Aprovado (Teste Automatizado)
+  T44   | PreFlight   | Varredura completa arquivo OK                |Aprovado (Teste Automatizado)
+  T45   | PreFlight   | Varredura apenas pagina ativa                |Aprovado
+  T46   | PreFlight   | Aviso gradiente bloqueado                    |Aprovado (Teste Automatizado)
+  T47   | PreFlight   | Atualizar PreFlight                          |Aprovado (Teste Automatizado)
+  T48   | PreFlight   | Correcoes automaticas minDot invalido        |Aprovado (Teste Automatizado)
+  T49   | PreFlight   | Correcoes automaticas fluxo completo         |Aprovado (Teste Automatizado)
+  T50   | PreFlight   | Desfazer correcoes do PreFlight              |Aprovado
+
+------------------------------------------------------------
+Console Flexo v2.0 — Plano de Testes Completo — Abril 2026
+------------------------------------------------------------

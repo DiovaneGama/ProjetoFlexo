@@ -1,0 +1,128 @@
+================================================================
+  GUIA DE MONTAGEM — Step & Repeat VBA
+  CorelDRAW 2026 v27 — Banda Estreita
+================================================================
+
+ARQUIVOS GERADOS:
+  1. modConfig.bas        — Constantes, tipos e funcoes utilitarias
+  2. modStepRepeat.bas    — Logica de posicionamento (grid)
+  3. modCameron.bas       — Marcas de registro Cameron
+  4. modRelatorio.bas     — Relatorio tecnico
+  5. frmStepRepeat_code.bas — Codigo do formulario (UserForm)
+
+================================================================
+INSTRUCOES DE IMPORTACAO NO CORELDRAW VBA EDITOR
+================================================================
+
+1. Abra o CorelDRAW 2026
+2. Menu: Ferramentas > Macros > Editor de Macros (Alt+F11)
+3. No VBA Editor, clique com botao direito em "GlobalMacros"
+   ou crie um novo GMS: StepRepeat.gms
+
+4. IMPORTAR MODULOS:
+   - Arquivo > Importar arquivo > selecione modConfig.bas
+   - Arquivo > Importar arquivo > selecione modStepRepeat.bas
+   - Arquivo > Importar arquivo > selecione modCameron.bas
+   - Arquivo > Importar arquivo > selecione modRelatorio.bas
+
+5. CRIAR O FORMULARIO:
+   - Inserir > UserForm
+   - Renomeie para "frmStepRepeat"
+   - Construa os controles conforme a tabela abaixo
+   - Cole o codigo de frmStepRepeat_code.bas na janela de codigo
+
+================================================================
+LAYOUT DO FORMULARIO — CONTROLES
+================================================================
+
+Form: frmStepRepeat (Width=240, Height=580)
+BackColor: RGB(26, 32, 48) = #1A2030
+
+--- FRAME: frameEspessura (Top=6, Left=6, Width=222, Height=42) ---
+  lbl114          Label   "1,14 mm"    Left=10  Top=16  W=96  H=20
+  lbl170          Label   "1,70 mm"    Left=114 Top=16  W=96  H=20
+
+--- FRAME: frameDimensoes (Top=52, Left=6, Width=222, Height=130) ---
+  Label           "Z (dentes)"         Left=10  Top=16  W=80  H=14
+  txtZ            TextBox              Left=95  Top=14  W=115 H=18
+  
+  lblPi314        Label   "Pi 3,14159" Left=10  Top=38  W=96  H=20
+  lblPi3175       Label   "Pi 3,175"   Left=114 Top=38  W=96  H=20
+  
+  Label           "Largura Faca (mm)"  Left=10  Top=64  W=80  H=14
+  txtLarguraFaca  TextBox              Left=95  Top=62  W=115 H=18
+  
+  Label           "Altura Faca (mm)"   Left=10  Top=86  W=80  H=14
+  txtAlturaFaca   TextBox              Left=95  Top=84  W=115 H=18
+  
+  Label           "Larg. Material"     Left=10  Top=108 W=80  H=14
+  txtLarguraMaterial TextBox           Left=95  Top=106 W=115 H=18
+
+--- FRAME: frameEspacamento (Top=186, Left=6, Width=222, Height=64) ---
+  Label           "Pistas"             Left=10  Top=16  W=55  H=14
+  txtPistas       TextBox              Left=10  Top=32  W=55  H=18
+  
+  Label           "Repeticoes"         Left=75  Top=16  W=60  H=14
+  txtRepeticoes   TextBox              Left=75  Top=32  W=60  H=18
+  
+  Label           "Gap Pistas"         Left=145 Top=16  W=65  H=14
+  txtGapPistas    TextBox              Left=145 Top=32  W=65  H=18
+
+--- FRAME: frameReducao (Top=254, Left=6, Width=222, Height=42) ---
+  lblRed638       Label   "6,38 mm"    Left=10  Top=16  W=96  H=20
+  lblRed622       Label   "6,22 mm"    Left=114 Top=16  W=96  H=20
+  lblRed9         Label   "9 mm"       Left=10  Top=16  W=62  H=20  Visible=False
+  lblRed95        Label   "9,5 mm"     Left=76  Top=16  W=62  H=20  Visible=False
+  lblRed10        Label   "10 mm"      Left=142 Top=16  W=68  H=20  Visible=False
+
+--- FRAME: frameOpcoes (Top=300, Left=6, Width=222, Height=58) ---
+  chkCameron      CheckBox "Cameron"   Left=10  Top=16  W=90  H=16
+  chkRelatorio    CheckBox "Relatorio" Left=110 Top=16  W=100 H=16
+  chkCameronCenter CheckBox "Central"  Left=10  Top=36  W=200 H=16  Visible=False
+
+--- FRAME: frameResultados (Top=362, Left=6, Width=222, Height=120) ---
+  Label "Desenvolvimento"              Left=10  Top=16  W=100 H=14
+  lblDesenvolvimento Label             Left=115 Top=16  W=100 H=14
+
+  Label "Gap entre Reps"               Left=10  Top=34  W=100 H=14
+  lblGapReps       Label               Left=115 Top=34  W=100 H=14
+
+  Label "Gap entre Pistas"             Left=10  Top=52  W=100 H=14
+  lblGapPistas     Label               Left=115 Top=52  W=100 H=14
+
+  Label "Reducao"                      Left=10  Top=70  W=100 H=14
+  lblReducao       Label               Left=115 Top=70  W=100 H=14
+
+  Label "Passo (Distorcao)"            Left=10  Top=88  W=100 H=14
+  lblPasso         Label               Left=115 Top=88  W=100 H=14
+
+--- BOTOES DE ACAO (fora dos frames) ---
+  btnMontar        Label               Top=490  Left=6   W=142 H=30
+  btnReset         Label               Top=490  Left=154 W=74  H=30
+
+================================================================
+CORES DE REFERENCIA (RGB → usar com H(R,G,B))
+================================================================
+  Fundo Form       : H( 26,  32,  48)   #1A2030
+  Fundo Frame/Borda: H( 35,  45,  63)   #232D3F
+  Fundo Label/Btn  : H( 30,  42,  58)   #1E2A3A
+  Fundo Hover      : H( 36,  50,  68)   #243244
+  Fundo Press      : H( 17,  24,  34)   #111822
+  Fundo Acao       : H( 26,  58,  94)   #1A3A5E
+  Texto Padrao     : H(154, 176, 200)   #9AB0C8
+  Texto Hover      : H(192, 212, 232)   #C0D4E8
+  Texto Press      : H(230, 240, 252)   #E6F0FC
+  Texto Acao       : H(106, 172, 232)   #6AACE8
+  Texto Label/Sec  : H(106, 125, 150)   #6A7D96
+  Resultado        : H(210, 180,  80)   Amarelo dourado
+  Erro             : H(220,  80,  80)   Vermelho
+
+================================================================
+COMO EXECUTAR
+================================================================
+1. Depois de importar tudo, no CorelDRAW:
+   Menu > Ferramentas > Macros > Executar Macro
+2. Selecione: GlobalMacros.frmStepRepeat.Show
+3. O docker aparecera na lateral
+4. Selecione um objeto, preencha os campos e clique MONTAR
+
