@@ -1,6 +1,6 @@
-Attribute VB_Name = "modStepRepeat"
+Attribute VB_Name = "Mod02_Montagem"
 ' ============================================================
-' modStepRepeat.bas — Logica de Posicionamento Step & Repeat
+' Mod02_Montagem.bas — Logica de Posicionamento Step & Repeat
 ' Banda Estreita — CorelDRAW 2026 v27
 ' ============================================================
 Option Explicit
@@ -76,12 +76,15 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
         Set grpFinal = shpOriginal
     End If
 
-    ' Aplicar reducao na altura do grupo
-    If cfg.Reducao > 0 Then
-        Dim alturaAtual As Double
-        alturaAtual = grpFinal.SizeHeight
-        grpFinal.SizeHeight = alturaAtual - cfg.Reducao
+    ' Aplicar reducao: a altura final do grupo deve ser exatamente cfg.Passo
+    ' (= Desenvolvimento - Reducao), que e a circunferencia distorcida real.
+    If cfg.Reducao > 0 And cfg.Passo > 0 Then
+        grpFinal.SizeHeight = cfg.Passo
     End If
+
+    ' Desabilitar otimizacao antes do Cameron para garantir leitura correta
+    ' das coordenadas do grupo apos o SizeHeight (evita valores stale)
+    Application.Optimization = False
 
     ' Cameron + agrupar tudo + centralizar
     Dim tudo As New ShapeRange
@@ -89,7 +92,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
 
     If cfg.IncluirCameron Then
         Dim camShapes As ShapeRange
-        Set camShapes = modCameron.InserirCameron(cfg, grpFinal)
+        Set camShapes = Mod03_Cameron.InserirCameron(cfg, grpFinal)
         Dim i As Long
         For i = 1 To camShapes.Count
             tudo.Add camShapes(i)
@@ -112,7 +115,7 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
 
     ' Relatorio
     If cfg.GerarRelatorio Then
-        modRelatorio.GerarRelatorio cfg
+        Mod04_Relatorio.GerarRelatorio cfg
     End If
 
     ' Finalizar

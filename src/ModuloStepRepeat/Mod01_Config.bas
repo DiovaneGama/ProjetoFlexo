@@ -1,6 +1,6 @@
-Attribute VB_Name = "modConfig"
+Attribute VB_Name = "Mod01_Config"
 ' ============================================================
-' modConfig.bas — Step & Repeat — Constantes e Utilitarios
+' Mod01_Config.bas — Step & Repeat — Constantes e Utilitarios
 ' Padrao de design: frmFlexo (Console Flexo v2.0)
 ' ============================================================
 Option Explicit
@@ -23,11 +23,6 @@ Public Const RED_114_622     As Double = 6.22
 Public Const RED_170_9       As Double = 9#
 Public Const RED_170_95      As Double = 9.5
 Public Const RED_170_10      As Double = 10#
-
-' ============================================================
-' CAMERON
-' ============================================================
-Public Const CAMERON_ESPESSURA   As Double = 1#     ' mm
 
 ' ============================================================
 ' CORES DO TEMA — Paleta frmFlexo (valores RGB para H())
@@ -75,6 +70,9 @@ Public Type TStepRepeatConfig
     Desenvolvimento As Double
     GapReps         As Double
     Passo           As Double       ' Desenvolvimento - Reducao
+
+    ' Cameron
+    CameronFilePath As String       ' Caminho do CDR do Cameron (gerenciado pelo form)
 End Type
 
 ' ============================================================

@@ -93,9 +93,11 @@ Private Sub UserForm_Initialize()
     lblRed95.Visible = False:  lblRed95.Enabled = False
     lblRed10.Visible = False:  lblRed10.Enabled = False
 
-    mCameronFilePath = ""
     chkRelatorio.Value = True
-    
+    mCameronFilePath = ""
+    lblCameronArquivo.Visible = False
+    AtualizarLabelCameron
+
     AtualizarRadioVisual
     RecalcularTudo
 End Sub
@@ -251,6 +253,83 @@ Private Sub AplicarTooltips()
     Me.txtGapPistas.ControlTipText = "Gap entre pistas em mm (ativo se pistas > 1)"
     Me.btnMontar.ControlTipText = "Executar montagem no documento ativo"
     Me.btnReset.ControlTipText = "Limpar todos os campos"
+    Me.lblCameronArquivo.ControlTipText = "Clique para selecionar o arquivo CDR do Cameron"
+End Sub
+
+' ============================================================
+' CAMERON — SELETOR DE ARQUIVO (FileDialog via PowerShell)
+' Mesmo padrao do Mod07_InserirMicropontos
+' ============================================================
+Private Function EscolherArquivoCDRCameron() As String
+    Dim oShell      As Object
+    Dim sTmpFile    As String
+    Dim sDirInicial As String
+    Dim sScript     As String
+    Dim sCmd        As String
+    Dim iFile       As Integer
+    Dim sResultado  As String
+
+    sTmpFile = Environ("TEMP") & "\mod03_cameron_path.txt"
+
+    If mCameronFilePath <> "" Then
+        sDirInicial = Left(mCameronFilePath, InStrRev(mCameronFilePath, "\"))
+    Else
+        sDirInicial = "C:\"
+    End If
+
+    sScript = "Add-Type -AssemblyName System.Windows.Forms;" & _
+              "[System.Windows.Forms.Application]::EnableVisualStyles();" & _
+              "$d = New-Object System.Windows.Forms.OpenFileDialog;" & _
+              "$d.Title = 'Step & Repeat - Selecione o CDR do Cameron';" & _
+              "$d.Filter = 'CorelDRAW (*.cdr)|*.cdr|Todos os arquivos (*.*)|*.*';" & _
+              "$d.FilterIndex = 1;" & _
+              "$d.InitialDirectory = '" & sDirInicial & "';" & _
+              "$d.CheckFileExists = $true;" & _
+              "if ($d.ShowDialog() -eq 'OK') {" & _
+              "  [System.IO.File]::WriteAllText('" & sTmpFile & "', $d.FileName)" & _
+              "} else {" & _
+              "  [System.IO.File]::WriteAllText('" & sTmpFile & "', '')" & _
+              "}"
+
+    sCmd = "powershell.exe -NoProfile -WindowStyle Hidden -Command """ & sScript & """"
+
+    Set oShell = CreateObject("WScript.Shell")
+    oShell.Run sCmd, 0, True
+    Set oShell = Nothing
+
+    sResultado = ""
+    If Dir(sTmpFile) <> "" Then
+        iFile = FreeFile
+        Open sTmpFile For Input As #iFile
+        If Not EOF(iFile) Then
+            Line Input #iFile, sResultado
+        End If
+        Close #iFile
+        Kill sTmpFile
+    End If
+
+    EscolherArquivoCDRCameron = Trim(sResultado)
+End Function
+
+' ============================================================
+' CAMERON — ATUALIZAR LABEL DE ARQUIVO
+' ============================================================
+Private Sub AtualizarLabelCameron()
+    With Me.lblCameronArquivo
+        .Font.Name = "Segoe UI"
+        .Font.Size = 7
+        .BackColor = H(17, 24, 34)
+        .BorderStyle = fmBorderStyleNone
+        If mCameronFilePath = "" Then
+            .Caption = "Selecionar..."
+            .ForeColor = H(106, 172, 232)   ' Azul — convida ao clique
+        Else
+            Dim parts() As String
+            parts = Split(mCameronFilePath, "\")
+            .Caption = ChrW(9654) & " " & parts(UBound(parts))
+            .ForeColor = H(154, 176, 200)   ' Cinza claro — preenchido
+        End If
+    End With
 End Sub
 
 ' ============================================================
@@ -471,22 +550,51 @@ Private Sub txtGapPistas_Change()
 End Sub
 
 Private Sub chkCameron_Click()
-    If Not chkCameron.Value Then
-        chkCameron.Caption = "Cameron"
-    End If
-    ' Mostrar Cameron Central so com >= 2 pistas
-    If Val(txtPistas.Text) >= 2 Then
+    Dim p As Long
+    p = Val(txtPistas.Text)
+
+    ' Cameron Central so com >= 2 pistas
+    If p >= 2 Then
         chkCameronCenter.Visible = chkCameron.Value
     Else
         chkCameronCenter.Visible = False
+        chkCameronCenter.Value = False
+    End If
+
+    ' Mostrar/ocultar label de arquivo
+    lblCameronArquivo.Visible = chkCameron.Value
+
+    ' Se marcou e ainda nao tem arquivo: abrir dialog automaticamente
+    If chkCameron.Value And mCameronFilePath = "" Then
+        Dim sPath As String
+        sPath = EscolherArquivoCDRCameron()
+        If sPath <> "" Then
+            mCameronFilePath = sPath
+        Else
+            ' Usuário cancelou: desmarca o checkbox
+            chkCameron.Value = False
+            lblCameronArquivo.Visible = False
+        End If
+    End If
+
+    AtualizarLabelCameron
+End Sub
+
+' ============================================================
+' CAMERON — LABEL CLICAVEL (trocar arquivo)
+' ============================================================
+Private Sub lblCameronArquivo_Click()
+    Dim sPath As String
+    sPath = EscolherArquivoCDRCameron()
+    If sPath <> "" Then
+        mCameronFilePath = sPath
+        AtualizarLabelCameron
     End If
 End Sub
 
-Private Function GetFileName(sPath As String) As String
-    Dim parts() As String
-    parts = Split(sPath, "\")
-    GetFileName = parts(UBound(parts))
-End Function
+Private Sub lblCameronArquivo_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    lblCameronArquivo.ForeColor = H(192, 212, 232)   ' Hover — azul mais claro
+End Sub
 
 ' ============================================================
 ' RECALCULAR TUDO
@@ -571,8 +679,35 @@ End Sub
 ' EXECUTAR MONTAGEM
 ' ============================================================
 Private Sub ExecutarMontagemDoForm()
+    ' Validacao de campos obrigatorios
+    If Val(txtZ.Text) <= 0 Then
+        MsgBox "Informe o numero de dentes (Z).", vbExclamation, "Step & Repeat"
+        txtZ.SetFocus: Exit Sub
+    End If
+    If Val(txtAlturaFaca.Text) <= 0 Then
+        MsgBox "Informe a altura da faca.", vbExclamation, "Step & Repeat"
+        txtAlturaFaca.SetFocus: Exit Sub
+    End If
+    If Val(txtLarguraFaca.Text) <= 0 Then
+        MsgBox "Informe a largura da faca.", vbExclamation, "Step & Repeat"
+        txtLarguraFaca.SetFocus: Exit Sub
+    End If
+    If Val(txtRepeticoes.Text) < 1 Then
+        MsgBox "Informe o numero de repeticoes.", vbExclamation, "Step & Repeat"
+        txtRepeticoes.SetFocus: Exit Sub
+    End If
+    If Val(txtPistas.Text) > 1 And Val(txtGapPistas.Text) <= 0 Then
+        MsgBox "Informe o gap entre pistas.", vbExclamation, "Step & Repeat"
+        txtGapPistas.SetFocus: Exit Sub
+    End If
+    If chkCameron.Value And mCameronFilePath = "" Then
+        MsgBox "Selecione o arquivo CDR do Cameron antes de montar.", _
+               vbExclamation, "Step & Repeat"
+        Exit Sub
+    End If
+
     Dim cfg As TStepRepeatConfig
-    
+
     cfg.BandaEstreita = True
     cfg.Z = Val(txtZ.Text)
     
@@ -613,11 +748,12 @@ Private Sub ExecutarMontagemDoForm()
     cfg.Passo = cfg.Desenvolvimento - cfg.Reducao
     cfg.IncluirCameron = chkCameron.Value
     cfg.CameronCentral = chkCameronCenter.Value
+    cfg.CameronFilePath = mCameronFilePath
 
     cfg.GerarRelatorio = chkRelatorio.Value
     
     ' Executar
-    modStepRepeat.ExecutarMontagem cfg
+    Mod02_Montagem.ExecutarMontagem cfg
 End Sub
 
 ' ============================================================
@@ -633,10 +769,11 @@ Private Sub ResetarCampos()
     txtGapPistas.Text = ""
     
     chkCameron.Value = False
-    chkCameron.Caption = "Cameron"
     chkCameronCenter.Value = False
     chkCameronCenter.Visible = False
     mCameronFilePath = ""
+    lblCameronArquivo.Visible = False
+    AtualizarLabelCameron
     chkRelatorio.Value = True
     
     ' Reset radios

@@ -1,6 +1,6 @@
-Attribute VB_Name = "modRelatorio"
+Attribute VB_Name = "Mod04_Relatorio"
 ' ============================================================
-' modRelatorio.bas — Relatorio Tecnico Step & Repeat
+' Mod04_Relatorio.bas — Relatorio Tecnico Step & Repeat
 ' ============================================================
 Option Explicit
 
@@ -56,7 +56,7 @@ Public Sub GerarRelatorio(cfg As TStepRepeatConfig)
     If cfg.IncluirCameron And cfg.CameronCentral Then
         rpt = rpt & "  Cameron Pos.  : Centralizado entre pistas" & vbCrLf
     ElseIf cfg.IncluirCameron Then
-        rpt = rpt & "  Cameron Pos.  : Laterais (offset 1,5mm)" & vbCrLf
+        rpt = rpt & "  Cameron Pos.  : Laterais (colado, sem offset)" & vbCrLf
     End If
     rpt = rpt & vbCrLf
     
@@ -85,7 +85,7 @@ Public Sub GerarRelatorio(cfg As TStepRepeatConfig)
         Dim largTotal As Double
         largTotal = cfg.Pistas * cfg.LarguraFaca + (cfg.Pistas - 1) * cfg.GapPistas
         Dim aproveitamento As Double
-        If cfg.LarguraMaterial > 0 Then aproveitamento = (largTotal / cfg.LarguraMaterial) * 100
+        aproveitamento = (largTotal / cfg.LarguraMaterial) * 100
         rpt = rpt & "  Aproveitamento  : " & Format(aproveitamento, "0.0") & "%" & vbCrLf
     End If
     
