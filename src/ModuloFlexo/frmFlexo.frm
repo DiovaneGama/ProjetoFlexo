@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmFlexo 
    Caption         =   "Console Flexo v2.0"
-   ClientHeight    =   10284
-   ClientLeft      =   105
-   ClientTop       =   450
-   ClientWidth     =   4605
+   ClientHeight    =   10848
+   ClientLeft      =   108
+   ClientTop       =   456
+   ClientWidth     =   4608
    OleObjectBlob   =   "frmFlexo.frx":0000
    ShowModal       =   0   'False
    StartUpPosition =   1  'CenterOwner
@@ -14,6 +14,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 
 
 Option Explicit
@@ -71,7 +72,7 @@ Private Sub UserForm_Initialize()
     Me.Left = 10
     Me.Top = 60
     Me.Width = 230
-    Me.Height = 545
+    Me.Height = 580
     Me.BackColor = H(26, 32, 48)
     Me.Caption = "Console Flexo v2.0"
 
@@ -587,15 +588,15 @@ End Sub
 ' FRAMES COLAPS�VEIS -- Inicializar
 ' ============================================================
 Private Sub InicializarFramesColapsaveis()
-    mFrameNomes(0)   = "frameTratamentoDeCores"
-    mFrameNomes(1)   = "frameVetores"
-    mFrameNomes(2)   = "FrameBitmaps"
-    mFrameNomes(3)   = "FrameMontagem"
+    mFrameNomes(0) = "frameTratamentoDeCores"
+    mFrameNomes(1) = "frameVetores"
+    mFrameNomes(2) = "FrameBitmaps"
+    mFrameNomes(3) = "FrameMontagem"
 
-    mFrameIcones(0)  = ChrW(9679)   ' ?
-    mFrameIcones(1)  = ChrW(9998)   ' ?
-    mFrameIcones(2)  = ChrW(9638)   ' ?
-    mFrameIcones(3)  = ChrW(9868)   ' montagem
+    mFrameIcones(0) = ChrW(9679)    ' ?
+    mFrameIcones(1) = ChrW(9998)    ' ?
+    mFrameIcones(2) = ChrW(9638)    ' ?
+    mFrameIcones(3) = ChrW(9868)    ' montagem
 
     mFrameTitulos(0) = "TRATAMENTO DE CORES"
     mFrameTitulos(1) = "TRATAMENTO DE VETORES"
