@@ -27,6 +27,18 @@ Private ultimaAcao As String
 Private ultimaAcaoEhSelecao As Boolean
 
 ' ============================================================
+' FRAMES COLAPS�VEIS
+' ============================================================
+Private mFrameNomes(3)              As String
+Private mFrameIcones(3)             As String
+Private mFrameTitulos(3)            As String
+Private mFrameAlturasOriginais(3)   As Double
+Private mFrameTopInicial            As Double
+Private mFrameColapsado(3)          As Boolean
+Private Const ALTURA_CAPTION        As Double = 16   ' twips -- so o titulo
+Private Const ESPACO_FRAMES         As Double = 3    ' gap entre frames
+
+' ============================================================
 ' CORES
 ' ============================================================
 Private Const C_FUNDO_FORM      As Long = 3416624   ' #341F30 ? #1A2030
@@ -68,6 +80,7 @@ Private Sub UserForm_Initialize()
     AplicarTemaInputs
     ResetarDesfazer
     AplicarTooltips
+    InicializarFramesColapsaveis
 End Sub
 
 ' ============================================================
@@ -570,6 +583,107 @@ End Sub
 ' ============================================================
 ' LEAVE � restaura hover quando mouse sai dos bot�es
 ' ============================================================
+' ============================================================
+' FRAMES COLAPS�VEIS -- Inicializar
+' ============================================================
+Private Sub InicializarFramesColapsaveis()
+    mFrameNomes(0)   = "frameTratamentoDeCores"
+    mFrameNomes(1)   = "frameVetores"
+    mFrameNomes(2)   = "FrameBitmaps"
+    mFrameNomes(3)   = "FrameMontagem"
+
+    mFrameIcones(0)  = ChrW(9679)   ' ?
+    mFrameIcones(1)  = ChrW(9998)   ' ?
+    mFrameIcones(2)  = ChrW(9638)   ' ?
+    mFrameIcones(3)  = ChrW(9868)   ' montagem
+
+    mFrameTitulos(0) = "TRATAMENTO DE CORES"
+    mFrameTitulos(1) = "TRATAMENTO DE VETORES"
+    mFrameTitulos(2) = "TRATAMENTO DE BITMAPS"
+    mFrameTitulos(3) = "MONTAGEM"
+
+    mFrameTopInicial = Me.Controls(mFrameNomes(0)).Top
+
+    Dim i As Integer
+    For i = 0 To 3
+        mFrameAlturasOriginais(i) = Me.Controls(mFrameNomes(i)).Height
+        mFrameColapsado(i) = False
+    Next i
+
+    For i = 0 To 3
+        AtualizarCaptionFrame i
+    Next i
+End Sub
+
+' ============================================================
+' FRAMES COLAPS�VEIS -- Caption com seta
+' ============================================================
+Private Sub AtualizarCaptionFrame(idx As Integer)
+    Dim seta As String
+    If mFrameColapsado(idx) Then
+        seta = ChrW(9658)   ' ?
+    Else
+        seta = ChrW(9660)   ' ?
+    End If
+    Me.Controls(mFrameNomes(idx)).Caption = _
+        " " & mFrameIcones(idx) & "  " & mFrameTitulos(idx) & "  " & seta
+End Sub
+
+' ============================================================
+' FRAMES COLAPS�VEIS -- Toggle
+' ============================================================
+Private Sub ToggleFrame(idx As Integer)
+    Dim frm As MSForms.Frame
+    Set frm = Me.Controls(mFrameNomes(idx))
+
+    mFrameColapsado(idx) = Not mFrameColapsado(idx)
+
+    If mFrameColapsado(idx) Then
+        frm.Height = ALTURA_CAPTION
+    Else
+        frm.Height = mFrameAlturasOriginais(idx)
+    End If
+
+    AtualizarCaptionFrame idx
+    ReposicionarFrames
+End Sub
+
+' ============================================================
+' FRAMES COLAPS�VEIS -- Reposicionar e ajustar form
+' ============================================================
+Private Sub ReposicionarFrames()
+    Dim topAtual As Double
+    topAtual = mFrameTopInicial
+
+    Dim i As Integer
+    For i = 0 To 3
+        Dim frm As MSForms.Frame
+        Set frm = Me.Controls(mFrameNomes(i))
+        frm.Top = topAtual
+        topAtual = topAtual + frm.Height + ESPACO_FRAMES
+    Next i
+
+    Me.btnDesfazer.Top = topAtual + 4
+    Me.btnReset.Top = Me.btnDesfazer.Top
+    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 24
+End Sub
+
+' ============================================================
+' FRAMES COLAPS�VEIS -- Eventos Click
+' ============================================================
+Private Sub frameTratamentoDeCores_Click()
+    ToggleFrame 0
+End Sub
+Private Sub frameVetores_Click()
+    ToggleFrame 1
+End Sub
+Private Sub FrameBitmaps_Click()
+    ToggleFrame 2
+End Sub
+Private Sub FrameMontagem_Click()
+    ToggleFrame 3
+End Sub
+
 Private Sub frameTratamentoDeCores_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     RemoverHoverTodos
 End Sub
