@@ -16,6 +16,7 @@ Attribute VB_Exposed = False
 
 
 
+
 ' ============================================================
 ' frmStepRepeat � Step & Repeat v1.0
 ' Design baseado no frmFlexo (Console Flexo v2.0)
@@ -518,7 +519,7 @@ Private Sub txtLarguraFaca_Change()
 End Sub
 Private Sub txtPistas_Change()
     Dim p As Long
-    p = Val(txtPistas.Text)
+    p = val(txtPistas.Text)
     
     ' Habilitar Gap Pistas se > 1
     If p > 1 Then
@@ -551,7 +552,7 @@ End Sub
 
 Private Sub chkCameron_Click()
     Dim p As Long
-    p = Val(txtPistas.Text)
+    p = val(txtPistas.Text)
 
     ' Cameron Central so com >= 2 pistas
     If p >= 2 Then
@@ -604,16 +605,16 @@ Private Sub RecalcularTudo()
     If lblPi314.Tag = "selected" Then piVal = PI_PADRAO Else piVal = PI_ALT
     
     Dim zVal As Double
-    zVal = Val(txtZ.Text)
+    zVal = val(txtZ.Text)
     
     Dim Desenvolvimento As Double
     Desenvolvimento = piVal * zVal
     
     Dim altFaca As Double
-    altFaca = Val(txtAlturaFaca.Text)
+    altFaca = val(txtAlturaFaca.Text)
     
     Dim reps As Long
-    reps = Val(txtRepeticoes.Text)
+    reps = val(txtRepeticoes.Text)
     
     ' Reducao
     Dim Reducao As Double
@@ -641,7 +642,7 @@ Private Sub RecalcularTudo()
     
     ' Gap Pistas
     Dim gapPistasVal As Double
-    gapPistasVal = Val(txtGapPistas.Text)
+    gapPistasVal = val(txtGapPistas.Text)
     
     ' Atualizar labels de resultado
     Dim hasData As Boolean
@@ -653,7 +654,7 @@ Private Sub RecalcularTudo()
         lblReducao.Caption = Format(Reducao, "0.00") & " mm"
         lblPasso.Caption = Format(TruncarDecimal(Passo, 2), "0.00") & " mm"
         
-        If Val(txtPistas.Text) > 1 And gapPistasVal > 0 Then
+        If val(txtPistas.Text) > 1 And gapPistasVal > 0 Then
             lblGapPistas.Caption = Format(TruncarDecimal(gapPistasVal, 2), "0.00") & " mm"
         Else
             lblGapPistas.Caption = ChrW(8212)
@@ -680,23 +681,23 @@ End Sub
 ' ============================================================
 Private Sub ExecutarMontagemDoForm()
     ' Validacao de campos obrigatorios
-    If Val(txtZ.Text) <= 0 Then
+    If val(txtZ.Text) <= 0 Then
         MsgBox "Informe o numero de dentes (Z).", vbExclamation, "Step & Repeat"
         txtZ.SetFocus: Exit Sub
     End If
-    If Val(txtAlturaFaca.Text) <= 0 Then
+    If val(txtAlturaFaca.Text) <= 0 Then
         MsgBox "Informe a altura da faca.", vbExclamation, "Step & Repeat"
         txtAlturaFaca.SetFocus: Exit Sub
     End If
-    If Val(txtLarguraFaca.Text) <= 0 Then
+    If val(txtLarguraFaca.Text) <= 0 Then
         MsgBox "Informe a largura da faca.", vbExclamation, "Step & Repeat"
         txtLarguraFaca.SetFocus: Exit Sub
     End If
-    If Val(txtRepeticoes.Text) < 1 Then
+    If val(txtRepeticoes.Text) < 1 Then
         MsgBox "Informe o numero de repeticoes.", vbExclamation, "Step & Repeat"
         txtRepeticoes.SetFocus: Exit Sub
     End If
-    If Val(txtPistas.Text) > 1 And Val(txtGapPistas.Text) <= 0 Then
+    If val(txtPistas.Text) > 1 And val(txtGapPistas.Text) <= 0 Then
         MsgBox "Informe o gap entre pistas.", vbExclamation, "Step & Repeat"
         txtGapPistas.SetFocus: Exit Sub
     End If
@@ -709,7 +710,7 @@ Private Sub ExecutarMontagemDoForm()
     Dim cfg As TStepRepeatConfig
 
     cfg.BandaEstreita = True
-    cfg.Z = Val(txtZ.Text)
+    cfg.Z = val(txtZ.Text)
     
     If lblPi314.Tag = "selected" Then
         cfg.PiValue = PI_PADRAO
@@ -718,13 +719,13 @@ Private Sub ExecutarMontagemDoForm()
     End If
     
     cfg.Desenvolvimento = cfg.PiValue * cfg.Z
-    cfg.LarguraFaca = Val(txtLarguraFaca.Text)
-    cfg.AlturaFaca = Val(txtAlturaFaca.Text)
-    cfg.LarguraMaterial = Val(txtLarguraMaterial.Text)
-    cfg.Pistas = Val(txtPistas.Text)
+    cfg.LarguraFaca = val(txtLarguraFaca.Text)
+    cfg.AlturaFaca = val(txtAlturaFaca.Text)
+    cfg.LarguraMaterial = val(txtLarguraMaterial.Text)
+    cfg.Pistas = val(txtPistas.Text)
     If cfg.Pistas < 1 Then cfg.Pistas = 1
-    cfg.Repeticoes = Val(txtRepeticoes.Text)
-    cfg.GapPistas = Val(txtGapPistas.Text)
+    cfg.Repeticoes = val(txtRepeticoes.Text)
+    cfg.GapPistas = val(txtGapPistas.Text)
     
     If lbl114.Tag = "selected" Then
         cfg.Foto114 = True
