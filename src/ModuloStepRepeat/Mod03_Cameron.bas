@@ -26,14 +26,16 @@ Public Function InserirCameron(cfg As TStepRepeatConfig, grp As Shape) As ShapeR
     Set lyr = ActivePage.ActiveLayer
 
     ' ── Bounding box do grupo ja com reducao aplicada ────────────────────────
+    ' SetPosition(x, y) no CorelDRAW define o canto SUPERIOR esquerdo do shape.
+    ' Portanto usamos topY para alinhar o topo do Cameron com o topo da montagem.
     Dim leftX   As Double
     Dim rightX  As Double
-    Dim bottomY As Double
+    Dim topY    As Double
     Dim centroX As Double
 
     leftX   = grp.LeftX
     rightX  = grp.RightX
-    bottomY = grp.BottomY
+    topY    = grp.TopY
     centroX = (leftX + rightX) / 2#
 
     ' ── Importar o CDR original (unico shape esperado no arquivo) ────────────
@@ -63,28 +65,28 @@ Public Function InserirCameron(cfg As TStepRepeatConfig, grp As Shape) As ShapeR
     camAltura = origCam.SizeHeight   ' = cfg.Passo
 
     ' ── Posicionar copias e construir resultado ───────────────────────────────
-    ' SetPosition(x, y) define o canto inferior esquerdo do shape.
-    ' Y = bottomY alinha a base do Cameron com a base da montagem,
-    ' e como camAltura = cfg.Passo = altura do grupo, o topo tambem alinha.
+    ' SetPosition(x, y) define o canto SUPERIOR esquerdo do shape.
+    ' topY alinha o topo do Cameron com o topo da montagem.
+    ' Como camAltura = cfg.Passo = altura do grupo, a base tambem alinha.
     Dim shpCam As Shape
 
     If cfg.CameronCentral And cfg.Pistas >= 2 Then
         ' ── CAMERON CENTRALIZADO — entre pistas ──────────────────────────────
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition centroX - (camLarg / 2#), bottomY
+        shpCam.SetPosition centroX - (camLarg / 2#), topY
         shpCam.Name = "Cameron_Centro"
         resultado.Add shpCam
     Else
         ' ── CAMERON LATERAL — colado na montagem ─────────────────────────────
         ' Esquerda: borda direita do Cameron encosta em leftX do grupo
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition leftX - camLarg, bottomY
+        shpCam.SetPosition leftX - camLarg, topY
         shpCam.Name = "Cameron_Esq"
         resultado.Add shpCam
 
         ' Direita: borda esquerda do Cameron encosta em rightX do grupo
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition rightX, bottomY
+        shpCam.SetPosition rightX, topY
         shpCam.Name = "Cameron_Dir"
         resultado.Add shpCam
     End If
