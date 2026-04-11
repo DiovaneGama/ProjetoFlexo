@@ -88,6 +88,7 @@ Private Sub UserForm_Initialize()
     AplicarTemaRadios
     AplicarTemaResultados
     AplicarTemaBotoes
+    AplicarTemaLabelsDescritivos
     AplicarTooltips
     
     ' Defaults
@@ -247,6 +248,52 @@ Private Sub AplicarTemaBotoes()
 End Sub
 
 ' ============================================================
+' TEMA — LABELS DESCRITIVAS (Segoe UI padrao frmFlexo)
+' Aplica fonte/cor a todas as labels de texto fixo dentro dos frames
+' excluindo radios, resultados e botoes que ja tem estilo proprio
+' ============================================================
+Private Sub AplicarTemaLabelsDescritivos()
+    Dim lblsExcluir As Variant
+    lblsExcluir = Array("lbl114", "lbl170", "lblPi314", "lblPi3175", _
+                        "lblRed638", "lblRed622", "lblRed9", "lblRed95", "lblRed10", _
+                        "lblDesenvolvimento", "lblGapReps", "lblGapPistas", _
+                        "lblReducao", "lblPasso", "lblCameronArquivo", _
+                        "btnMontar", "btnReset")
+
+    Dim frms As Variant
+    frms = Array("frameEspessura", "frameDimensoes", "frameEspacamento", _
+                 "frameReducao", "frameOpcoes", "frameResultados")
+
+    Dim i As Long
+    For i = 0 To UBound(frms)
+        Dim frm As MSForms.Frame
+        Set frm = Me.Controls(frms(i))
+
+        Dim ctrl As Object
+        For Each ctrl In frm.Controls
+            If TypeName(ctrl) = "Label" Then
+                Dim excluir As Boolean
+                excluir = False
+                Dim j As Long
+                For j = 0 To UBound(lblsExcluir)
+                    If ctrl.Name = lblsExcluir(j) Then
+                        excluir = True
+                        Exit For
+                    End If
+                Next j
+
+                If Not excluir Then
+                    ctrl.Font.Name = "Segoe UI"
+                    ctrl.Font.Size = 8
+                    ctrl.ForeColor = H(106, 125, 150)   ' Texto Secundario
+                    ctrl.BackColor = H(26, 32, 48)      ' Fundo Formulario
+                End If
+            End If
+        Next ctrl
+    Next i
+End Sub
+
+' ============================================================
 ' TOOLTIPS
 ' ============================================================
 Private Sub AplicarTooltips()
@@ -345,6 +392,7 @@ End Sub
 ' HOVER / PRESS � padrao frmFlexo
 ' ============================================================
 Private Sub AplicarHover(lbl As MSForms.Label)
+    If lbl.Tag = "selected" Then Exit Sub   ' nao aplica hover em radio selecionado
     lbl.BackColor = H(36, 50, 68)
     lbl.ForeColor = H(192, 212, 232)
 End Sub
@@ -798,22 +846,22 @@ End Sub
 ' LEAVE � remover hover quando mouse sai (padrao frmFlexo)
 ' ============================================================
 Private Sub frameEspessura_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 Private Sub frameDimensoes_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 Private Sub frameEspacamento_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 Private Sub frameReducao_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 Private Sub frameOpcoes_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 Private Sub frameResultados_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-    RemoverHover Me.btnMontar: RemoverHover Me.btnReset
+    RemoverHover Me.btnMontar: RemoverHover Me.btnReset: AtualizarRadioVisual
 End Sub
 
 ' ============================================================
