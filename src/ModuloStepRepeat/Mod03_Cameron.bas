@@ -28,17 +28,13 @@ Public Function InserirCameron(cfg As TStepRepeatConfig, grp As Shape) As ShapeR
     ' ── Bounding box do grupo ja com reducao aplicada ────────────────────────
     Dim leftX   As Double
     Dim rightX  As Double
-    Dim topY    As Double
     Dim bottomY As Double
     Dim centroX As Double
-    Dim centroY As Double
 
     leftX   = grp.LeftX
     rightX  = grp.RightX
-    topY    = grp.TopY
     bottomY = grp.BottomY
-    centroX = (leftX + rightX)  / 2#
-    centroY = (topY  + bottomY) / 2#
+    centroX = (leftX + rightX) / 2#
 
     ' ── Importar o CDR original (unico shape esperado no arquivo) ────────────
     Dim oImport  As ImportFilter
@@ -57,32 +53,38 @@ Public Function InserirCameron(cfg As TStepRepeatConfig, grp As Shape) As ShapeR
         Exit Function
     End If
 
-    Set origCam  = ActiveSelection.Shapes(1)
-    camLarg      = origCam.SizeWidth
-    camAltura    = origCam.SizeHeight
+    Set origCam = ActiveSelection.Shapes(1)
+
+    ' ── Redimensionar Cameron para a altura exata do Passo ───────────────────
+    origCam.SizeHeight = cfg.Passo
+
+    ' Re-ler dimensoes apos resize (largura ajustada proporcionalmente)
+    camLarg   = origCam.SizeWidth
+    camAltura = origCam.SizeHeight   ' = cfg.Passo
 
     ' ── Posicionar copias e construir resultado ───────────────────────────────
-    ' O CDR do Cameron e mantido nas proporcoes originais (sem distorcao).
-    ' Centralizado verticalmente em relacao ao grupo.
+    ' SetPosition(x, y) define o canto inferior esquerdo do shape.
+    ' Y = bottomY alinha a base do Cameron com a base da montagem,
+    ' e como camAltura = cfg.Passo = altura do grupo, o topo tambem alinha.
     Dim shpCam As Shape
 
     If cfg.CameronCentral And cfg.Pistas >= 2 Then
         ' ── CAMERON CENTRALIZADO — entre pistas ──────────────────────────────
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition centroX - (camLarg / 2#), centroY - (camAltura / 2#)
+        shpCam.SetPosition centroX - (camLarg / 2#), bottomY
         shpCam.Name = "Cameron_Centro"
         resultado.Add shpCam
     Else
         ' ── CAMERON LATERAL — colado na montagem ─────────────────────────────
         ' Esquerda: borda direita do Cameron encosta em leftX do grupo
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition leftX - camLarg, centroY - (camAltura / 2#)
+        shpCam.SetPosition leftX - camLarg, bottomY
         shpCam.Name = "Cameron_Esq"
         resultado.Add shpCam
 
         ' Direita: borda esquerda do Cameron encosta em rightX do grupo
         Set shpCam = origCam.Duplicate
-        shpCam.SetPosition rightX, centroY - (camAltura / 2#)
+        shpCam.SetPosition rightX, bottomY
         shpCam.Name = "Cameron_Dir"
         resultado.Add shpCam
     End If
