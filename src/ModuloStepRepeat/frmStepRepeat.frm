@@ -255,6 +255,9 @@ Private Sub AplicarTooltips()
     Me.btnMontar.ControlTipText = "Executar montagem no documento ativo"
     Me.btnReset.ControlTipText = "Limpar todos os campos"
     Me.lblCameronArquivo.ControlTipText = "Clique para selecionar o arquivo CDR do Cameron"
+    Me.chkCameron.ControlTipText = "Inserir Cameron externo (.cdr) na montagem"
+    Me.chkCameronCenter.ControlTipText = "Centralizar Cameron entre as pistas"
+    Me.chkRelatorio.ControlTipText = "Gerar relatorio apos a montagem"
 End Sub
 
 ' ============================================================
@@ -318,7 +321,7 @@ End Function
 Private Sub AtualizarLabelCameron()
     With Me.lblCameronArquivo
         .Font.Name = "Segoe UI"
-        .Font.Size = 7
+        .Font.Size = 8
         .BackColor = H(17, 24, 34)
         .BorderStyle = fmBorderStyleNone
         If mCameronFilePath = "" Then
@@ -352,8 +355,8 @@ Private Sub RemoverHover(lbl As MSForms.Label)
 End Sub
 
 Private Sub AplicarPress(lbl As MSForms.Label)
-    lbl.BackColor = H(17, 24, 34)
-    lbl.ForeColor = H(230, 240, 252)
+    lbl.BackColor = H(21, 28, 43)
+    lbl.ForeColor = H(192, 212, 232)
 End Sub
 
 
