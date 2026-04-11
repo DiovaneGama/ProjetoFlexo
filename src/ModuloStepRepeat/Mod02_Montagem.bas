@@ -111,7 +111,9 @@ Public Sub ExecutarMontagem(cfg As TStepRepeatConfig)
     Dim pgW As Double, pgH As Double
     pgW = ActivePage.SizeWidth
     pgH = ActivePage.SizeHeight
-    grpTotal.SetPosition (pgW - grpTotal.SizeWidth) / 2, (pgH - grpTotal.SizeHeight) / 2
+    ' SetPosition define canto superior esquerdo (Y cresce para cima no CorelDRAW).
+    ' Canto superior centrado = (pgH + altura) / 2
+    grpTotal.SetPosition (pgW - grpTotal.SizeWidth) / 2, (pgH + grpTotal.SizeHeight) / 2
 
     ' Relatorio
     If cfg.GerarRelatorio Then
