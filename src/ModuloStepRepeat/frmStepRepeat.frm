@@ -188,7 +188,9 @@ Private Sub AplicarTemaRadios()
             .Font.Size = 8
             .Font.Bold = False
             .TextAlign = fmTextAlignCenter
+            .WordWrap = True
             .BorderStyle = fmBorderStyleNone
+            .Caption = vbCrLf & .Caption   ' padding top para centralizar verticalmente
             .Tag = ""
         End With
     Next i
@@ -285,6 +287,7 @@ Private Sub AplicarTemaLabelsDescritivos()
                 If Not excluir Then
                     ctrl.Font.Name = "Segoe UI"
                     ctrl.Font.Size = 8
+                    ctrl.Font.Bold = True
                     ctrl.ForeColor = H(106, 125, 150)   ' Texto Secundario
                     ctrl.BackColor = H(26, 32, 48)      ' Fundo Formulario
                 End If
