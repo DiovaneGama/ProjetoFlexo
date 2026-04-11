@@ -72,7 +72,7 @@ Private Sub UserForm_Initialize()
     Me.Left = 10
     Me.Top = 60
     Me.Width = 230
-    Me.Height = 580
+    Me.Height = 600
     Me.BackColor = H(26, 32, 48)
     Me.Caption = "Console Flexo v2.0"
 
@@ -82,7 +82,6 @@ Private Sub UserForm_Initialize()
     ResetarDesfazer
     AplicarTooltips
     InicializarFramesColapsaveis
-    ReposicionarFrames
 End Sub
 
 ' ============================================================
@@ -667,7 +666,7 @@ Private Sub ReposicionarFrames()
 
     Me.btnDesfazer.Top = topAtual + 4
     Me.btnReset.Top = Me.btnDesfazer.Top
-    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 29
+    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 24
 End Sub
 
 ' ============================================================

@@ -17,6 +17,7 @@ Attribute VB_Exposed = False
 
 
 
+
 ' ============================================================
 ' frmStepRepeat � Step & Repeat v1.0
 ' Design baseado no frmFlexo (Console Flexo v2.0)
@@ -31,6 +32,10 @@ Option Explicit
 Private ultimoLabelAtivo As MSForms.Label
 Private ultimaCaptionOriginal As String
 Private mCameronFilePath As String
+
+Private Sub chkCameronCenter_Click()
+
+End Sub
 
 ' ============================================================
 ' CONTROLES ESPERADOS NO FORM (.frm designer):
