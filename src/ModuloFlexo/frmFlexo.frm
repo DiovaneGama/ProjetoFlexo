@@ -670,7 +670,7 @@ Private Sub ReposicionarFrames()
 
     Me.btnDesfazer.Top = topAtual + 4
     Me.btnReset.Top = Me.btnDesfazer.Top
-    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 24
+    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 26
 End Sub
 
 ' ============================================================
