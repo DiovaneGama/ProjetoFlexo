@@ -133,8 +133,7 @@ End Sub
 ' ============================================================
 ' TEMA - TODAS AS LABELS/BOT�ES
 ' ============================================================
-Private Sub AplicarTemaLabels()
-    Dim lbls(17) As MSForms.Label
+Private Sub ObterTodosBotoes(lbls() As MSForms.Label)
     Set lbls(0) = Me.btnBranco
     Set lbls(1) = Me.btnPretoSujo
     Set lbls(2) = Me.btnSpot
@@ -153,6 +152,11 @@ Private Sub AplicarTemaLabels()
     Set lbls(15) = Me.btnInserirTextos
     Set lbls(16) = Me.btnTrimBox
     Set lbls(17) = Me.btnMicropontos
+End Sub
+
+Private Sub AplicarTemaLabels()
+    Dim lbls(17) As MSForms.Label
+    ObterTodosBotoes lbls
 
     Dim i As Integer
     For i = 0 To 17
@@ -709,24 +713,7 @@ End Sub
 
 Private Sub RemoverHoverTodos()
     Dim lbls(17) As MSForms.Label
-    Set lbls(0) = Me.btnBranco
-    Set lbls(1) = Me.btnPretoSujo
-    Set lbls(2) = Me.btnSpot
-    Set lbls(3) = Me.btnRGB
-    Set lbls(4) = Me.btnCorRegistro
-    Set lbls(5) = Me.btnConverterPantone
-    Set lbls(6) = Me.btnSelPreenchimento
-    Set lbls(7) = Me.btnSelContorno
-    Set lbls(8) = Me.btnCorrigirBordaDura
-    Set lbls(9) = Me.btnLimparSujeira
-    Set lbls(10) = Me.btnTextosEmCurvas
-    Set lbls(11) = Me.btnEspessuraMinima
-    Set lbls(12) = Me.btnCorrigirContornos
-    Set lbls(13) = Me.btnDesbloquear
-    Set lbls(14) = Me.btnPadronizarImagens
-    Set lbls(15) = Me.btnInserirTextos
-    Set lbls(16) = Me.btnTrimBox
-    Set lbls(17) = Me.btnMicropontos
+    ObterTodosBotoes lbls
 
     Dim i As Integer
     For i = 0 To 17
@@ -744,24 +731,7 @@ End Sub
 
 Private Sub ResetarTodosBotoes()
     Dim lbls(17) As MSForms.Label
-    Set lbls(0) = Me.btnBranco
-    Set lbls(1) = Me.btnPretoSujo
-    Set lbls(2) = Me.btnSpot
-    Set lbls(3) = Me.btnRGB
-    Set lbls(4) = Me.btnCorRegistro
-    Set lbls(5) = Me.btnConverterPantone
-    Set lbls(6) = Me.btnSelPreenchimento
-    Set lbls(7) = Me.btnSelContorno
-    Set lbls(8) = Me.btnCorrigirBordaDura
-    Set lbls(9) = Me.btnLimparSujeira
-    Set lbls(10) = Me.btnTextosEmCurvas
-    Set lbls(11) = Me.btnEspessuraMinima
-    Set lbls(12) = Me.btnCorrigirContornos
-    Set lbls(13) = Me.btnDesbloquear
-    Set lbls(14) = Me.btnPadronizarImagens
-    Set lbls(15) = Me.btnInserirTextos
-    Set lbls(16) = Me.btnTrimBox
-    Set lbls(17) = Me.btnMicropontos
+    ObterTodosBotoes lbls
 
     Dim i As Integer
     For i = 0 To 17
