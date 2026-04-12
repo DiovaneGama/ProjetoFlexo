@@ -37,6 +37,7 @@ Private mFrameTitulos(3)            As String
 Private mFrameAlturasOriginais(3)   As Double
 Private mFrameTopInicial            As Double
 Private mFrameColapsado(3)          As Boolean
+Private mPaddingRodape              As Double   ' altura abaixo do btnDesfazer (capturado no init)
 Private Const ALTURA_CAPTION        As Double = 16   ' twips -- so o titulo
 Private Const ESPACO_FRAMES         As Double = 3    ' gap entre frames
 
@@ -609,6 +610,10 @@ Private Sub InicializarFramesColapsaveis()
 
     mFrameTopInicial = Me.Controls(mFrameNomes(0)).Top
 
+    ' Captura o padding real do rodape (distancia do btn ate o fim do form)
+    ' Inclui automaticamente barra de titulo + bordas, independente de DPI
+    mPaddingRodape = Me.Height - Me.btnDesfazer.Top - Me.btnDesfazer.Height
+
     Dim i As Integer
     For i = 0 To 3
         mFrameAlturasOriginais(i) = Me.Controls(mFrameNomes(i)).Height
@@ -670,7 +675,7 @@ Private Sub ReposicionarFrames()
 
     Me.btnDesfazer.Top = topAtual + 4
     Me.btnReset.Top = Me.btnDesfazer.Top
-    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + 26
+    Me.Height = Me.btnDesfazer.Top + Me.btnDesfazer.Height + mPaddingRodape
 End Sub
 
 ' ============================================================
