@@ -1,7 +1,7 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmFlexo 
    Caption         =   "Console Flexo v2.0"
-   ClientHeight    =   10848
+   ClientHeight    =   10632
    ClientLeft      =   108
    ClientTop       =   456
    ClientWidth     =   4608
@@ -14,6 +14,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 
 
 
@@ -74,7 +75,7 @@ Private Sub UserForm_Initialize()
     Me.Left = 10
     Me.Top = 60
     Me.Width = 230
-    Me.Height = 600
+    Me.Height = 575
     Me.BackColor = H(26, 32, 48)
     Me.Caption = "Console Flexo v2.0"
 
@@ -154,9 +155,6 @@ Private Sub AplicarTemaLabels()
 
     Dim i As Integer
     For i = 0 To 17
-        ' Injeta o caption com icone antes de aplicar o estilo
-        ' (AplicarEstiloLabelPadrao le .Caption do designer — precisa ser sobrescrito primeiro)
-        lbls(i).Caption = ObterCaptionOriginal(i)
         AplicarEstiloLabelPadrao lbls(i)
     Next i
 
@@ -610,9 +608,9 @@ Private Sub InicializarFramesColapsaveis()
 
     mFrameTopInicial = Me.Controls(mFrameNomes(0)).Top
 
-    ' Padding do rodape = mesmo espaco interno do frame Montagem abaixo do ultimo botao
-    ' (distancia entre btnTrimBox e a borda inferior do FrameMontagem)
-    mPaddingRodape = Me.FrameMontagem.Height - (Me.btnTrimBox.Top + Me.btnTrimBox.Height)
+    ' Captura o padding real do rodape (distancia do btn ate o fim do form)
+    ' Inclui automaticamente barra de titulo + bordas, independente de DPI
+    mPaddingRodape = Me.Height - Me.btnDesfazer.Top - Me.btnDesfazer.Height
 
     Dim i As Integer
     For i = 0 To 3
