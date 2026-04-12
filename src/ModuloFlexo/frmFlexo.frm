@@ -783,7 +783,7 @@ Private Function ObterCaptionOriginal(index As Integer) As String
         Case 2:  ObterCaptionOriginal = ChrW(9672) & "  Converter Spot p/ CMYK"
         Case 3:  ObterCaptionOriginal = ChrW(11041) & "  Converter RGB p/ CMYK"
         Case 4:  ObterCaptionOriginal = ChrW(10011) & "  Cor de Registro"
-        Case 5:  ObterCaptionOriginal = ChrW(9673) & "  Pantone p/ CMYK"
+        Case 5:  ObterCaptionOriginal = ChrW(9673) & "  RGB p/ Pantone"
         Case 6:  ObterCaptionOriginal = ChrW(9635) & "  Mesmo Preenchimento"
         Case 7:  ObterCaptionOriginal = ChrW(9634) & "  Mesmo Contorno"
         Case 8:  ObterCaptionOriginal = ChrW(9636) & "  Minimas Degrade"
