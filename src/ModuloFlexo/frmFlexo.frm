@@ -154,6 +154,7 @@ Private Sub AplicarTemaLabels()
 
     Dim i As Integer
     For i = 0 To 17
+        lbls(i).Caption = ObterCaptionOriginal(i)
         AplicarEstiloLabelPadrao lbls(i)
     Next i
 
