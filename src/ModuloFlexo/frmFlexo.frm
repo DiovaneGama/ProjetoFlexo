@@ -17,6 +17,7 @@ Attribute VB_Exposed = False
 
 
 
+
 Option Explicit
 
 ' ============================================================
@@ -778,28 +779,28 @@ End Sub
 Private Function ObterCaptionOriginal(index As Integer) As String
     Select Case index
         ' -- TRATAMENTO DE CORES --
-        Case 0:  ObterCaptionOriginal = ChrW(9678)  & "  Branco Overprint"
-        Case 1:  ObterCaptionOriginal = ChrW(9724)  & "  Preto Composto"
-        Case 2:  ObterCaptionOriginal = ChrW(9672)  & "  Converter Spot p/ CMYK"
+        Case 0:  ObterCaptionOriginal = ChrW(9678) & "  Branco Overprint"
+        Case 1:  ObterCaptionOriginal = ChrW(9724) & "  Preto Composto"
+        Case 2:  ObterCaptionOriginal = ChrW(9672) & "  Converter Spot p/ CMYK"
         Case 3:  ObterCaptionOriginal = ChrW(11041) & "  Converter RGB p/ CMYK"
         Case 4:  ObterCaptionOriginal = ChrW(10011) & "  Cor de Registro"
-        Case 5:  ObterCaptionOriginal = ChrW(9673)  & "  Pantone p/ CMYK"
-        Case 6:  ObterCaptionOriginal = ChrW(9635)  & "  Mesmo Preenchimento"
-        Case 7:  ObterCaptionOriginal = ChrW(9634)  & "  Mesmo Contorno"
-        Case 8:  ObterCaptionOriginal = ChrW(9636)  & "  Minimas Degrade"
+        Case 5:  ObterCaptionOriginal = ChrW(9673) & "  Pantone p/ CMYK"
+        Case 6:  ObterCaptionOriginal = ChrW(9635) & "  Mesmo Preenchimento"
+        Case 7:  ObterCaptionOriginal = ChrW(9634) & "  Mesmo Contorno"
+        Case 8:  ObterCaptionOriginal = ChrW(9636) & "  Minimas Degrade"
         Case 9:  ObterCaptionOriginal = ChrW(10006) & "  Limpar Cores"
         ' -- TRATAMENTO DE VETORES --
         Case 10: ObterCaptionOriginal = ChrW(10023) & "  Textos em Curvas"
-        Case 11: ObterCaptionOriginal = ChrW(9473)  & "  Inspetor de Linhas"
-        Case 12: ObterCaptionOriginal = ChrW(8863)  & "  Corrigir Contornos"
-        Case 13: ObterCaptionOriginal = ChrW(9683)  & "  Desbloquear Objetos"
+        Case 11: ObterCaptionOriginal = ChrW(9473) & "  Inspetor de Linhas"
+        Case 12: ObterCaptionOriginal = ChrW(8863) & "  Corrigir Contornos"
+        Case 13: ObterCaptionOriginal = ChrW(9683) & "  Desbloquear Objetos"
         ' -- TRATAMENTO DE BITMAPS --
-        Case 14: ObterCaptionOriginal = ChrW(9640)  & "  Padronizar Imagens"
+        Case 14: ObterCaptionOriginal = ChrW(9640) & "  Padronizar Imagens"
         ' -- MONTAGEM --
         Case 15: ObterCaptionOriginal = ChrW(10000) & "  Inserir Dados"
-        Case 16: ObterCaptionOriginal = ChrW(8862)  & "  Aplicar Trimbox"
+        Case 16: ObterCaptionOriginal = ChrW(8862) & "  Aplicar Trimbox"
         ' -- VETORES (cont.) --
-        Case 17: ObterCaptionOriginal = ChrW(8853)  & "  Inserir Micropontos"   ' ⊕
+        Case 17: ObterCaptionOriginal = ChrW(8853) & "  Inserir Micropontos"    ' ⊕
         Case Else: ObterCaptionOriginal = ""
     End Select
 End Function
