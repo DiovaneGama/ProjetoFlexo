@@ -152,6 +152,9 @@ Private Sub AplicarTemaLabels()
 
     Dim i As Integer
     For i = 0 To 17
+        ' Injeta o caption com icone antes de aplicar o estilo
+        ' (AplicarEstiloLabelPadrao le .Caption do designer — precisa ser sobrescrito primeiro)
+        lbls(i).Caption = ObterCaptionOriginal(i)
         AplicarEstiloLabelPadrao lbls(i)
     Next i
 
