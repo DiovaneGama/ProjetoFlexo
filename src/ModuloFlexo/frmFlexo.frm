@@ -610,9 +610,9 @@ Private Sub InicializarFramesColapsaveis()
 
     mFrameTopInicial = Me.Controls(mFrameNomes(0)).Top
 
-    ' Captura o padding real do rodape (distancia do btn ate o fim do form)
-    ' Inclui automaticamente barra de titulo + bordas, independente de DPI
-    mPaddingRodape = Me.Height - Me.btnDesfazer.Top - Me.btnDesfazer.Height
+    ' Padding do rodape = mesmo espaco interno do frame Montagem abaixo do ultimo botao
+    ' (distancia entre btnTrimBox e a borda inferior do FrameMontagem)
+    mPaddingRodape = Me.FrameMontagem.Height - (Me.btnTrimBox.Top + Me.btnTrimBox.Height)
 
     Dim i As Integer
     For i = 0 To 3
