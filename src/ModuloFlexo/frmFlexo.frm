@@ -550,7 +550,7 @@ Private Sub btnMicropontos_MouseDown(ByVal Button As Integer, ByVal Shift As Int
 End Sub
 Private Sub btnMicropontos_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod07_InserirMicropontos.InserirMicropontos
-    MarcarConcluido Me.btnMicropontos, "Inserir Micropontos", "Micropontos", False
+    MarcarConcluido Me.btnMicropontos, ObterCaptionOriginal(17), "Micropontos", False
 End Sub
 
 ' ============================================================
@@ -699,7 +699,7 @@ Private Sub FrameMontagem_MouseMove(ByVal Button As Integer, ByVal Shift As Inte
 End Sub
 
 Private Sub RemoverHoverTodos()
-    Dim lbls(16) As MSForms.Label
+    Dim lbls(17) As MSForms.Label
     Set lbls(0) = Me.btnBranco
     Set lbls(1) = Me.btnPretoSujo
     Set lbls(2) = Me.btnSpot
@@ -717,9 +717,10 @@ Private Sub RemoverHoverTodos()
     Set lbls(14) = Me.btnPadronizarImagens
     Set lbls(15) = Me.btnInserirTextos
     Set lbls(16) = Me.btnTrimBox
+    Set lbls(17) = Me.btnMicropontos
 
     Dim i As Integer
-    For i = 0 To 16
+    For i = 0 To 17
         RemoverHover lbls(i)
     Next i
 
@@ -733,7 +734,7 @@ Private Sub RemoverHoverTodos()
 End Sub
 
 Private Sub ResetarTodosBotoes()
-    Dim lbls(16) As MSForms.Label
+    Dim lbls(17) As MSForms.Label
     Set lbls(0) = Me.btnBranco
     Set lbls(1) = Me.btnPretoSujo
     Set lbls(2) = Me.btnSpot
@@ -751,9 +752,10 @@ Private Sub ResetarTodosBotoes()
     Set lbls(14) = Me.btnPadronizarImagens
     Set lbls(15) = Me.btnInserirTextos
     Set lbls(16) = Me.btnTrimBox
+    Set lbls(17) = Me.btnMicropontos
 
     Dim i As Integer
-    For i = 0 To 16
+    For i = 0 To 17
         With lbls(i)
             .BackColor = H(30, 42, 58)
             .ForeColor = H(154, 176, 200)
@@ -772,23 +774,29 @@ End Sub
 
 Private Function ObterCaptionOriginal(index As Integer) As String
     Select Case index
-        Case 0: ObterCaptionOriginal = "Branco Overprint"
-        Case 1: ObterCaptionOriginal = "Preto Composto"
-        Case 2: ObterCaptionOriginal = "Converter Spot p/ CMYK"
-        Case 3: ObterCaptionOriginal = "Converter RGB p/ CMYK"
-        Case 4: ObterCaptionOriginal = "Mudar p/ Cor de Registro"
-        Case 5: ObterCaptionOriginal = "Converter para Pantone"
-        Case 6: ObterCaptionOriginal = "Seleciona Msm Cor Preenchimento"
-        Case 7: ObterCaptionOriginal = "Seleciona Msm Cor Contorno"
-        Case 8: ObterCaptionOriginal = "Corrigir Minimas Degrade"
-        Case 9: ObterCaptionOriginal = "Limpar Cores"
-        Case 10: ObterCaptionOriginal = "Textos em Curvas"
-        Case 11: ObterCaptionOriginal = "Inspetor de Linhas Finas"
-        Case 12: ObterCaptionOriginal = "Corrigir Contornos Finos"
-        Case 13: ObterCaptionOriginal = "Desbloquear Objetos"
-        Case 14: ObterCaptionOriginal = "Padronizar Imagens"
-        Case 15: ObterCaptionOriginal = "Inserir Dados"
-        Case 16: ObterCaptionOriginal = "Aplicar Trimbox"
+        ' -- TRATAMENTO DE CORES --
+        Case 0:  ObterCaptionOriginal = ChrW(9678)  & "  Branco Overprint"
+        Case 1:  ObterCaptionOriginal = ChrW(9724)  & "  Preto Composto"
+        Case 2:  ObterCaptionOriginal = ChrW(9672)  & "  Converter Spot p/ CMYK"
+        Case 3:  ObterCaptionOriginal = ChrW(11041) & "  Converter RGB p/ CMYK"
+        Case 4:  ObterCaptionOriginal = ChrW(10011) & "  Mudar p/ Cor de Registro"
+        Case 5:  ObterCaptionOriginal = ChrW(9673)  & "  Converter para Pantone"
+        Case 6:  ObterCaptionOriginal = ChrW(9635)  & "  Seleciona Msm Cor Preenchimento"
+        Case 7:  ObterCaptionOriginal = ChrW(9634)  & "  Seleciona Msm Cor Contorno"
+        Case 8:  ObterCaptionOriginal = ChrW(9636)  & "  Corrigir Minimas Degrade"
+        Case 9:  ObterCaptionOriginal = ChrW(10006) & "  Limpar Cores"
+        ' -- TRATAMENTO DE VETORES --
+        Case 10: ObterCaptionOriginal = ChrW(10023) & "  Textos em Curvas"
+        Case 11: ObterCaptionOriginal = ChrW(9473)  & "  Inspetor de Linhas Finas"
+        Case 12: ObterCaptionOriginal = ChrW(8863)  & "  Corrigir Contornos Finos"
+        Case 13: ObterCaptionOriginal = ChrW(9683)  & "  Desbloquear Objetos"
+        ' -- TRATAMENTO DE BITMAPS --
+        Case 14: ObterCaptionOriginal = ChrW(9640)  & "  Padronizar Imagens"
+        ' -- MONTAGEM --
+        Case 15: ObterCaptionOriginal = ChrW(10000) & "  Inserir Dados"
+        Case 16: ObterCaptionOriginal = ChrW(8862)  & "  Aplicar Trimbox"
+        ' -- VETORES (cont.) --
+        Case 17: ObterCaptionOriginal = ChrW(8853)  & "  Inserir Micropontos"   ' ⊕
         Case Else: ObterCaptionOriginal = ""
     End Select
 End Function

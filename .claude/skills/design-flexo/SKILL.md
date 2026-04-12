@@ -205,7 +205,34 @@ src/
 
 ---
 
-## 10. Regras Criticas — Nunca Violar
+## 10. Ícones dos Botões de Ação
+
+Todo botão de ação deve ter um ícone Unicode prefixando o caption. A fonte de verdade é `ObterCaptionOriginal()` em `frmFlexo.frm`. Padrão de caption: `ChrW(XXXX) & "  " & textoLegivel` — `AplicarEstiloLabelPadrao` adiciona o `vbCrLf` inicial automaticamente.
+
+| Botão | Ícone | ChrW | Grupo |
+|-------|-------|------|-------|
+| btnBranco | ◎ | 9678 | Cores |
+| btnPretoSujo | ◼ | 9724 | Cores |
+| btnSpot | ◈ | 9672 | Cores |
+| btnRGB | ⬡ | 11041 | Cores |
+| btnCorRegistro | ✛ | 10011 | Cores |
+| btnConverterPantone | ◉ | 9673 | Cores |
+| btnSelPreenchimento | ▣ | 9635 | Cores |
+| btnSelContorno | ▢ | 9634 | Cores |
+| btnCorrigirBordaDura | ▤ | 9636 | Cores |
+| btnLimparSujeira | ✖ | 10006 | Cores |
+| btnTextosEmCurvas | ❧ | 10023 | Vetores |
+| btnEspessuraMinima | ━ | 9473 | Vetores |
+| btnCorrigirContornos | ⊟ | 8863 | Vetores |
+| btnDesbloquear | ◓ | 9683 | Vetores |
+| btnMicropontos | ⊕ | 8853 | Vetores |
+| btnPadronizarImagens | ▨ | 9640 | Bitmaps |
+| btnInserirTextos | ❐ | 10000 | Montagem |
+| btnTrimBox | ⊞ | 8862 | Montagem |
+
+---
+
+## 11. Regras Criticas — Nunca Violar
 
 1. **Nunca use `CommandButton`** — sempre `MSForms.Label` estilizado
 2. **Nunca hardcode cores** como Long ou hex — sempre `H(R, G, B)`
