@@ -780,7 +780,7 @@ Private Function ObterCaptionOriginal(index As Integer) As String
         ' -- TRATAMENTO DE CORES --
         Case 0:  ObterCaptionOriginal = ChrW(9678) & "  Branco Overprint"
         Case 1:  ObterCaptionOriginal = ChrW(9724) & "  Preto Composto"
-        Case 2:  ObterCaptionOriginal = ChrW(9672) & "  Converter Spot p/ CMYK"
+        Case 2:  ObterCaptionOriginal = ChrW(9672) & "  Pantone p/ CMYK"
         Case 3:  ObterCaptionOriginal = ChrW(11041) & "  Converter RGB p/ CMYK"
         Case 4:  ObterCaptionOriginal = ChrW(10011) & "  Cor de Registro"
         Case 5:  ObterCaptionOriginal = ChrW(9673) & "  RGB p/ Pantone"
