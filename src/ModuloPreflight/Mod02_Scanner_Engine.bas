@@ -168,53 +168,29 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
 End Sub
 
 Private Sub AnalisarGradiente(s As Shape)
-    Dim K As Integer
-    Dim temBordaDura As Boolean: temBordaDura = False
+    ' Deteccao de RGB nos nos do gradiente (contagem separada da borda dura)
     On Error Resume Next
-    Dim maxC As Long, maxM As Long, maxY As Long, maxK As Long, maxTint As Long
-    maxC = 0: maxM = 0: maxY = 0: maxK = 0: maxTint = 0
-    Dim temSpot As Boolean: temSpot = False
-    Dim temBrancoCMYK As Boolean: temBrancoCMYK = False
-    Dim temRGB As Boolean: temRGB = False
-    Dim cores() As Color
+    Dim K As Integer
     Dim totalCores As Integer
     totalCores = 2 + s.Fill.Fountain.Colors.Count
+    Dim cores() As Color
     ReDim cores(1 To totalCores)
     Set cores(1) = s.Fill.Fountain.StartColor
     Set cores(2) = s.Fill.Fountain.EndColor
     For K = 0 To s.Fill.Fountain.Colors.Count - 1
         Set cores(3 + K) = s.Fill.Fountain.Colors(K).Color
     Next K
-    For K = 1 To totalCores
-        If cores(K).Type = cdrColorCMYK Then
-            If cores(K).CMYKCyan > maxC Then maxC = cores(K).CMYKCyan
-            If cores(K).CMYKMagenta > maxM Then maxM = cores(K).CMYKMagenta
-            If cores(K).CMYKYellow > maxY Then maxY = cores(K).CMYKYellow
-            If cores(K).CMYKBlack > maxK Then maxK = cores(K).CMYKBlack
-            If (cores(K).CMYKCyan + cores(K).CMYKMagenta + cores(K).CMYKYellow + cores(K).CMYKBlack) = 0 Then temBrancoCMYK = True
-        ElseIf cores(K).Type = cdrColorSpot Then
-            If cores(K).Tint > maxTint Then maxTint = cores(K).Tint
-            If cores(K).Tint > 0 Then temSpot = True
-        ElseIf cores(K).Type = cdrColorRGB Then
-            temRGB = True
+    Dim K2 As Integer
+    For K2 = 1 To totalCores
+        If cores(K2).Type = cdrColorRGB Then
+            relatorio.QtdRGB = relatorio.QtdRGB + 1
+            Exit For
         End If
-    Next K
-    If temRGB Then relatorio.QtdRGB = relatorio.QtdRGB + 1
-    For K = 1 To totalCores
-        If cores(K).Type = cdrColorCMYK Then
-            If maxC > 0 And cores(K).CMYKCyan = 0 Then temBordaDura = True: Exit For
-            If maxM > 0 And cores(K).CMYKMagenta = 0 Then temBordaDura = True: Exit For
-            If maxY > 0 And cores(K).CMYKYellow = 0 Then temBordaDura = True: Exit For
-            If maxK > 0 And cores(K).CMYKBlack = 0 Then temBordaDura = True: Exit For
-        ElseIf cores(K).Type = cdrColorSpot Then
-            If maxTint > 0 And cores(K).Tint = 0 Then temBordaDura = True: Exit For
-        End If
-    Next K
-    If Not temBordaDura Then
-        If temSpot And temBrancoCMYK Then temBordaDura = True
-    End If
-    If temBordaDura Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
+    Next K2
     On Error GoTo 0
+
+    ' Deteccao de borda dura delegada ao Mod06_Utils
+    If Mod06_Utils.TemBordaDura(s) Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
 End Sub
 
 Private Function DimSomaCMY(C As Color) As Long
