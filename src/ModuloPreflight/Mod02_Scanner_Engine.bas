@@ -35,7 +35,7 @@ Public Sub ExecutarScanner()
         .QtdImgRGB = 0: .QtdFontesVivas = 0: .QtdGradBloqueado = 0
     End With
 
-    ' ? Varre apenas a pï¿½gina ativa ï¿½ nï¿½o todo o documento
+    ' ? Varre apenas a página ativa — não todo o documento
     CrawlerMergulhoProfundo ActivePage.shapes
 
     frmPreFlight.Show vbModeless
@@ -97,12 +97,11 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                 End If
             End If
         End If
-        On Error GoTo 0
     Next s
     Exit Sub
 
 ErrShapeSkip:
-    Debug.Print "CrawlerMergulhoProfundo â€” shape ignorado (Err " & Err.Number & "): " & Err.Description
+    Debug.Print "CrawlerMergulhoProfundo — shape ignorado (Err " & Err.Number & "): " & Err.Description
     Resume Next
 End Sub
 
@@ -134,7 +133,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' PANTONE - conta e lista cores ï¿½nicas, excluindo cores tï¿½cnicas
+    ' PANTONE - conta e lista cores únicas, excluindo cores técnicas
     If C.IsSpot Then
         Dim nomeCor As String: nomeCor = Trim(C.Name)
         If nomeCor <> "" Then
@@ -147,7 +146,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' CORES Tï¿½CNICAS - conta e lista cores ï¿½nicas
+    ' CORES TÉCNICAS - conta e lista cores únicas
     Dim nTec As String: nTec = LCase(Trim(C.Name))
     If EhCorTecnica(nTec) Then
         Dim nomeTec As String: nomeTec = Trim(C.Name)
@@ -168,7 +167,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
 End Sub
 
 Private Sub AnalisarGradiente(s As Shape)
-    ' Deteccao de RGB nos nos do gradiente (contagem separada da borda dura)
+    ' Detecção de RGB nos nós do gradiente (contagem separada da borda dura)
     On Error Resume Next
     Dim K As Integer
     Dim totalCores As Integer
@@ -189,7 +188,7 @@ Private Sub AnalisarGradiente(s As Shape)
     Next K2
     On Error GoTo 0
 
-    ' Deteccao de borda dura delegada ao Mod08_Utils
+    ' Detecção de borda dura delegada ao Mod08_Utils
     If Mod08_Utils.TemBordaDura(s) Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
 End Sub
 
@@ -234,7 +233,7 @@ Private Function EhCorTecnica(nCorLower As String) As Boolean
 End Function
 
 ' ============================================================
-' Funï¿½ï¿½o auxiliar: busca ï¿½ndice de uma cor Spot na paleta PANTONE
+' Função auxiliar: busca índice de uma cor Spot na paleta PANTONE
 ' ============================================================
 Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Long
     BuscarIndicePaleta = -1
@@ -251,7 +250,7 @@ Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Lon
 End Function
 
 Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
-    ActiveDocument.BeginCommandGroup "Corre" & ChrW(231) & ChrW(227) & "o Autom" & ChrW(225) & "tica PreFlight"
+    ActiveDocument.BeginCommandGroup "Correção Automática PreFlight"
     On Error GoTo FimErro
 
     Call Mod02_Cores.CorrigirBrancoOverprint(silencioso:=True)
@@ -266,4 +265,3 @@ FimErro:
     ActiveDocument.EndCommandGroup
     Application.Refresh
 End Sub
-
