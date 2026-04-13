@@ -327,7 +327,7 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
                 ' Unica excecao: contorno branco CMYK (0,0,0,0), espessura 0,001-0,005mm,
                 ' com preenchimento uniforme tambem branco CMYK (0,0,0,0)
                 Dim ehIntencional As Boolean: ehIntencional = False
-                If espW <= 0.005 Then
+                If espW <= 0.05 Then
                     If s.Outline.Color.Type = cdrColorCMYK Then
                         If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
                             s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then

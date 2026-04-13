@@ -66,7 +66,7 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                             Dim ehIntencional As Boolean: ehIntencional = False
                             ' Unica excecao: contorno branco CMYK (0,0,0,0), espessura 0,001-0,005mm,
                             ' com preenchimento uniforme tambem branco CMYK (0,0,0,0)
-                            If espMM <= 0.005 Then
+                            If espMM <= 0.05 Then
                                 If s.Outline.Color.Type = cdrColorCMYK Then
                                     If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
                                         s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
