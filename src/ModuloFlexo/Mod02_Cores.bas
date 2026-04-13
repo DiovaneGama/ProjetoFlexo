@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mod02_Cores"
 ' ============================================================
-' MÓDULO: Mod02_Cores (VERSÃO CONSOLIDADA DEFINITIVA V1.5)
-' DESCRIÇÃO: Motor de busca recursiva absoluta para Flexografia
+' Mï¿½DULO: Mod02_Cores (VERSï¿½O CONSOLIDADA DEFINITIVA V1.5)
+' DESCRIï¿½ï¿½O: Motor de busca recursiva absoluta para Flexografia
 ' ============================================================
 
 Option Explicit
@@ -10,17 +10,17 @@ Private srRes As ShapeRange
 Private escolhaMetodo As VbMsgBoxResult
 
 ' ============================================================
-' BLOCO 1: FERRAMENTAS DE CONVERSÃO E CORREÇÃO
+' BLOCO 1: FERRAMENTAS DE CONVERSï¿½O E CORREï¿½ï¿½O
 ' ============================================================
 
 Public Sub ConverterRGB(Optional silencioso As Boolean = False)
     If silencioso Then
-        escolhaMetodo = vbYes   ' sempre CMYK completo no modo automático
+        escolhaMetodo = vbYes   ' sempre CMYK completo no modo automï¿½tico
     Else
         escolhaMetodo = MsgBox("Converter RGB para:" & vbCrLf & vbCrLf & _
                             "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
-                            "[ NÃO ] -> CMY (Sem Preto - Ideal para Flexo)", _
-                            vbYesNoCancel + vbQuestion, "Conversão RGB")
+                            "[ Nï¿½O ] -> CMY (Sem Preto - Ideal para Flexo)", _
+                            vbYesNoCancel + vbQuestion, "Conversï¿½o RGB")
         If escolhaMetodo = vbCancel Then Exit Sub
     End If
     ChamarMotor "RGB", silencioso
@@ -30,8 +30,8 @@ End Sub
 Public Sub ConverterSpotParaCMYK()
     escolhaMetodo = MsgBox("Converter PANTONE/SPOT para:" & vbCrLf & vbCrLf & _
                         "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
-                        "[ NÃO ] -> CMY (Sem Preto - Evita sujar a cor)", _
-                        vbYesNoCancel + vbQuestion, "Conversão Pantone")
+                        "[ Nï¿½O ] -> CMY (Sem Preto - Evita sujar a cor)", _
+                        vbYesNoCancel + vbQuestion, "Conversï¿½o Pantone")
     If escolhaMetodo = vbCancel Then Exit Sub
     ChamarMotor "Spot"
     Finalizar "Cores Spot/Pantone convertidas"
@@ -74,7 +74,7 @@ Private Sub Finalizar(texto As String)
         srRes.CreateSelection
         MsgBox texto & " e selecionados: " & srRes.Count, vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhum objeto com esse critério foi encontrado.", vbInformation, "Console Flexo"
+        MsgBox "Nenhum objeto com esse critï¿½rio foi encontrado.", vbInformation, "Console Flexo"
     End If
 End Sub
 
@@ -185,7 +185,7 @@ Public Sub SelecionarMsmCor(modoBusca As Integer)
     Dim srCoresIguais As ShapeRange
     
     If ActiveSelection.Shapes.Count = 0 Then
-        MsgBox "Selecione um objeto de referência para eu saber qual cor procurar!", vbExclamation, "Console Flexo"
+        MsgBox "Selecione um objeto de referï¿½ncia para eu saber qual cor procurar!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
     
@@ -197,7 +197,7 @@ Public Sub SelecionarMsmCor(modoBusca As Integer)
     If modoBusca = 2 Then temPre = False
     
     If Not temPre And Not temCon Then
-        MsgBox "O objeto de referência não possui a propriedade de cor que você quer buscar.", vbInformation, "Console Flexo"
+        MsgBox "O objeto de referï¿½ncia nï¿½o possui a propriedade de cor que vocï¿½ quer buscar.", vbInformation, "Console Flexo"
         Exit Sub
     End If
     
@@ -306,7 +306,7 @@ Private Sub CrawlerAplicarRegistro(s As Shape, corReg As Color, ByRef contador A
     On Error Resume Next
     
     If s.Type <> cdrGroupShape And s.Type <> cdrGuidelineShape Then
-        ' 1. PREENCHIMENTO - só converte se for preto puro ou preto rico
+        ' 1. PREENCHIMENTO - sï¿½ converte se for preto puro ou preto rico
         If s.Fill.Type = cdrUniformFill Then
             If EhPretoParaRegistro(s.Fill.UniformColor) Then
                 s.Fill.UniformColor.CopyAssign corReg
@@ -367,7 +367,7 @@ Public Sub ConverterParaPantone()
     On Error GoTo 0
 
     If palPantone Is Nothing Then
-        MsgBox "Biblioteca PANTONE não encontrada.", vbCritical, "Erro de Paleta"
+        MsgBox "Biblioteca PANTONE nï¿½o encontrada.", vbCritical, "Erro de Paleta"
         Exit Sub
     End If
 
@@ -385,7 +385,7 @@ Public Sub ConverterParaPantone()
     If alteracoes > 0 Then
         MsgBox "Sucesso! " & alteracoes & " propriedades convertidas para Pantone.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhuma conversão feita.", vbInformation, "Console Flexo"
+        MsgBox "Nenhuma conversï¿½o feita.", vbInformation, "Console Flexo"
     End If
     Exit Sub
 
@@ -424,21 +424,21 @@ Private Sub CrawlerConverterPantone(s As Shape, pal As Palette, ByRef contador A
 End Sub
 
 ' ============================================================
-' FERRAMENTA: CORRETOR DE BORDA DURA EM DEGRADÊS
+' FERRAMENTA: CORRETOR DE BORDA DURA EM DEGRADï¿½S
 ' ============================================================
 Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional silencioso As Boolean = False)
     Dim minDotLong As Long
 
     If silencioso Then
-        ' Modo automático: usa o valor passado por parâmetro
-        If minDotLong <= 0 Then Exit Sub
+        ' Modo automï¿½tico: usa o valor passado por parï¿½metro
         minDotLong = CLng(minDot)
+        If minDotLong <= 0 Then Exit Sub
     Else
-        ' Modo manual: obtém o valor via InputBox (ignora o parâmetro)
+        ' Modo manual: obtï¿½m o valor via InputBox (ignora o parï¿½metro)
         Dim inputMin As String
         inputMin = InputBox("RESOLVER BORDA DURA (HARD EDGE)" & vbCrLf & vbCrLf & _
-                            "Digite a porcentagem mínima de ponto a ser inserida nos valores zero do degradê:" & vbCrLf & _
-                            "(Escolha 2 ou 3)", "Ponto Mínimo Flexo", "2")
+                            "Digite a porcentagem mï¿½nima de ponto a ser inserida nos valores zero do degradï¿½:" & vbCrLf & _
+                            "(Escolha 2 ou 3)", "Ponto Mï¿½nimo Flexo", "2")
         If inputMin = "" Then Exit Sub  ' usuario cancelou
         If inputMin <> "2" And inputMin <> "3" Then
             MsgBox "Valor fora do intervalo!" & vbCrLf & _
@@ -456,11 +456,11 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
     Next s
 
     If srProblemas.Count = 0 Then
-        If Not silencioso Then MsgBox "Nenhum preenchimento gradiente (degradê) encontrado na página.", vbInformation, "Console Flexo"
+        If Not silencioso Then MsgBox "Nenhum preenchimento gradiente (degradï¿½) encontrado na pï¿½gina.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
-    ' Abre a paleta PANTONE para uso na reconstrução de cores Spot
+    ' Abre a paleta PANTONE para uso na reconstruï¿½ï¿½o de cores Spot
     Dim palPantone As Palette
     On Error Resume Next
     Set palPantone = Palettes.OpenFixed(cdrPANTONECoated)
@@ -512,7 +512,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
         Next K
         On Error GoTo 0
 
-        ' === FASE 1: Lê o DNA do gradiente ===
+        ' === FASE 1: Lï¿½ o DNA do gradiente ===
         On Error Resume Next
         For K = 1 To totalCores
             If cores(K).Type = cdrColorCMYK Then
@@ -529,7 +529,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
                     temSpot = True
                     If nomePantone = "" Then
                         nomePantone = cores(K).Name
-                        ' Busca o índice na paleta para uso posterior
+                        ' Busca o ï¿½ndice na paleta para uso posterior
                         If Not palPantone Is Nothing Then
                             Dim p As Long
                             For p = 1 To palPantone.ColorCount
@@ -545,7 +545,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
         Next K
         On Error GoTo 0
 
-        ' === FASE 2: Aplica correção nó a nó ===
+        ' === FASE 2: Aplica correï¿½ï¿½o nï¿½ a nï¿½ ===
         ' [T14/T15] On Error Resume Next cobre toda a fase 2
         ' para proteger contra objetos com camada bloqueada ou propriedades somente-leitura
         On Error Resume Next
@@ -554,7 +554,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
             If Err.Number <> 0 Then Err.Clear: GoTo ProximoNo
 
             If tipoK = cdrColorCMYK Then
-                ' Detecta se este nó é um branco CMYK que é Pantone 0% disfarçado
+                ' Detecta se este nï¿½ ï¿½ um branco CMYK que ï¿½ Pantone 0% disfarï¿½ado
                 ehBrancoPantone = False
                 If temSpot And temBrancoCMYK Then
                     If (cores(K).CMYKCyan + cores(K).CMYKMagenta + cores(K).CMYKYellow + cores(K).CMYKBlack) = 0 Then
@@ -563,7 +563,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
                 End If
 
                 If ehBrancoPantone And idxPantone > 0 And Not palPantone Is Nothing Then
-                    ' REGRA 2: Reconstrói nó como Spot usando cor da paleta + Tint
+                    ' REGRA 2: Reconstrï¿½i nï¿½ como Spot usando cor da paleta + Tint
                     If K = 1 Then
                         obj.Fill.Fountain.StartColor.CopyAssign palPantone.Color(idxPantone)
                         obj.Fill.Fountain.StartColor.Tint = minDotLong
@@ -576,18 +576,18 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
                     End If
                     mudou = True
                 ElseIf Not ehBrancoPantone Then
-                    ' REGRA 1: Gradiente CMYK puro — zero em canal ativo = borda dura
+                    ' REGRA 1: Gradiente CMYK puro ï¿½ zero em canal ativo = borda dura
                     newC = cores(K).CMYKCyan
                     newM = cores(K).CMYKMagenta
                     newY = cores(K).CMYKYellow
                     newK = cores(K).CMYKBlack
                     mudouCor = False
-                    ' Corrige zeros em canais ativos (>= 2% em algum nó)
+                    ' Corrige zeros em canais ativos (>= 2% em algum nï¿½)
                     If maxC >= 2 And newC = 0 Then newC = minDotLong: mudouCor = True
                     If maxM >= 2 And newM = 0 Then newM = minDotLong: mudouCor = True
                     If maxY >= 2 And newY = 0 Then newY = minDotLong: mudouCor = True
                     If maxK >= 2 And newK = 0 Then newK = minDotLong: mudouCor = True
-                    ' Também corrige valores residuais entre 1 e minDot
+                    ' Tambï¿½m corrige valores residuais entre 1 e minDot
                     If maxC >= 2 And newC > 0 And newC < minDotLong Then newC = minDotLong: mudouCor = True
                     If maxM >= 2 And newM > 0 And newM < minDotLong Then newM = minDotLong: mudouCor = True
                     If maxY >= 2 And newY > 0 And newY < minDotLong Then newY = minDotLong: mudouCor = True
@@ -605,9 +605,9 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
                 End If
 
             ElseIf cores(K).Type = cdrColorSpot Then
-                ' REGRA 3: Spot com Tint abaixo do mínimo = borda dura
+                ' REGRA 3: Spot com Tint abaixo do mï¿½nimo = borda dura
                 ' [Fix T8] Tint so funciona em nos Spot
-                ' On Error Resume Next pontual protege contra no CMYK disfarçado
+                ' On Error Resume Next pontual protege contra no CMYK disfarï¿½ado
                 If cores(K).Tint < minDotLong Then
                     If K = 1 Then
                         On Error Resume Next
@@ -661,9 +661,10 @@ ProximoObj:
     If Not silencioso Then
         If srCorrigidos.Count > 0 Then
             srCorrigidos.CreateSelection
-        MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra mínima ajustada para " & minDotLong & "% e estão selecionados.", vbInformation, "Console Flexo"
-    Else
-        MsgBox "Varredura concluída. Todos os degradês já possuem pontos mínimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
+            MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra mï¿½nima ajustada para " & minDotLong & "% e estï¿½o selecionados.", vbInformation, "Console Flexo"
+        Else
+            MsgBox "Varredura concluï¿½da. Todos os degradï¿½s jï¿½ possuem pontos mï¿½nimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
+        End If
     End If
     Exit Sub
 End Sub
@@ -691,7 +692,7 @@ Public Sub LimparSujeiraCores()
     If MsgBox("Deseja rastrear o documento e ZERAR qualquer canal de cor (CMYK) que esteja com menos de 2%?", _
               vbYesNo + vbQuestion, "Console Flexo") = vbNo Then Exit Sub
 
-    ' ? CORREÇÃO: agrupa todas as alterações em 1 único Undo
+    ' ? CORREï¿½ï¿½O: agrupa todas as alteraï¿½ï¿½es em 1 ï¿½nico Undo
     ActiveDocument.BeginCommandGroup "Limpar Sujeira de Cores"
     On Error GoTo FimErro
 
@@ -706,9 +707,9 @@ Public Sub LimparSujeiraCores()
 
     If srProblemas.Count > 0 Then
         srProblemas.CreateSelection
-        MsgBox "Faxina concluída! " & srProblemas.Count & " objeto(s) tiveram sujeiras de cor removidas e estão selecionados.", vbInformation, "Console Flexo"
+        MsgBox "Faxina concluï¿½da! " & srProblemas.Count & " objeto(s) tiveram sujeiras de cor removidas e estï¿½o selecionados.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhuma sujeira encontrada. As cores já estão limpas!", vbInformation, "Console Flexo"
+        MsgBox "Nenhuma sujeira encontrada. As cores jï¿½ estï¿½o limpas!", vbInformation, "Console Flexo"
     End If
     Exit Sub
 

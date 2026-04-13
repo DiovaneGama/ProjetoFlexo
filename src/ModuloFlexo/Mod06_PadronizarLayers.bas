@@ -6,13 +6,12 @@
 '              todas na sequência correta.
 '
 '  Ordem final no painel (topo → base):
-'    1. Saida
-'    2. Trimbox
-'    3. Informacoes
-'    4. Micropontos
-'    5. Branco
-'    6. Arte
-'    7. Material
+'    1. Trimbox
+'    2. Informacoes
+'    3. Micropontos
+'    4. Branco
+'    5. Arte
+'    6. Material
 '
 '  API oficial (Programming Guide v27):
 '    Page.CreateLayer(name)   → cria layer no topo
@@ -23,17 +22,16 @@
 
 Option Explicit
 
-Private Const NUM_LAYERS As Integer = 7
+Private Const NUM_LAYERS As Integer = 6
 
 Private Function LayerOrder() As String()
     Dim arr(1 To NUM_LAYERS) As String
-    arr(1) = "Saida"
-    arr(2) = "Trimbox"
-    arr(3) = "Informacoes"
-    arr(4) = "Micropontos"
-    arr(5) = "Branco"
-    arr(6) = "Arte"
-    arr(7) = "Material"
+    arr(1) = "Trimbox"
+    arr(2) = "Informacoes"
+    arr(3) = "Micropontos"
+    arr(4) = "Branco"
+    arr(5) = "Arte"
+    arr(6) = "Material"
     LayerOrder = arr
 End Function
 
@@ -72,24 +70,18 @@ Public Sub PadronizarLayers()
     '    Resultado: Saida(1) > Trimbox(2) > ... > Material(7)
     ' --------------------------------------------------------
 
-    ' Coloca "Saida" no topo: move acima de todas as outras
-    ' fazendo MoveAbove da primeira layer da coleção
-    Dim lSaida As Layer
-    Set lSaida = pg.Layers(names(1))
+    ' Coloca "Trimbox" no topo via loop até que seja a primeira layer
+    Dim lTrimbox As Layer
+    Set lTrimbox = pg.Layers(names(1))
+    Do While pg.Layers.Item(1).Name <> names(1)
+        lTrimbox.MoveAbove pg.Layers.Item(1)
+    Loop
 
-    ' Move Saida para o topo (acima da layer que está em pos 1)
-    ' Repetimos até que Saida seja a primeira
-    Dim lTop As Layer
-    Set lTop = pg.Layers.Item(1)
-    If lTop.Name <> names(1) Then
-        lSaida.MoveAbove lTop
-    End If
-
-    ' Agora encadeia cada layer abaixo da anterior
-    ' names(1)=Saida já está no topo; posiciona 2..7 em cascata
+    ' Encadeia cada layer abaixo da anterior
+    ' names(1)=Trimbox já está no topo; posiciona 2..6 em cascata
     Dim lRef  As Layer
     Dim lMove As Layer
-    Set lRef = pg.Layers(names(1))   ' referência inicial = Saida
+    Set lRef = pg.Layers(names(1))   ' referência inicial = Trimbox
 
     For i = 2 To NUM_LAYERS
         Set lMove = pg.Layers(names(i))
@@ -98,13 +90,12 @@ Public Sub PadronizarLayers()
     Next i
 
     MsgBox "Layers padronizadas com sucesso na página ativa!" & vbCrLf & vbCrLf & _
-           "  1. Saida" & vbCrLf & _
-           "  2. Trimbox" & vbCrLf & _
-           "  3. Informacoes" & vbCrLf & _
-           "  4. Micropontos" & vbCrLf & _
-           "  5. Branco" & vbCrLf & _
-           "  6. Arte" & vbCrLf & _
-           "  7. Material", _
+           "  1. Trimbox" & vbCrLf & _
+           "  2. Informacoes" & vbCrLf & _
+           "  3. Micropontos" & vbCrLf & _
+           "  4. Branco" & vbCrLf & _
+           "  5. Arte" & vbCrLf & _
+           "  6. Material", _
            vbInformation, "PadronizarLayers"
 
 End Sub

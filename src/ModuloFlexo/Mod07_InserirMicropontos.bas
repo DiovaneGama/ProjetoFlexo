@@ -161,7 +161,7 @@ Public Sub InserirMicropontos()
     '==========================================================================
     ' ETAPA 1 — CONFIGURAÇÃO DE AMBIENTE
     '==========================================================================
-    ' On Error GoTo ErroHandler  ' << DESABILITADO PARA DEPURAÇÃO — reativar em produção
+    On Error GoTo Finalizar
 
     Set oDoc  = ActiveDocument
     Set oPage = ActivePage
