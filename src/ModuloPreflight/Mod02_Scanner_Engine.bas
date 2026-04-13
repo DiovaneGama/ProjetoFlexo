@@ -39,8 +39,8 @@ End Sub
 
 Private Sub CrawlerMergulhoProfundo(shps As shapes)
     Dim s As Shape
-    On Error Resume Next
     For Each s In shps.FindShapes(Recursive:=True)
+        On Error GoTo ErrShapeSkip
         If s.Type <> cdrGuidelineShape Then
             If Not s.Layer Is Nothing Then
                 If s.Layer.IsSpecialLayer = False And s.Layer.Printable = True Then
@@ -93,8 +93,13 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                 End If
             End If
         End If
+        On Error GoTo 0
     Next s
-    On Error GoTo 0
+    Exit Sub
+
+ErrShapeSkip:
+    Debug.Print "CrawlerMergulhoProfundo — shape ignorado (Err " & Err.Number & "): " & Err.Description
+    Resume Next
 End Sub
 
 Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
