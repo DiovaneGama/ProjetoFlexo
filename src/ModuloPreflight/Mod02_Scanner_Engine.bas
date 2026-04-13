@@ -279,8 +279,8 @@ Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
     On Error GoTo FimErro
 
     Call Mod02_Cores.CorrigirBrancoOverprint(silencioso:=True)
-    Call Mod02_Cores.DetectarPretoSujo(silencioso:=True)
     Call Mod02_Cores.ConverterRGB(silencioso:=True)
+    Call Mod02_Cores.DetectarPretoSujo(silencioso:=True)
     Call Mod03_Vetores.ConverterTextosEmCurvas(silencioso:=True)
     Call Mod03_Vetores.PadronizarContornosFinos(silencioso:=True)
     Call Mod05_Imagens.PadronizarImagensCMYK600(silencioso:=True)
