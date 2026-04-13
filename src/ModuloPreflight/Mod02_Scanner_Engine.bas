@@ -189,8 +189,8 @@ Private Sub AnalisarGradiente(s As Shape)
     Next K2
     On Error GoTo 0
 
-    ' Deteccao de borda dura delegada ao Mod06_Utils
-    If Mod06_Utils.TemBordaDura(s) Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
+    ' Deteccao de borda dura delegada ao Mod08_Utils
+    If Mod08_Utils.TemBordaDura(s) Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
 End Sub
 
 Private Function DimSomaCMY(C As Color) As Long

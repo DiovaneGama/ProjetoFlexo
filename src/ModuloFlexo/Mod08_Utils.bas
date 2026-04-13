@@ -1,6 +1,6 @@
-Attribute VB_Name = "Mod06_Utils"
+Attribute VB_Name = "Mod08_Utils"
 ' ============================================================
-' MODULO: Mod06_Utils (UTILITARIOS COMPARTILHADOS)
+' MODULO: Mod08_Utils (UTILITARIOS COMPARTILHADOS)
 ' DESCRICAO: Funcoes auxiliares usadas por mais de um modulo.
 '            Centraliza logica que antes estava duplicada.
 ' ============================================================
