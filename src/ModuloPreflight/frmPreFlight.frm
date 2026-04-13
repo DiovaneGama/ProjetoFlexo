@@ -222,6 +222,7 @@ Private Sub UserForm_Initialize()
         .BackColor = H(30, 42, 58)
         .ForeColor = H(154, 176, 200)
         .TextAlign = fmTextAlignCenter
+        .WordWrap = True
         .BorderStyle = fmBorderStyleNone
         .Caption = vbCrLf & "Atualizar"
         .ControlTipText = "Executar nova varredura PreFlight na p" & ChrW(225) & "gina ativa"
@@ -233,6 +234,7 @@ Private Sub UserForm_Initialize()
         .BackColor = H(30, 42, 58)
         .ForeColor = H(154, 176, 200)
         .TextAlign = fmTextAlignCenter
+        .WordWrap = True
         .BorderStyle = fmBorderStyleNone
         .Caption = vbCrLf & "Desfazer"
         .ControlTipText = "Desfazer as corre" & ChrW(231) & ChrW(245) & "es aplicadas"
@@ -244,6 +246,7 @@ Private Sub UserForm_Initialize()
         .BackColor = H(26, 58, 94)
         .ForeColor = H(106, 172, 232)
         .TextAlign = fmTextAlignCenter
+        .WordWrap = True
         .BorderStyle = fmBorderStyleNone
         .Caption = vbCrLf & "Corrigir Erros"
         .ControlTipText = "Aplicar todas as corre" & ChrW(231) & ChrW(245) & "es cr" & ChrW(237) & "ticas automaticamente"
