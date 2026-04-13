@@ -324,16 +324,22 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
             Dim espW As Double: espW = s.Outline.Width
             ' Se a espessura for maior que zero e menor ou igual a 0.101mm (Margem de erro do VBA)
             If espW > 0 And espW <= 0.101 Then
-                ' Regra de negócio: contornos brancos são intencionais (não sinalizar)
+                ' Unica excecao: contorno branco CMYK (0,0,0,0), espessura 0,001-0,005mm,
+                ' com preenchimento uniforme tambem branco CMYK (0,0,0,0)
                 Dim ehIntencional As Boolean: ehIntencional = False
-                If EhContornoBranco(s.Outline.Color) Then ehIntencional = True
-                ' Contornos <= 0,05mm com preenchimento também são intencionais
-                If espW <= 0.05 Then
-                    If s.Fill.Type = cdrUniformFill Or _
-                       s.Fill.Type = cdrFountainFill Or _
-                       s.Fill.Type = cdrTextureFill Or _
-                       s.Fill.Type = cdrPatternFill Then
-                        ehIntencional = True
+                If espW <= 0.005 Then
+                    If s.Outline.Color.Type = cdrColorCMYK Then
+                        If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                            s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                            If s.Fill.Type = cdrUniformFill Then
+                                If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                    If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                        s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                        ehIntencional = True
+                                    End If
+                                End If
+                            End If
+                        End If
                     End If
                 End If
                 If Not ehIntencional Then sacola.Add s
@@ -353,21 +359,6 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
     On Error GoTo 0
 End Sub
 
-' ------------------------------------------------------------
-' Função auxiliar: identifica contorno de cor branca
-' ------------------------------------------------------------
-Private Function EhContornoBranco(C As Color) As Boolean
-    EhContornoBranco = False
-    On Error Resume Next
-    If C.Type = cdrColorCMYK Then
-        If (C.CMYKCyan + C.CMYKMagenta + C.CMYKYellow + C.CMYKBlack) = 0 Then EhContornoBranco = True
-    ElseIf C.Type = cdrColorRGB Then
-        If C.RGBRed = 255 And C.RGBGreen = 255 And C.RGBBlue = 255 Then EhContornoBranco = True
-    ElseIf C.IsSpot Then
-        If C.Tint = 0 Then EhContornoBranco = True
-    End If
-    On Error GoTo 0
-End Function
 ' ============================================================
 ' FERRAMENTA: DESBLOQUEAR OBJETOS DA PAGINA ATIVA
 ' ============================================================

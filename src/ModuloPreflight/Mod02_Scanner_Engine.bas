@@ -62,15 +62,23 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                         End Select
                         espMM = Round(s.Outline.Width * fator, 3)
 
-                        If espMM > 0.005 And espMM <= 0.1 Then
+                        If espMM > 0 And espMM <= 0.1 Then
                             Dim ehIntencional As Boolean: ehIntencional = False
-                            If EhBranco(s.Outline.Color) Then ehIntencional = True
-                            If espMM <= 0.05 Then
-                                If s.Fill.Type = cdrUniformFill Or _
-                                   s.Fill.Type = cdrFountainFill Or _
-                                   s.Fill.Type = cdrTextureFill Or _
-                                   s.Fill.Type = cdrPatternFill Then
-                                    ehIntencional = True
+                            ' Unica excecao: contorno branco CMYK (0,0,0,0), espessura 0,001-0,005mm,
+                            ' com preenchimento uniforme tambem branco CMYK (0,0,0,0)
+                            If espMM <= 0.005 Then
+                                If s.Outline.Color.Type = cdrColorCMYK Then
+                                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                                        If s.Fill.Type = cdrUniformFill Then
+                                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                                    ehIntencional = True
+                                                End If
+                                            End If
+                                        End If
+                                    End If
                                 End If
                             End If
                             If Not ehIntencional Then relatorio.QtdLinhasFinas = relatorio.QtdLinhasFinas + 1
