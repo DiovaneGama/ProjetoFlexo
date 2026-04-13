@@ -35,7 +35,7 @@ Public Sub ExecutarScanner()
         .QtdImgRGB = 0: .QtdFontesVivas = 0: .QtdGradBloqueado = 0
     End With
 
-    ' ? Varre apenas a página ativa — não todo o documento
+    ' ? Varre apenas a pï¿½gina ativa ï¿½ nï¿½o todo o documento
     CrawlerMergulhoProfundo ActivePage.shapes
 
     frmPreFlight.Show vbModeless
@@ -64,9 +64,9 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
 
                         If espMM > 0 And espMM <= 0.1 Then
                             Dim ehIntencional As Boolean: ehIntencional = False
-                            ' Unica excecao: contorno branco CMYK (0,0,0,0), espessura 0,001-0,005mm,
-                            ' com preenchimento uniforme tambem branco CMYK (0,0,0,0)
+                            ' Excecoes de contorno intencional (range 0,001mm a 0,05mm)
                             If espMM <= 0.05 Then
+                                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
                                 If s.Outline.Color.Type = cdrColorCMYK Then
                                     If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
                                         s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
@@ -77,6 +77,15 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                                                     ehIntencional = True
                                                 End If
                                             End If
+                                        End If
+                                    End If
+                                End If
+                                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                                ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
+                                If Not ehIntencional Then
+                                    If s.Fill.Type = cdrUniformFill Then
+                                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
+                                            ehIntencional = True
                                         End If
                                     End If
                                 End If
@@ -109,7 +118,7 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
     Exit Sub
 
 ErrShapeSkip:
-    Debug.Print "CrawlerMergulhoProfundo — shape ignorado (Err " & Err.Number & "): " & Err.Description
+    Debug.Print "CrawlerMergulhoProfundo ï¿½ shape ignorado (Err " & Err.Number & "): " & Err.Description
     Resume Next
 End Sub
 
@@ -141,7 +150,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' PANTONE - conta e lista cores únicas, excluindo cores técnicas
+    ' PANTONE - conta e lista cores ï¿½nicas, excluindo cores tï¿½cnicas
     If C.IsSpot Then
         Dim nomeCor As String: nomeCor = Trim(C.Name)
         If nomeCor <> "" Then
@@ -154,7 +163,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
         End If
     End If
 
-    ' CORES TÉCNICAS - conta e lista cores únicas
+    ' CORES Tï¿½CNICAS - conta e lista cores ï¿½nicas
     Dim nTec As String: nTec = LCase(Trim(C.Name))
     If EhCorTecnica(nTec) Then
         Dim nomeTec As String: nomeTec = Trim(C.Name)
@@ -175,7 +184,7 @@ Private Sub AnalisarCor(C As Color, s As Shape, isOutline As Boolean)
 End Sub
 
 Private Sub AnalisarGradiente(s As Shape)
-    ' Detecção de RGB nos nós do gradiente (contagem separada da borda dura)
+    ' Detecï¿½ï¿½o de RGB nos nï¿½s do gradiente (contagem separada da borda dura)
     On Error Resume Next
     Dim K As Integer
     Dim totalCores As Integer
@@ -196,7 +205,7 @@ Private Sub AnalisarGradiente(s As Shape)
     Next K2
     On Error GoTo 0
 
-    ' Detecção de borda dura delegada ao Mod08_Utils
+    ' Detecï¿½ï¿½o de borda dura delegada ao Mod08_Utils
     If Mod08_Utils.TemBordaDura(s) Then relatorio.QtdBordaDura = relatorio.QtdBordaDura + 1
 End Sub
 
@@ -241,7 +250,7 @@ Private Function EhCorTecnica(nCorLower As String) As Boolean
 End Function
 
 ' ============================================================
-' Função auxiliar: busca índice de uma cor Spot na paleta PANTONE
+' Funï¿½ï¿½o auxiliar: busca ï¿½ndice de uma cor Spot na paleta PANTONE
 ' ============================================================
 Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Long
     BuscarIndicePaleta = -1
@@ -258,7 +267,7 @@ Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Lon
 End Function
 
 Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
-    ActiveDocument.BeginCommandGroup "Correção Automática PreFlight"
+    ActiveDocument.BeginCommandGroup "Correï¿½ï¿½o Automï¿½tica PreFlight"
     On Error GoTo FimErro
 
     Call Mod02_Cores.CorrigirBrancoOverprint(silencioso:=True)

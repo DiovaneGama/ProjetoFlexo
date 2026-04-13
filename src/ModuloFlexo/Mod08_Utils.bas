@@ -76,3 +76,35 @@ Public Function TemBordaDura(shp As Shape) As Boolean
     On Error GoTo 0
     TemBordaDura = resultado
 End Function
+
+' ============================================================
+' FUNCAO: CompararCoresSeguro
+' Retorna True se dois objetos Color sao identicos.
+' Suporta CMYK, RGB, Spot e fallback via IsSame.
+'
+' Usada por:
+'   Mod03_Vetores.CrawlerBuscaContornos  -- excecao contorno = fill
+'   Mod02_Scanner_Engine.CrawlerMergulhoProfundo -- mesma excecao no scanner
+' ============================================================
+Public Function CompararCoresSeguro(c1 As Color, c2 As Color) As Boolean
+    CompararCoresSeguro = False
+    If c1.Type <> c2.Type Then Exit Function
+    Select Case c1.Type
+        Case cdrColorCMYK
+            If c1.CMYKCyan = c2.CMYKCyan And c1.CMYKMagenta = c2.CMYKMagenta And _
+               c1.CMYKYellow = c2.CMYKYellow And c1.CMYKBlack = c2.CMYKBlack Then
+                CompararCoresSeguro = True
+            End If
+        Case cdrColorRGB
+            If c1.RGBRed = c2.RGBRed And c1.RGBGreen = c2.RGBGreen And _
+               c1.RGBBlue = c2.RGBBlue Then
+                CompararCoresSeguro = True
+            End If
+        Case cdrColorSpot
+            If c1.SpotName = c2.SpotName And c1.Tint = c2.Tint Then
+                CompararCoresSeguro = True
+            End If
+        Case Else
+            CompararCoresSeguro = c1.IsSame(c2)
+    End Select
+End Function

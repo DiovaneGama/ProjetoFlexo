@@ -444,54 +444,54 @@ End Sub
 ' ============================================================
 Private Sub btnBranco_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.CorrigirBrancoOverprint
-    MarcarConcluido Me.btnBranco, "Branco Overprint", "Branco Overprint", False
+    MarcarConcluido Me.btnBranco, ObterCaptionOriginal(0), "Branco Overprint", False
 End Sub
 
 Private Sub btnPretoSujo_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.DetectarPretoSujo
-    MarcarConcluido Me.btnPretoSujo, "Preto Composto", "Preto Composto", False
+    MarcarConcluido Me.btnPretoSujo, ObterCaptionOriginal(1), "Preto Composto", False
 End Sub
 
 Private Sub btnSpot_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.ConverterSpotParaCMYK
-    MarcarConcluido Me.btnSpot, "Converter Spot p/ CMYK", "Converter Spot", False
+    MarcarConcluido Me.btnSpot, ObterCaptionOriginal(2), "Converter Spot", False
 End Sub
 
 Private Sub btnRGB_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.ConverterRGB
-    MarcarConcluido Me.btnRGB, "Converter RGB p/ CMYK", "Converter RGB", False
+    MarcarConcluido Me.btnRGB, ObterCaptionOriginal(3), "Converter RGB", False
 End Sub
 
 Private Sub btnCorRegistro_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.MudarParaCorDeRegistro
-    MarcarConcluido Me.btnCorRegistro, "Mudar p/ Cor de Registro", "Cor de Registro", False
+    MarcarConcluido Me.btnCorRegistro, ObterCaptionOriginal(4), "Cor de Registro", False
 End Sub
 
 Private Sub btnConverterPantone_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.ConverterParaPantone
-    MarcarConcluido Me.btnConverterPantone, "Converter para Pantone", "Converter Pantone", False
+    MarcarConcluido Me.btnConverterPantone, ObterCaptionOriginal(5), "Converter Pantone", False
 End Sub
 
 ' ? apenasSelecao = True � n�o habilita Desfazer
 Private Sub btnSelPreenchimento_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.SelecionarMsmCor(1)
-    MarcarConcluido Me.btnSelPreenchimento, "Seleciona Msm Cor Preenchimento", "Sel. Preenchimento", True
+    MarcarConcluido Me.btnSelPreenchimento, ObterCaptionOriginal(6), "Sel. Preenchimento", True
 End Sub
 
 ' ? apenasSelecao = True � n�o habilita Desfazer
 Private Sub btnSelContorno_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.SelecionarMsmCor(2)
-    MarcarConcluido Me.btnSelContorno, "Seleciona Msm Cor Contorno", "Sel. Contorno", True
+    MarcarConcluido Me.btnSelContorno, ObterCaptionOriginal(7), "Sel. Contorno", True
 End Sub
 
 Private Sub btnCorrigirBordaDura_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.CorrigirBordaDuraGradientes
-    MarcarConcluido Me.btnCorrigirBordaDura, "Corrigir Minimas Degrade", "Corrigir Degrade", False
+    MarcarConcluido Me.btnCorrigirBordaDura, ObterCaptionOriginal(8), "Corrigir Degrade", False
 End Sub
 
 Private Sub btnLimparSujeira_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod02_Cores.LimparSujeiraCores
-    MarcarConcluido Me.btnLimparSujeira, "Limpar Cores", "Limpar Cores", False
+    MarcarConcluido Me.btnLimparSujeira, ObterCaptionOriginal(9), "Limpar Cores", False
 End Sub
 
 ' ============================================================
@@ -499,18 +499,18 @@ End Sub
 ' ============================================================
 Private Sub btnTextosEmCurvas_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.ConverterTextosEmCurvas
-    MarcarConcluido Me.btnTextosEmCurvas, "Textos em Curvas", "Textos em Curvas", False
+    MarcarConcluido Me.btnTextosEmCurvas, ObterCaptionOriginal(10), "Textos em Curvas", False
 End Sub
 
 ' ? apenasSelecao = True � n�o habilita Desfazer
 Private Sub btnEspessuraMinima_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.InspecionarEspessuraMinima
-    MarcarConcluido Me.btnEspessuraMinima, "Inspetor de Linhas Finas", "Linhas Finas", True
+    MarcarConcluido Me.btnEspessuraMinima, ObterCaptionOriginal(11), "Linhas Finas", True
 End Sub
 
 Private Sub btnCorrigirContornos_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.PadronizarContornosFinos
-    MarcarConcluido Me.btnCorrigirContornos, "Corrigir Contornos Finos", "Contornos Finos", False
+    MarcarConcluido Me.btnCorrigirContornos, ObterCaptionOriginal(12), "Contornos Finos", False
 End Sub
 
 ' ============================================================
@@ -524,7 +524,7 @@ Private Sub btnDesbloquear_MouseDown(ByVal Button As Integer, ByVal Shift As Int
 End Sub
 Private Sub btnDesbloquear_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod03_Vetores.DesbloquearObjetos
-    MarcarConcluido Me.btnDesbloquear, "Desbloquear Objetos", "Desbloquear", False
+    MarcarConcluido Me.btnDesbloquear, ObterCaptionOriginal(13), "Desbloquear", False
 End Sub
 
 ' ============================================================
@@ -532,7 +532,7 @@ End Sub
 ' ============================================================
 Private Sub btnPadronizarImagens_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod05_Imagens.PadronizarImagensCMYK600
-    MarcarConcluido Me.btnPadronizarImagens, "Padronizar Imagens", "Padronizar Imagens", False
+    MarcarConcluido Me.btnPadronizarImagens, ObterCaptionOriginal(14), "Padronizar Imagens", False
 End Sub
 
 ' ============================================================
@@ -543,12 +543,12 @@ Private Sub btnInserirTextos_MouseUp(ByVal Button As Integer, ByVal Shift As Int
     Me.txtDados.Text = ""
     Me.txtCores.Text = ""
     Me.txtDados.SetFocus
-    MarcarConcluido Me.btnInserirTextos, "Inserir Dados", "Inserir Dados", False
+    MarcarConcluido Me.btnInserirTextos, ObterCaptionOriginal(15), "Inserir Dados", False
 End Sub
 
 Private Sub btnTrimBox_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
     Call Mod04_Montagem.AjustarTrimBoxEBorda
-    MarcarConcluido Me.btnTrimBox, "Aplicar Trimbox", "Aplicar Trimbox", False
+    MarcarConcluido Me.btnTrimBox, ObterCaptionOriginal(16), "Aplicar Trimbox", False
 End Sub
 
 Private Sub btnMicropontos_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
