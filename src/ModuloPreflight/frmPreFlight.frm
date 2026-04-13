@@ -256,26 +256,29 @@ End Sub
 Private Sub UserForm_Activate()
     On Error Resume Next
 
+    Dim rel As RelatorioPreFlight
+    rel = GetRelatorio()
+
     ' 1. Atualiza��o Visual das Labels
-    AtualizarStatus Me.lblBrancoOver, "Brancos com Overprint: ", relatorio.QtdBrancoOver, True
-    AtualizarStatus Me.lblPretoSujo, "Pretos Compostos/Sujos: ", relatorio.QtdPretoSujo, True
-    AtualizarStatus Me.lblRGB, "Cores RGB (Vetor): ", relatorio.QtdRGB, True
-    AtualizarStatus Me.lblRegistro, "Cores de Registro: ", relatorio.QtdRegistro, False
-    AtualizarStatus Me.lblBordaDura, "Gradientes 0% (Borda Dura): ", relatorio.QtdBordaDura, True
-    AtualizarStatus Me.lblBloqueados, "Objetos Bloqueados: ", relatorio.QtdBloqueados, False
-    AtualizarStatus Me.lblLinhasFinas, "Linhas <= 0.1mm: ", relatorio.QtdLinhasFinas, True
-    AtualizarStatus Me.lblInvisiveis, "Objetos Ocultos: ", relatorio.QtdInvisiveis, False
-    AtualizarStatus Me.lblImgBaixa, "Imagens < 300 DPI: ", relatorio.QtdImgBaixa, True
-    AtualizarStatus Me.lblImgRGB, "Imagens em RGB: ", relatorio.QtdImgRGB, True
-    AtualizarStatus Me.lblFontesVivas, "Fontes Vivas: ", relatorio.QtdFontesVivas, True
-    AtualizarStatus Me.lblPantone, "Cores Pantone: ", relatorio.QtdPantone, False
-    AtualizarStatus Me.lblTecnicas, "Cores Tecnicas (Faca/Vz): ", relatorio.QtdTecnicas, False
+    AtualizarStatus Me.lblBrancoOver, "Brancos com Overprint: ", rel.QtdBrancoOver, True
+    AtualizarStatus Me.lblPretoSujo, "Pretos Compostos/Sujos: ", rel.QtdPretoSujo, True
+    AtualizarStatus Me.lblRGB, "Cores RGB (Vetor): ", rel.QtdRGB, True
+    AtualizarStatus Me.lblRegistro, "Cores de Registro: ", rel.QtdRegistro, False
+    AtualizarStatus Me.lblBordaDura, "Gradientes 0% (Borda Dura): ", rel.QtdBordaDura, True
+    AtualizarStatus Me.lblBloqueados, "Objetos Bloqueados: ", rel.QtdBloqueados, False
+    AtualizarStatus Me.lblLinhasFinas, "Linhas <= 0.1mm: ", rel.QtdLinhasFinas, True
+    AtualizarStatus Me.lblInvisiveis, "Objetos Ocultos: ", rel.QtdInvisiveis, False
+    AtualizarStatus Me.lblImgBaixa, "Imagens < 300 DPI: ", rel.QtdImgBaixa, True
+    AtualizarStatus Me.lblImgRGB, "Imagens em RGB: ", rel.QtdImgRGB, True
+    AtualizarStatus Me.lblFontesVivas, "Fontes Vivas: ", rel.QtdFontesVivas, True
+    AtualizarStatus Me.lblPantone, "Cores Pantone: ", rel.QtdPantone, False
+    AtualizarStatus Me.lblTecnicas, "Cores Tecnicas (Faca/Vz): ", rel.QtdTecnicas, False
 
     ' 2. T�tulo Din�mico
     Dim totalCritico As Integer
-    totalCritico = relatorio.QtdBrancoOver + relatorio.QtdPretoSujo + relatorio.QtdBordaDura + _
-                   relatorio.QtdLinhasFinas + relatorio.QtdImgBaixa + relatorio.QtdRGB + _
-                   relatorio.QtdFontesVivas
+    totalCritico = rel.QtdBrancoOver + rel.QtdPretoSujo + rel.QtdBordaDura + _
+                   rel.QtdLinhasFinas + rel.QtdImgBaixa + rel.QtdRGB + _
+                   rel.QtdFontesVivas
 
     If totalCritico = 0 Then
         Me.lblStatusGeral.Caption = "ARQUIVO OK PARA PRODUCAO"
@@ -294,9 +297,9 @@ Private Sub UserForm_Activate()
     End If
 
     ' 3. Lista de Pantones
-    If relatorio.QtdPantone > 0 Then
+    If rel.QtdPantone > 0 Then
         Dim strLista As String
-        strLista = Trim(relatorio.BibliotecasPantone)
+        strLista = Trim(rel.BibliotecasPantone)
         If Right(strLista, 1) = "|" Then strLista = Left(strLista, Len(strLista) - 1)
         If Len(strLista) > 0 Then
             Dim arrNomes() As String
@@ -320,9 +323,9 @@ Private Sub UserForm_Activate()
     End If
 
     ' 4. Lista de Cores T�cnicas
-    If relatorio.QtdTecnicas > 0 Then
+    If rel.QtdTecnicas > 0 Then
         Dim strTec As String
-        strTec = Trim(relatorio.BibliotecasTecnicas)
+        strTec = Trim(rel.BibliotecasTecnicas)
         If Right(strTec, 1) = "|" Then strTec = Left(strTec, Len(strTec) - 1)
         If Len(strTec) > 0 Then
             Dim arrTec() As String
@@ -334,7 +337,7 @@ Private Sub UserForm_Activate()
                     listaFinalTec = listaFinalTec & Chr(149) & " " & Trim(arrTec(iTec)) & vbCrLf
                 End If
             Next iTec
-            Me.lblTecnicas.Caption = "Cores Tecnicas (Faca/Vz): " & relatorio.QtdTecnicas & vbCrLf & listaFinalTec
+            Me.lblTecnicas.Caption = "Cores Tecnicas (Faca/Vz): " & rel.QtdTecnicas & vbCrLf & listaFinalTec
             Me.lblTecnicas.ForeColor = RGB(91, 155, 213)
         End If
     End If
@@ -371,7 +374,7 @@ Private Sub btnCorrigir_Click()
     resposta = MsgBox("Deseja aplicar todas as correcoes criticas de forma automatica na arte?", vbYesNo + vbQuestion, "Correcao Automatica")
     If resposta <> vbYes Then Exit Sub
 
-    If relatorio.QtdBordaDura > 0 Then
+    If GetRelatorio().QtdBordaDura > 0 Then
         minDot = InputBox("Foram detectados Gradientes indo a 0% (Borda Dura)." & vbCrLf & vbCrLf & _
                           "Qual a porcentagem minima do cliche que devo aplicar?" & vbCrLf & _
                           "(Ex: digite 2 para 2%, 3 para 3%)", "Ponto Minimo de Flexografia", "2")

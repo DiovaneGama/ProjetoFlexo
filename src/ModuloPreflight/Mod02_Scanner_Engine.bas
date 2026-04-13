@@ -20,7 +20,11 @@ Public Type RelatorioPreFlight
     QtdGradBloqueado As Integer
 End Type
 
-Public relatorio As RelatorioPreFlight
+Private relatorio As RelatorioPreFlight
+
+Public Function GetRelatorio() As RelatorioPreFlight
+    GetRelatorio = relatorio
+End Function
 
 Public Sub ExecutarScanner()
     Dim p As Page
