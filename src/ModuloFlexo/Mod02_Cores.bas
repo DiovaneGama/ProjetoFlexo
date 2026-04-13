@@ -109,6 +109,29 @@ Private Sub ExecutarCrawler(s As Shape, tipoAcao As String)
                         sofreuAlteracao = True
                     End If
                 End If
+                If s.Fill.Type = cdrFountainFill Then
+                    Dim nG As Integer
+                    Dim totalG As Integer: totalG = 2 + s.Fill.Fountain.Colors.Count
+                    For nG = 1 To totalG
+                        Dim cG As Color
+                        On Error Resume Next
+                        If nG = 1 Then Set cG = s.Fill.Fountain.StartColor
+                        If nG = 2 Then Set cG = s.Fill.Fountain.EndColor
+                        If nG > 2  Then Set cG = s.Fill.Fountain.Colors(nG - 3).Color
+                        On Error GoTo 0
+                        If Not cG Is Nothing Then
+                            Dim deveConverterG As Boolean: deveConverterG = False
+                            If tipoAcao = "RGB"  And cG.Type = cdrColorRGB Then deveConverterG = True
+                            If tipoAcao = "Spot" And cG.IsSpot             Then deveConverterG = True
+                            If deveConverterG Then
+                                cG.ConvertToCMYK
+                                If escolhaMetodo = vbNo Then cG.CMYKBlack = 0
+                                sofreuAlteracao = True
+                            End If
+                        End If
+                        Set cG = Nothing
+                    Next nG
+                End If
                 If s.Outline.Type = cdrOutline Then
                     Dim targetO As Boolean: targetO = False
                     If tipoAcao = "RGB" And s.Outline.Color.Type = cdrColorRGB Then targetO = True
@@ -615,26 +638,29 @@ ProximoObj:
 
     ' [T14] Se todos os gradientes estavam bloqueados -- aborta sem continuar
     If qtdBloqueados > 0 And srCorrigidos.Count = 0 Then
-        ActiveDocument.EndCommandGroup
-        Application.Refresh
-        MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: todos os " & qtdBloqueados & _
-               " gradiente(s) encontrados est" & ChrW(227) & "o BLOQUEADOS." & vbCrLf & vbCrLf & _
-               "Use o bot" & ChrW(227) & "o 'Desbloquear Objetos' no Console Flexo" & _
-               " e execute novamente.", vbExclamation, "Console Flexo"
+        If Not silencioso Then ActiveDocument.EndCommandGroup
+        If Not silencioso Then Application.Refresh
+        If Not silencioso Then
+            MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: todos os " & qtdBloqueados & _
+                   " gradiente(s) encontrados est" & ChrW(227) & "o BLOQUEADOS." & vbCrLf & vbCrLf & _
+                   "Use o bot" & ChrW(227) & "o 'Desbloquear Objetos' no Console Flexo" & _
+                   " e execute novamente.", vbExclamation, "Console Flexo"
+        End If
         Exit Sub
     End If
 
     ' Avisa se havia objetos bloqueados misturados com desbloqueados
-    If qtdBloqueados > 0 Then
+    If qtdBloqueados > 0 And Not silencioso Then
         MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: " & qtdBloqueados & " gradiente(s) bloqueado(s) foram ignorados." & vbCrLf & _
                "Desbloqueie os objetos e execute novamente.", vbExclamation, "Console Flexo"
     End If
 
-    ActiveDocument.EndCommandGroup
-    Application.Refresh
+    If Not silencioso Then ActiveDocument.EndCommandGroup
+    If Not silencioso Then Application.Refresh
 
-    If srCorrigidos.Count > 0 Then
-        srCorrigidos.CreateSelection
+    If Not silencioso Then
+        If srCorrigidos.Count > 0 Then
+            srCorrigidos.CreateSelection
         MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra mínima ajustada para " & minDotLong & "% e estão selecionados.", vbInformation, "Console Flexo"
     Else
         MsgBox "Varredura concluída. Todos os degradês já possuem pontos mínimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
