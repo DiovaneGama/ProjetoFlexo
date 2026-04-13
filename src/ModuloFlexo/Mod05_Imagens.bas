@@ -21,13 +21,15 @@ Private Const MODO_PB         As Long = 0
 Private Const DPI_MINIMO      As Long = 599   ' abaixo disso = problema
 Private Const DPI_ALVO        As Long = 600   ' resolucao padrao de saida
 
-Public Sub PadronizarImagensCMYK600()
+Public Sub PadronizarImagensCMYK600(Optional silencioso As Boolean = False)
 
-    Dim resposta As VbMsgBoxResult
-    resposta = MsgBox("Deseja padronizar automaticamente todas as imagens" & _
-                      " da p" & ChrW(225) & "gina para CMYK e 600 DPI?", _
-                      vbYesNo + vbQuestion, "Console Flexo")
-    If resposta = vbNo Then Exit Sub
+    If Not silencioso Then
+        Dim resposta As VbMsgBoxResult
+        resposta = MsgBox("Deseja padronizar automaticamente todas as imagens" & _
+                          " da p" & ChrW(225) & "gina para CMYK e 600 DPI?", _
+                          vbYesNo + vbQuestion, "Console Flexo")
+        If resposta = vbNo Then Exit Sub
+    End If
 
     ' ── Varredura ───────────────────────────────────────────
     ' Usa valores numericos para evitar ambiguidade entre enums
@@ -41,10 +43,12 @@ Public Sub PadronizarImagensCMYK600()
     Next s
 
     If sacola.Count = 0 Then
-        MsgBox "Aprovado! Todas as imagens j" & ChrW(225) & _
-               " est" & ChrW(227) & "o no padr" & ChrW(227) & _
-               "o (CMYK/Grayscale/1-bit e 600 DPI).", _
-               vbInformation, "Console Flexo"
+        If Not silencioso Then
+            MsgBox "Aprovado! Todas as imagens j" & ChrW(225) & _
+                   " est" & ChrW(227) & "o no padr" & ChrW(227) & _
+                   "o (CMYK/Grayscale/1-bit e 600 DPI).", _
+                   vbInformation, "Console Flexo"
+        End If
         Exit Sub
     End If
 
@@ -107,15 +111,19 @@ Public Sub PadronizarImagensCMYK600()
     ActiveDocument.EndCommandGroup
     Application.Refresh
 
-    MsgBox "Sucesso! " & alteracoes & " imagem(ns) padronizada(s)" & _
-           " para CMYK @ 600 DPI.", vbInformation, "Console Flexo"
+    If Not silencioso Then
+        MsgBox "Sucesso! " & alteracoes & " imagem(ns) padronizada(s)" & _
+               " para CMYK @ 600 DPI.", vbInformation, "Console Flexo"
+    End If
     Exit Sub
 
 FimErro:
     ActiveDocument.EndCommandGroup
     Application.Refresh
-    MsgBox "Erro ao padronizar imagens: " & Err.Description, _
-           vbCritical, "Console Flexo"
+    If Not silencioso Then
+        MsgBox "Erro ao padronizar imagens: " & Err.Description, _
+               vbCritical, "Console Flexo"
+    End If
 End Sub
 
 ' ============================================================

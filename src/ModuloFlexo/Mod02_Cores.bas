@@ -13,14 +13,18 @@ Private escolhaMetodo As VbMsgBoxResult
 ' BLOCO 1: FERRAMENTAS DE CONVERS�O E CORRE��O
 ' ============================================================
 
-Public Sub ConverterRGB()
-    escolhaMetodo = MsgBox("Converter RGB para:" & vbCrLf & vbCrLf & _
-                        "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
-                        "[ N�O ] -> CMY (Sem Preto - Ideal para Flexo)", _
-                        vbYesNoCancel + vbQuestion, "Convers�o RGB")
-    If escolhaMetodo = vbCancel Then Exit Sub
+Public Sub ConverterRGB(Optional silencioso As Boolean = False)
+    If silencioso Then
+        escolhaMetodo = vbYes   ' sempre CMYK completo no modo autom�tico
+    Else
+        escolhaMetodo = MsgBox("Converter RGB para:" & vbCrLf & vbCrLf & _
+                            "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
+                            "[ N�O ] -> CMY (Sem Preto - Ideal para Flexo)", _
+                            vbYesNoCancel + vbQuestion, "Convers�o RGB")
+        If escolhaMetodo = vbCancel Then Exit Sub
+    End If
     ChamarMotor "RGB"
-    Finalizar "Objetos RGB convertidos"
+    If Not silencioso Then Finalizar "Objetos RGB convertidos"
 End Sub
 
 Public Sub ConverterSpotParaCMYK()
@@ -33,8 +37,15 @@ Public Sub ConverterSpotParaCMYK()
     Finalizar "Cores Spot/Pantone convertidas"
 End Sub
 
-Public Sub CorrigirBrancoOverprint(): ChamarMotor "Branco": Finalizar "Brancos corrigidos": End Sub
-Public Sub DetectarPretoSujo(): ChamarMotor "PretoSujo": Finalizar "Pretos Sujos limpos": End Sub
+Public Sub CorrigirBrancoOverprint(Optional silencioso As Boolean = False)
+    ChamarMotor "Branco"
+    If Not silencioso Then Finalizar "Brancos corrigidos"
+End Sub
+
+Public Sub DetectarPretoSujo(Optional silencioso As Boolean = False)
+    ChamarMotor "PretoSujo"
+    If Not silencioso Then Finalizar "Pretos Sujos limpos"
+End Sub
 
 ' --- GERENCIADORES DE FLUXO ---
 
@@ -416,19 +427,27 @@ End Sub
 ' ============================================================
 ' FERRAMENTA: CORRETOR DE BORDA DURA EM DEGRAD�S
 ' ============================================================
-Public Sub CorrigirBordaDuraGradientes()
-    Dim inputMin As String
-    inputMin = InputBox("RESOLVER BORDA DURA (HARD EDGE)" & vbCrLf & vbCrLf & _
-                        "Digite a porcentagem m�nima de ponto a ser inserida nos valores zero do degrad�:" & vbCrLf & _
-                        "(Escolha 2 ou 3)", "Ponto M�nimo Flexo", "2")
-    If inputMin = "" Then Exit Sub  ' usuario cancelou
-    If inputMin <> "2" And inputMin <> "3" Then
-        MsgBox "Valor fora do intervalo!" & vbCrLf & _
-               "Digite apenas 2 ou 3.", vbExclamation, "Console Flexo"
-        Exit Sub
-    End If
+Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional silencioso As Boolean = False)
+    Dim minDotLong As Long
 
-    Dim minDot As Long: minDot = CLng(inputMin)
+    If silencioso Then
+        ' Modo autom�tico: usa o valor passado por par�metro
+        If minDot <= 0 Then Exit Sub
+        minDotLong = CLng(minDot)
+    Else
+        ' Modo manual: obt�m o valor via InputBox (ignora o par�metro)
+        Dim inputMin As String
+        inputMin = InputBox("RESOLVER BORDA DURA (HARD EDGE)" & vbCrLf & vbCrLf & _
+                            "Digite a porcentagem m�nima de ponto a ser inserida nos valores zero do degrad�:" & vbCrLf & _
+                            "(Escolha 2 ou 3)", "Ponto M�nimo Flexo", "2")
+        If inputMin = "" Then Exit Sub  ' usuario cancelou
+        If inputMin <> "2" And inputMin <> "3" Then
+            MsgBox "Valor fora do intervalo!" & vbCrLf & _
+                   "Digite apenas 2 ou 3.", vbExclamation, "Console Flexo"
+            Exit Sub
+        End If
+        minDotLong = CLng(inputMin)
+    End If
     Dim srProblemas As ShapeRange: Set srProblemas = CreateShapeRange
     Dim srCorrigidos As ShapeRange: Set srCorrigidos = CreateShapeRange
     Dim s As Shape
@@ -438,7 +457,7 @@ Public Sub CorrigirBordaDuraGradientes()
     Next s
 
     If srProblemas.Count = 0 Then
-        MsgBox "Nenhum preenchimento gradiente (degrad�) encontrado na p�gina.", vbInformation, "Console Flexo"
+        If Not silencioso Then MsgBox "Nenhum preenchimento gradiente (degrad�) encontrado na p�gina.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
@@ -548,13 +567,13 @@ Public Sub CorrigirBordaDuraGradientes()
                     ' REGRA 2: Reconstr�i n� como Spot usando cor da paleta + Tint
                     If K = 1 Then
                         obj.Fill.Fountain.StartColor.CopyAssign palPantone.Color(idxPantone)
-                        obj.Fill.Fountain.StartColor.Tint = minDot
+                        obj.Fill.Fountain.StartColor.Tint = minDotLong
                     ElseIf K = 2 Then
                         obj.Fill.Fountain.EndColor.CopyAssign palPantone.Color(idxPantone)
-                        obj.Fill.Fountain.EndColor.Tint = minDot
+                        obj.Fill.Fountain.EndColor.Tint = minDotLong
                     Else
                         obj.Fill.Fountain.Colors(K - 3).Color.CopyAssign palPantone.Color(idxPantone)
-                        obj.Fill.Fountain.Colors(K - 3).Color.Tint = minDot
+                        obj.Fill.Fountain.Colors(K - 3).Color.Tint = minDotLong
                     End If
                     mudou = True
                 ElseIf Not ehBrancoPantone Then
@@ -565,15 +584,15 @@ Public Sub CorrigirBordaDuraGradientes()
                     newK = cores(K).CMYKBlack
                     mudouCor = False
                     ' Corrige zeros em canais ativos (>= 2% em algum n�)
-                    If maxC >= 2 And newC = 0 Then newC = minDot: mudouCor = True
-                    If maxM >= 2 And newM = 0 Then newM = minDot: mudouCor = True
-                    If maxY >= 2 And newY = 0 Then newY = minDot: mudouCor = True
-                    If maxK >= 2 And newK = 0 Then newK = minDot: mudouCor = True
-                    ' Tamb�m corrige valores residuais entre 1 e minDot
-                    If maxC >= 2 And newC > 0 And newC < minDot Then newC = minDot: mudouCor = True
-                    If maxM >= 2 And newM > 0 And newM < minDot Then newM = minDot: mudouCor = True
-                    If maxY >= 2 And newY > 0 And newY < minDot Then newY = minDot: mudouCor = True
-                    If maxK >= 2 And newK > 0 And newK < minDot Then newK = minDot: mudouCor = True
+                    If maxC >= 2 And newC = 0 Then newC = minDotLong: mudouCor = True
+                    If maxM >= 2 And newM = 0 Then newM = minDotLong: mudouCor = True
+                    If maxY >= 2 And newY = 0 Then newY = minDotLong: mudouCor = True
+                    If maxK >= 2 And newK = 0 Then newK = minDotLong: mudouCor = True
+                    ' Tamb�m corrige valores residuais entre 1 e minDotLong
+                    If maxC >= 2 And newC > 0 And newC < minDotLong Then newC = minDotLong: mudouCor = True
+                    If maxM >= 2 And newM > 0 And newM < minDotLong Then newM = minDotLong: mudouCor = True
+                    If maxY >= 2 And newY > 0 And newY < minDotLong Then newY = minDotLong: mudouCor = True
+                    If maxK >= 2 And newK > 0 And newK < minDotLong Then newK = minDotLong: mudouCor = True
                     If mudouCor Then
                         If K = 1 Then
                             obj.Fill.Fountain.StartColor.CMYKAssign newC, newM, newY, newK
@@ -590,18 +609,18 @@ Public Sub CorrigirBordaDuraGradientes()
                 ' REGRA 3: Spot com Tint abaixo do m�nimo = borda dura
                 ' [Fix T8] Tint so funciona em nos Spot
                 ' On Error Resume Next pontual protege contra no CMYK disfar�ado
-                If cores(K).Tint < minDot Then
+                If cores(K).Tint < minDotLong Then
                     If K = 1 Then
                         On Error Resume Next
-                        obj.Fill.Fountain.StartColor.Tint = minDot
+                        obj.Fill.Fountain.StartColor.Tint = minDotLong
                         On Error GoTo 0
                     ElseIf K = 2 Then
                         On Error Resume Next
-                        obj.Fill.Fountain.EndColor.Tint = minDot
+                        obj.Fill.Fountain.EndColor.Tint = minDotLong
                         On Error GoTo 0
                     Else
                         On Error Resume Next
-                        obj.Fill.Fountain.Colors(K - 3).Color.Tint = minDot
+                        obj.Fill.Fountain.Colors(K - 3).Color.Tint = minDotLong
                         On Error GoTo 0
                     End If
                     mudou = True
@@ -622,15 +641,17 @@ ProximoObj:
     If QtdBloqueados > 0 And srCorrigidos.Count = 0 Then
         ActiveDocument.EndCommandGroup
         Application.Refresh
-        MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: todos os " & QtdBloqueados & _
-               " gradiente(s) encontrados est" & ChrW(227) & "o BLOQUEADOS." & vbCrLf & vbCrLf & _
-               "Use o bot" & ChrW(227) & "o 'Desbloquear Objetos' no Console Flexo" & _
-               " e execute novamente.", vbExclamation, "Console Flexo"
+        If Not silencioso Then
+            MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: todos os " & QtdBloqueados & _
+                   " gradiente(s) encontrados est" & ChrW(227) & "o BLOQUEADOS." & vbCrLf & vbCrLf & _
+                   "Use o bot" & ChrW(227) & "o 'Desbloquear Objetos' no Console Flexo" & _
+                   " e execute novamente.", vbExclamation, "Console Flexo"
+        End If
         Exit Sub
     End If
 
     ' Avisa se havia objetos bloqueados misturados com desbloqueados
-    If QtdBloqueados > 0 Then
+    If QtdBloqueados > 0 And Not silencioso Then
         MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: " & QtdBloqueados & " gradiente(s) bloqueado(s) foram ignorados." & vbCrLf & _
                "Desbloqueie os objetos e execute novamente.", vbExclamation, "Console Flexo"
     End If
@@ -638,11 +659,13 @@ ProximoObj:
     ActiveDocument.EndCommandGroup
     Application.Refresh
 
-    If srCorrigidos.Count > 0 Then
-        srCorrigidos.CreateSelection
-        MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra m�nima ajustada para " & minDot & "% e est�o selecionados.", vbInformation, "Console Flexo"
-    Else
-        MsgBox "Varredura conclu�da. Todos os degrad�s j� possuem pontos m�nimos suficientes (acima de " & minDot & "%).", vbInformation, "Console Flexo"
+    If Not silencioso Then
+        If srCorrigidos.Count > 0 Then
+            srCorrigidos.CreateSelection
+            MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra m�nima ajustada para " & minDotLong & "% e est�o selecionados.", vbInformation, "Console Flexo"
+        Else
+            MsgBox "Varredura conclu�da. Todos os degrad�s j� possuem pontos m�nimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
+        End If
     End If
     Exit Sub
 End Sub

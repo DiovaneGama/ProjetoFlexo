@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mod03_Vetores"
 ' ============================================================
-' MÓDULO: Mod03_Vetores (TRATAMENTO ESTRUTURAL E FIRST)
-' DESCRIÇÃO: Conversão de Fontes, Otimização de Nós e Espessura
+' Mï¿½DULO: Mod03_Vetores (TRATAMENTO ESTRUTURAL E FIRST)
+' DESCRIï¿½ï¿½O: Conversï¿½o de Fontes, Otimizaï¿½ï¿½o de Nï¿½s e Espessura
 ' ============================================================
 
 Option Explicit
@@ -9,7 +9,7 @@ Option Explicit
 ' ============================================================
 ' FERRAMENTA 1: CONVERTER TODOS OS TEXTOS EM CURVAS
 ' ============================================================
-Public Sub ConverterTextosEmCurvas()
+Public Sub ConverterTextosEmCurvas(Optional silencioso As Boolean = False)
     Dim srTextos As ShapeRange
     Set srTextos = CreateShapeRange
     Dim s As Shape
@@ -19,7 +19,7 @@ Public Sub ConverterTextosEmCurvas()
     Next s
 
     If srTextos.Count = 0 Then
-        MsgBox "Nenhum texto vivo encontrado.", vbInformation, "Console Flexo"
+        If Not silencioso Then MsgBox "Nenhum texto vivo encontrado.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
@@ -34,12 +34,12 @@ Public Sub ConverterTextosEmCurvas()
     Next i
 
     ActiveDocument.EndCommandGroup
-    MsgBox convertidos & " textos convertidos em curvas!", vbInformation, "Console Flexo"
+    If Not silencioso Then MsgBox convertidos & " textos convertidos em curvas!", vbInformation, "Console Flexo"
     Exit Sub
 
 FimErro:
     ActiveDocument.EndCommandGroup
-    MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
+    If Not silencioso Then MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
 End Sub
 
 Private Sub CrawlerBuscaTexto(s As Shape, ByRef sacola As ShapeRange)
@@ -57,45 +57,45 @@ Private Sub CrawlerBuscaTexto(s As Shape, ByRef sacola As ShapeRange)
 End Sub
 
 ' ============================================================
-' FERRAMENTA 2: INSPETOR DE NÓS (Atua apenas na Seleção)
+' FERRAMENTA 2: INSPETOR DE Nï¿½S (Atua apenas na Seleï¿½ï¿½o)
 ' ============================================================
 Public Sub InspecionarNos()
     ' Trava: Verifica se o operador selecionou algo para inspecionar
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione os objetos ou o grupo que você deseja inspecionar primeiro!", vbExclamation, "Console Flexo"
+        MsgBox "Selecione os objetos ou o grupo que vocï¿½ deseja inspecionar primeiro!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
 
     Dim limiteNos As String
-    limiteNos = InputBox("Digite a quantidade máxima de nós permitida por objeto:" & vbCrLf & "(Acima de 1500 costuma ser lixo de Rastreio Automático)", "Inspetor de Nós", "1500")
+    limiteNos = InputBox("Digite a quantidade mï¿½xima de nï¿½s permitida por objeto:" & vbCrLf & "(Acima de 1500 costuma ser lixo de Rastreio Automï¿½tico)", "Inspetor de Nï¿½s", "1500")
     If limiteNos = "" Or Not IsNumeric(limiteNos) Then Exit Sub
     
     Dim maxNos As Long: maxNos = CLng(limiteNos)
     Dim srNos As ShapeRange: Set srNos = CreateShapeRange
     Dim s As Shape
     
-    ' Muda a varredura: Agora olha SÓ para o que o operador selecionou!
+    ' Muda a varredura: Agora olha Sï¿½ para o que o operador selecionou!
     For Each s In ActiveSelection.shapes
         CrawlerBuscaNos s, maxNos, srNos
     Next s
     
-    ' Limpa a seleção inicial do operador para não confundir
+    ' Limpa a seleï¿½ï¿½o inicial do operador para nï¿½o confundir
     ActiveDocument.ClearSelection
     
     If srNos.Count > 0 Then
         ' Seleciona APENAS os objetos defeituosos dentro do grupo que ele havia selecionado
         srNos.CreateSelection
-        MsgBox "Atenção! " & srNos.Count & " objetos DENTRO DA SUA SELEÇÃO possuem mais de " & maxNos & " nós e foram isolados." & vbCrLf & vbCrLf & _
-               "Analise se é possível utilizar o botão de Reduzir Nós sem deformar a arte.", vbExclamation, "Console Flexo"
+        MsgBox "Atenï¿½ï¿½o! " & srNos.Count & " objetos DENTRO DA SUA SELEï¿½ï¿½O possuem mais de " & maxNos & " nï¿½s e foram isolados." & vbCrLf & vbCrLf & _
+               "Analise se ï¿½ possï¿½vel utilizar o botï¿½o de Reduzir Nï¿½s sem deformar a arte.", vbExclamation, "Console Flexo"
     Else
-        MsgBox "Seleção limpa! Nenhum objeto inspecionado possui excesso de nós.", vbInformation, "Console Flexo"
+        MsgBox "Seleï¿½ï¿½o limpa! Nenhum objeto inspecionado possui excesso de nï¿½s.", vbInformation, "Console Flexo"
     End If
 End Sub
 ' ============================================================
-' FERRAMENTA 4: REDUTOR DE NÓS SEGURO (AutoReduce)
+' FERRAMENTA 4: REDUTOR DE Nï¿½S SEGURO (AutoReduce)
 ' ============================================================
 Public Sub ReduzirNosSeguro()
-    ' Trava de segurança
+    ' Trava de seguranï¿½a
     If ActiveSelection.shapes.Count = 0 Then
         MsgBox "Selecione as curvas que deseja suavizar primeiro!", vbExclamation, "Console Flexo"
         Exit Sub
@@ -106,10 +106,10 @@ Public Sub ReduzirNosSeguro()
     Dim totalNosDepois As Long: totalNosDepois = 0
     Dim curvasAfetadas As Integer: curvasAfetadas = 0
     
-    ' Fator de Suavização (0.005 é considerado seguro no Corel para não deformar logotipos)
+    ' Fator de Suavizaï¿½ï¿½o (0.005 ï¿½ considerado seguro no Corel para nï¿½o deformar logotipos)
     Dim fatorSuavizacao As Double: fatorSuavizacao = 0.005
     
-    ' Inicia a varredura blindada APENAS na seleção
+    ' Inicia a varredura blindada APENAS na seleï¿½ï¿½o
     For Each s In ActiveSelection.shapes
         CrawlerReduzirNos s, fatorSuavizacao, totalNosAntes, totalNosDepois, curvasAfetadas
     Next s
@@ -118,15 +118,15 @@ Public Sub ReduzirNosSeguro()
     nosRemovidos = totalNosAntes - totalNosDepois
     
     If nosRemovidos > 0 Then
-        MsgBox "Limpeza concluída! Foram removidos " & nosRemovidos & " nós inúteis de " & curvasAfetadas & " curva(s)." & vbCrLf & vbCrLf & _
-               "DICA: Dê um zoom e verifique visualmente se a arte original não sofreu deformações.", vbInformation, "Console Flexo"
+        MsgBox "Limpeza concluï¿½da! Foram removidos " & nosRemovidos & " nï¿½s inï¿½teis de " & curvasAfetadas & " curva(s)." & vbCrLf & vbCrLf & _
+               "DICA: Dï¿½ um zoom e verifique visualmente se a arte original nï¿½o sofreu deformaï¿½ï¿½es.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhum nó pôde ser removido. Os objetos selecionados já estão otimizados ou não são curvas.", vbInformation, "Console Flexo"
+        MsgBox "Nenhum nï¿½ pï¿½de ser removido. Os objetos selecionados jï¿½ estï¿½o otimizados ou nï¿½o sï¿½o curvas.", vbInformation, "Console Flexo"
     End If
 End Sub
 
 ' ------------------------------------------------------------
-' O CRAWLER: Varredura Segura para Remoção de Nós
+' O CRAWLER: Varredura Segura para Remoï¿½ï¿½o de Nï¿½s
 ' ------------------------------------------------------------
 Private Sub CrawlerReduzirNos(s As Shape, fator As Double, ByRef nosAntes As Long, ByRef nosDepois As Long, ByRef afetadas As Integer)
     Dim subS As Shape
@@ -136,12 +136,12 @@ Private Sub CrawlerReduzirNos(s As Shape, fator As Double, ByRef nosAntes As Lon
     If s.Type = cdrCurveShape Then
         Dim antes As Long: antes = s.Curve.Nodes.Count
         
-        ' Aplica a redução nativa do Corel
+        ' Aplica a reduï¿½ï¿½o nativa do Corel
         s.Curve.AutoReduceNodes fator
         
         Dim depois As Long: depois = s.Curve.Nodes.Count
         
-        ' Só contabiliza se realmente conseguiu remover algum nó
+        ' Sï¿½ contabiliza se realmente conseguiu remover algum nï¿½
         If antes > depois Then
             nosAntes = nosAntes + antes
             nosDepois = nosDepois + depois
@@ -161,8 +161,8 @@ Private Sub CrawlerReduzirNos(s As Shape, fator As Double, ByRef nosAntes As Lon
     End If
 End Sub
 
-' O CrawlerBuscaNos continua exatamente o mesmo que você já tem aí!
-' Ele vai mergulhar nos grupos e PowerClips da seleção normalmente.
+' O CrawlerBuscaNos continua exatamente o mesmo que vocï¿½ jï¿½ tem aï¿½!
+' Ele vai mergulhar nos grupos e PowerClips da seleï¿½ï¿½o normalmente.
 
 Private Sub CrawlerBuscaNos(s As Shape, limite As Long, ByRef sacola As ShapeRange)
     Dim subS As Shape
@@ -181,15 +181,15 @@ Private Sub CrawlerBuscaNos(s As Shape, limite As Long, ByRef sacola As ShapeRan
 End Sub
 
 ' ============================================================
-' FERRAMENTA 3: RADAR DE ESPESSURA MÍNIMA (Estilo ArtPro)
+' FERRAMENTA 3: RADAR DE ESPESSURA Mï¿½NIMA (Estilo ArtPro)
 ' ============================================================
 Public Sub InspecionarEspessuraMinima()
-    ' Padroniza a unidade matemática do documento para Milímetros temporariamente
+    ' Padroniza a unidade matemï¿½tica do documento para Milï¿½metros temporariamente
     Dim unidOriginal As cdrUnit
     unidOriginal = ActiveDocument.Unit
     ActiveDocument.Unit = cdrMillimeter
     
-    Dim limiteMinimo As Double: limiteMinimo = 0.1 ' 0.1 mm (Padrão FIRST)
+    Dim limiteMinimo As Double: limiteMinimo = 0.1 ' 0.1 mm (Padrï¿½o FIRST)
     Dim srFinos As ShapeRange: Set srFinos = CreateShapeRange
     Dim s As Shape
     
@@ -198,14 +198,14 @@ Public Sub InspecionarEspessuraMinima()
         CrawlerEspessura s, limiteMinimo, srFinos
     Next s
     
-    ' Devolve a unidade original para o Corel do usuário
+    ' Devolve a unidade original para o Corel do usuï¿½rio
     ActiveDocument.Unit = unidOriginal
     
     ' Resultado
     If srFinos.Count > 0 Then
         srFinos.CreateSelection
-        MsgBox "Alerta Crítico FIRST! " & srFinos.Count & " objetos ou contornos possuem espessura física menor que 0,1 mm." & vbCrLf & vbCrLf & _
-               "Eles foram selecionados para que você possa engrossá-los, sob risco de quebra na chapa.", vbCritical, "Console Flexo"
+        MsgBox "Alerta Crï¿½tico FIRST! " & srFinos.Count & " objetos ou contornos possuem espessura fï¿½sica menor que 0,1 mm." & vbCrLf & vbCrLf & _
+               "Eles foram selecionados para que vocï¿½ possa engrossï¿½-los, sob risco de quebra na chapa.", vbCritical, "Console Flexo"
     Else
         MsgBox "Aprovado! Nenhuma linha ou objeto fino o suficiente para quebrar na chapa foi encontrado.", vbInformation, "Console Flexo"
     End If
@@ -221,14 +221,14 @@ Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeR
         Dim outW As Double: outW = 0
         Dim sinalizar As Boolean: sinalizar = False
         
-        ' 1. AVALIAÇÃO DE CONTORNO VIVO
+        ' 1. AVALIAï¿½ï¿½O DE CONTORNO VIVO
         If s.Outline.Type = cdrOutline Then
             outW = s.Outline.Width
-            ' Se tem contorno e é menor que o limite, já falha na hora!
+            ' Se tem contorno e ï¿½ menor que o limite, jï¿½ falha na hora!
             If outW > 0 And outW < limit Then sinalizar = True
         End If
         
-        ' 2. AVALIAÇÃO DE OBJETO CONVERTIDO (Ctrl+Shift+Q)
+        ' 2. AVALIAï¿½ï¿½O DE OBJETO CONVERTIDO (Ctrl+Shift+Q)
         ' Objeto convertido nao tem contorno ativo -- dimensao fisica = espessura original
         ' [T20] Usa GetBoundingBox que e mais confiavel que SizeWidth para objetos convertidos
         If s.Type <> cdrBitmapShape And s.Type <> cdrTextShape Then
@@ -261,9 +261,9 @@ Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeR
     End If
 End Sub
 ' ============================================================
-' FERRAMENTA: PADRONIZADOR DE CONTORNOS (0,2mm + Seleção Final)
+' FERRAMENTA: PADRONIZADOR DE CONTORNOS (0,2mm + Seleï¿½ï¿½o Final)
 ' ============================================================
-Public Sub PadronizarContornosFinos()
+Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
     Dim srProblemas As ShapeRange: Set srProblemas = CreateShapeRange
     Dim srCorrigidos As ShapeRange: Set srCorrigidos = CreateShapeRange
     Dim s As Shape
@@ -277,7 +277,7 @@ Public Sub PadronizarContornosFinos()
 
     If srProblemas.Count = 0 Then
         ActiveDocument.Unit = unidadeOriginal
-        MsgBox "Nenhum contorno abaixo de 0,1mm encontrado.", vbInformation, "Console Flexo"
+        If Not silencioso Then MsgBox "Nenhum contorno abaixo de 0,1mm encontrado.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
@@ -296,7 +296,7 @@ Public Sub PadronizarContornosFinos()
     Application.Refresh
     ActiveDocument.Unit = unidadeOriginal
 
-    If srCorrigidos.Count > 0 Then
+    If srCorrigidos.Count > 0 And Not silencioso Then
         srCorrigidos.CreateSelection
         MsgBox srCorrigidos.Count & " contorno(s) padronizados para 0,2mm.", vbInformation, "Console Flexo"
     End If
@@ -307,17 +307,17 @@ FimErro:
     Application.Optimization = False
     ActiveDocument.Unit = unidadeOriginal
     Application.Refresh
-    MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
+    If Not silencioso Then MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
 End Sub
 
 ' ------------------------------------------------------------
-' CRAWLER: CAÇADOR DE CONTORNOS (Ignora preenchimentos e tamanhos)
+' CRAWLER: CAï¿½ADOR DE CONTORNOS (Ignora preenchimentos e tamanhos)
 ' ------------------------------------------------------------
 Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
     Dim subS As Shape
     On Error Resume Next
     
-    ' Ignora Bitmaps e Grupos na análise individual
+    ' Ignora Bitmaps e Grupos na anï¿½lise individual
     If s.Type <> cdrBitmapShape And s.Type <> cdrGroupShape Then
         ' Verifica se o objeto TEM um contorno aplicado
         If s.Outline.Type = cdrOutline Then
