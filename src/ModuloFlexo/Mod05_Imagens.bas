@@ -66,7 +66,7 @@ Public Sub PadronizarImagensCMYK600(Optional silencioso As Boolean = False)
     alteracoes = 0
 
     ' ── Conversao ───────────────────────────────────────────
-    ActiveDocument.BeginCommandGroup "Padronizar Imagens CMYK 600"
+    If Not silencioso Then ActiveDocument.BeginCommandGroup "Padronizar Imagens CMYK 600"
     On Error GoTo FimErro
 
     For i = 1 To sacola.Count
@@ -108,8 +108,8 @@ Public Sub PadronizarImagensCMYK600(Optional silencioso As Boolean = False)
         On Error GoTo FimErro
     Next i
 
-    ActiveDocument.EndCommandGroup
-    Application.Refresh
+    If Not silencioso Then ActiveDocument.EndCommandGroup
+    If Not silencioso Then Application.Refresh
 
     If Not silencioso Then
         MsgBox "Sucesso! " & alteracoes & " imagem(ns) padronizada(s)" & _
@@ -118,8 +118,8 @@ Public Sub PadronizarImagensCMYK600(Optional silencioso As Boolean = False)
     Exit Sub
 
 FimErro:
-    ActiveDocument.EndCommandGroup
-    Application.Refresh
+    If Not silencioso Then ActiveDocument.EndCommandGroup
+    If Not silencioso Then Application.Refresh
     If Not silencioso Then
         MsgBox "Erro ao padronizar imagens: " & Err.Description, _
                vbCritical, "Console Flexo"

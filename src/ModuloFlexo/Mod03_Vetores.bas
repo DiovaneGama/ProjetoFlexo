@@ -23,7 +23,7 @@ Public Sub ConverterTextosEmCurvas(Optional silencioso As Boolean = False)
         Exit Sub
     End If
 
-    ActiveDocument.BeginCommandGroup "Console Flexo - Textos em Curvas"
+    If Not silencioso Then ActiveDocument.BeginCommandGroup "Console Flexo - Textos em Curvas"
     On Error GoTo FimErro
 
     Dim i As Integer
@@ -33,12 +33,12 @@ Public Sub ConverterTextosEmCurvas(Optional silencioso As Boolean = False)
         convertidos = convertidos + 1
     Next i
 
-    ActiveDocument.EndCommandGroup
+    If Not silencioso Then ActiveDocument.EndCommandGroup
     If Not silencioso Then MsgBox convertidos & " textos convertidos em curvas!", vbInformation, "Console Flexo"
     Exit Sub
 
 FimErro:
-    ActiveDocument.EndCommandGroup
+    If Not silencioso Then ActiveDocument.EndCommandGroup
     If Not silencioso Then MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
 End Sub
 
@@ -281,7 +281,7 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
         Exit Sub
     End If
 
-    ActiveDocument.BeginCommandGroup "Console Flexo - Corrigir Contornos"
+    If Not silencioso Then ActiveDocument.BeginCommandGroup "Console Flexo - Corrigir Contornos"
     Application.Optimization = True
     On Error GoTo FimErro
 
@@ -291,9 +291,9 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
         srCorrigidos.Add obj
     Next obj
 
-    ActiveDocument.EndCommandGroup
+    If Not silencioso Then ActiveDocument.EndCommandGroup
     Application.Optimization = False
-    Application.Refresh
+    If Not silencioso Then Application.Refresh
     ActiveDocument.Unit = unidadeOriginal
 
     If srCorrigidos.Count > 0 And Not silencioso Then
@@ -303,10 +303,10 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
     Exit Sub
 
 FimErro:
-    ActiveDocument.EndCommandGroup
+    If Not silencioso Then ActiveDocument.EndCommandGroup
     Application.Optimization = False
     ActiveDocument.Unit = unidadeOriginal
-    Application.Refresh
+    If Not silencioso Then Application.Refresh
     If Not silencioso Then MsgBox "Erro: " & Err.Description, vbCritical, "Console Flexo"
 End Sub
 

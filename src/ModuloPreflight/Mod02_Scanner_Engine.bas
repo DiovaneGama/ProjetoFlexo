@@ -288,5 +288,6 @@ Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
 
 FimErro:
     ActiveDocument.EndCommandGroup
+    Application.Refresh
 End Sub
 

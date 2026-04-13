@@ -23,7 +23,7 @@ Public Sub ConverterRGB(Optional silencioso As Boolean = False)
                             vbYesNoCancel + vbQuestion, "Convers�o RGB")
         If escolhaMetodo = vbCancel Then Exit Sub
     End If
-    ChamarMotor "RGB"
+    ChamarMotor "RGB", silencioso
     If Not silencioso Then Finalizar "Objetos RGB convertidos"
 End Sub
 
@@ -38,22 +38,22 @@ Public Sub ConverterSpotParaCMYK()
 End Sub
 
 Public Sub CorrigirBrancoOverprint(Optional silencioso As Boolean = False)
-    ChamarMotor "Branco"
+    ChamarMotor "Branco", silencioso
     If Not silencioso Then Finalizar "Brancos corrigidos"
 End Sub
 
 Public Sub DetectarPretoSujo(Optional silencioso As Boolean = False)
-    ChamarMotor "PretoSujo"
+    ChamarMotor "PretoSujo", silencioso
     If Not silencioso Then Finalizar "Pretos Sujos limpos"
 End Sub
 
 ' --- GERENCIADORES DE FLUXO ---
 
-Private Sub ChamarMotor(acao As String)
+Private Sub ChamarMotor(acao As String, Optional silencioso As Boolean = False)
     Dim s As Shape
     Set srRes = CreateShapeRange
 
-    ActiveDocument.BeginCommandGroup "Console Flexo - " & acao
+    If Not silencioso Then ActiveDocument.BeginCommandGroup "Console Flexo - " & acao
     Application.Optimization = True
     Application.EventsEnabled = False
     On Error GoTo FimErro
@@ -63,10 +63,10 @@ Private Sub ChamarMotor(acao As String)
     Next s
 
 FimErro:
-    ActiveDocument.EndCommandGroup
+    If Not silencioso Then ActiveDocument.EndCommandGroup
     Application.EventsEnabled = True
     Application.Optimization = False
-    Application.Refresh
+    If Not silencioso Then Application.Refresh
 End Sub
 
 Private Sub Finalizar(texto As String)
@@ -467,7 +467,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
     Set palPantone = Palettes.OpenFixed(cdrPANTONECoated)
     On Error GoTo 0
 
-    ActiveDocument.BeginCommandGroup "Corrigir Borda Dura Gradientes"
+    If Not silencioso Then ActiveDocument.BeginCommandGroup "Corrigir Borda Dura Gradientes"
 
     Dim obj As Shape
     Dim maxC As Long, maxM As Long, maxY As Long, maxK As Long, maxTint As Long
@@ -639,8 +639,8 @@ ProximoObj:
 
     ' [T14] Se todos os gradientes estavam bloqueados -- aborta sem continuar
     If QtdBloqueados > 0 And srCorrigidos.Count = 0 Then
-        ActiveDocument.EndCommandGroup
-        Application.Refresh
+        If Not silencioso Then ActiveDocument.EndCommandGroup
+        If Not silencioso Then Application.Refresh
         If Not silencioso Then
             MsgBox "Aten" & ChrW(231) & ChrW(227) & "o: todos os " & QtdBloqueados & _
                    " gradiente(s) encontrados est" & ChrW(227) & "o BLOQUEADOS." & vbCrLf & vbCrLf & _
@@ -656,8 +656,8 @@ ProximoObj:
                "Desbloqueie os objetos e execute novamente.", vbExclamation, "Console Flexo"
     End If
 
-    ActiveDocument.EndCommandGroup
-    Application.Refresh
+    If Not silencioso Then ActiveDocument.EndCommandGroup
+    If Not silencioso Then Application.Refresh
 
     If Not silencioso Then
         If srCorrigidos.Count > 0 Then
