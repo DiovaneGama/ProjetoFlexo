@@ -321,9 +321,22 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
     If s.Type <> cdrBitmapShape And s.Type <> cdrGroupShape Then
         ' Verifica se o objeto TEM um contorno aplicado
         If s.Outline.Type = cdrOutline Then
+            Dim espW As Double: espW = s.Outline.Width
             ' Se a espessura for maior que zero e menor ou igual a 0.101mm (Margem de erro do VBA)
-            If s.Outline.Width > 0 And s.Outline.Width <= 0.101 Then
-                sacola.Add s
+            If espW > 0 And espW <= 0.101 Then
+                ' Regra de negócio: contornos brancos são intencionais (não sinalizar)
+                Dim ehIntencional As Boolean: ehIntencional = False
+                If EhContornoBranco(s.Outline.Color) Then ehIntencional = True
+                ' Contornos <= 0,05mm com preenchimento também são intencionais
+                If espW <= 0.05 Then
+                    If s.Fill.Type = cdrUniformFill Or _
+                       s.Fill.Type = cdrFountainFill Or _
+                       s.Fill.Type = cdrTextureFill Or _
+                       s.Fill.Type = cdrPatternFill Then
+                        ehIntencional = True
+                    End If
+                End If
+                If Not ehIntencional Then sacola.Add s
             End If
         End If
     End If
@@ -340,6 +353,21 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
     On Error GoTo 0
 End Sub
 
+' ------------------------------------------------------------
+' Função auxiliar: identifica contorno de cor branca
+' ------------------------------------------------------------
+Private Function EhContornoBranco(C As Color) As Boolean
+    EhContornoBranco = False
+    On Error Resume Next
+    If C.Type = cdrColorCMYK Then
+        If (C.CMYKCyan + C.CMYKMagenta + C.CMYKYellow + C.CMYKBlack) = 0 Then EhContornoBranco = True
+    ElseIf C.Type = cdrColorRGB Then
+        If C.RGBRed = 255 And C.RGBGreen = 255 And C.RGBBlue = 255 Then EhContornoBranco = True
+    ElseIf C.IsSpot Then
+        If C.Tint = 0 Then EhContornoBranco = True
+    End If
+    On Error GoTo 0
+End Function
 ' ============================================================
 ' FERRAMENTA: DESBLOQUEAR OBJETOS DA PAGINA ATIVA
 ' ============================================================
