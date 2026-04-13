@@ -20,14 +20,92 @@ Attribute VB_Exposed = False
 ' ==============================================================================
 Option Explicit
 
-Private Sub lblLinhasFinas_Click()
+' ------------------------------------------------------------------------------
+Private Function H(R As Long, G As Long, B As Long) As Long
+    H = RGB(R, G, B)
+End Function
 
+' ------------------------------------------------------------------------------
+' Estados normais dos botoes (restaurados no MouseUp)
+Private Sub RestaurarBtnAtualizar()
+    Me.btnAtualizar.BackColor = H(30, 42, 58)
+    Me.btnAtualizar.ForeColor = H(154, 176, 200)
 End Sub
 
-Private Sub lblPretoSujo_Click()
-
+Private Sub RestaurarBtnDesfazer()
+    Me.btnDesfazer.BackColor = H(30, 42, 58)
+    Me.btnDesfazer.ForeColor = H(154, 176, 200)
 End Sub
 
+Private Sub RestaurarBtnCorrigir()
+    If Me.btnCorrigir.Enabled Then
+        Me.btnCorrigir.BackColor = H(26, 58, 94)
+        Me.btnCorrigir.ForeColor = H(106, 172, 232)
+    End If
+End Sub
+
+' ------------------------------------------------------------------------------
+' Hover / Press - btnAtualizar
+Private Sub btnAtualizar_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Me.btnAtualizar.BackColor = H(36, 50, 68)
+    Me.btnAtualizar.ForeColor = H(192, 212, 232)
+    RestaurarBtnDesfazer
+    RestaurarBtnCorrigir
+End Sub
+
+Private Sub btnAtualizar_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Me.btnAtualizar.BackColor = H(21, 28, 43)
+    Me.btnAtualizar.ForeColor = H(192, 212, 232)
+End Sub
+
+Private Sub btnAtualizar_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    RestaurarBtnAtualizar
+End Sub
+
+' Hover / Press - btnDesfazer
+Private Sub btnDesfazer_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Me.btnDesfazer.BackColor = H(36, 50, 68)
+    Me.btnDesfazer.ForeColor = H(192, 212, 232)
+    RestaurarBtnAtualizar
+    RestaurarBtnCorrigir
+End Sub
+
+Private Sub btnDesfazer_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    Me.btnDesfazer.BackColor = H(21, 28, 43)
+    Me.btnDesfazer.ForeColor = H(192, 212, 232)
+End Sub
+
+Private Sub btnDesfazer_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    RestaurarBtnDesfazer
+End Sub
+
+' Hover / Press - btnCorrigir (azul acao)
+Private Sub btnCorrigir_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    If Not Me.btnCorrigir.Enabled Then Exit Sub
+    Me.btnCorrigir.BackColor = H(30, 70, 114)
+    Me.btnCorrigir.ForeColor = H(192, 212, 232)
+    RestaurarBtnAtualizar
+    RestaurarBtnDesfazer
+End Sub
+
+Private Sub btnCorrigir_MouseDown(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    If Not Me.btnCorrigir.Enabled Then Exit Sub
+    Me.btnCorrigir.BackColor = H(20, 48, 78)
+    Me.btnCorrigir.ForeColor = H(192, 212, 232)
+End Sub
+
+Private Sub btnCorrigir_MouseUp(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    RestaurarBtnCorrigir
+End Sub
+
+' Restaura todos ao mover o mouse sobre o formulario (fora dos botoes)
+Private Sub UserForm_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+    RestaurarBtnAtualizar
+    RestaurarBtnDesfazer
+    RestaurarBtnCorrigir
+End Sub
+
+' ------------------------------------------------------------------------------
 Private Sub UserForm_Initialize()
     On Error Resume Next
     Me.StartUpPosition = 0
@@ -50,7 +128,7 @@ Private Sub UserForm_Initialize()
     corTexto = RGB(204, 204, 204)
     corTextoDim = RGB(120, 120, 120)
 
-    ' FORMULÁRIO
+    ' FORMULï¿½RIO
     Me.BackColor = corFundo
     Me.Width = 240
     Me.Height = 450
@@ -69,7 +147,7 @@ Private Sub UserForm_Initialize()
         .TextAlign = 2
     End With
 
-    ' SEÇÃO LABELS - aplica estilo base em todos
+    ' SEï¿½ï¿½O LABELS - aplica estilo base em todos
     Dim lbls(14) As MSForms.Label
     Set lbls(0) = Me.lblBrancoOver
     Set lbls(1) = Me.lblPretoSujo
@@ -100,10 +178,10 @@ Private Sub UserForm_Initialize()
     Next i
 
     ' POSICIONAMENTO VERTICAL DOS ITENS
-    ' Seção Erros Críticos
+    ' Seï¿½ï¿½o Erros Crï¿½ticos
     Dim yPos As Integer: yPos = 32
 
-    ' Separador de seção
+    ' Separador de seï¿½ï¿½o
     Me.lblBrancoOver.Top = yPos: yPos = yPos + 18
     Me.lblPretoSujo.Top = yPos: yPos = yPos + 18
     Me.lblRGB.Top = yPos: yPos = yPos + 18
@@ -113,12 +191,12 @@ Private Sub UserForm_Initialize()
     Me.lblImgRGB.Top = yPos: yPos = yPos + 18
     Me.lblFontesVivas.Top = yPos: yPos = yPos + 22
 
-    ' Seção Informações
+    ' Seï¿½ï¿½o Informaï¿½ï¿½es
     Me.lblRegistro.Top = yPos: yPos = yPos + 18
     Me.lblBloqueados.Top = yPos: yPos = yPos + 18
     Me.lblInvisiveis.Top = yPos: yPos = yPos + 22
 
-    ' Seção Cores Especiais
+    ' Seï¿½ï¿½o Cores Especiais
     Me.lblPantone.Top = yPos: yPos = yPos + 18
     Me.lblListaPantones.Top = yPos
     Me.lblListaPantones.Height = 54
@@ -133,40 +211,49 @@ Private Sub UserForm_Initialize()
     Me.lblTecnicas.Left = 8
     Me.lblTecnicas.Width = Me.Width - 16
 
-    ' BOTÕES
+    ' BOTï¿½ES
     Dim btnH As Integer: btnH = 22
     Dim btnY As Integer: btnY = Me.Height - 75
     Dim btnW As Integer: btnW = 70
 
     With Me.btnAtualizar
         .Top = btnY: .Left = 4: .Width = btnW: .Height = btnH
-        .Font.Name = "Segoe UI": .Font.Size = 8
-        .BackColor = RGB(45, 45, 45)
-        .ForeColor = RGB(180, 180, 180)
-        .Caption = "Atualizar"
+        .Font.Name = "Segoe UI": .Font.Size = 8: .Font.Bold = True
+        .BackColor = H(30, 42, 58)
+        .ForeColor = H(154, 176, 200)
+        .TextAlign = fmTextAlignCenter
+        .BorderStyle = fmBorderStyleNone
+        .Caption = vbCrLf & "Atualizar"
+        .ControlTipText = "Executar nova varredura PreFlight na p" & ChrW(225) & "gina ativa"
     End With
 
     With Me.btnDesfazer
         .Top = btnY: .Left = 78: .Width = btnW: .Height = btnH
-        .Font.Name = "Segoe UI": .Font.Size = 8
-        .BackColor = RGB(45, 45, 45)
-        .ForeColor = RGB(180, 180, 180)
-        .Caption = "Desfazer"
+        .Font.Name = "Segoe UI": .Font.Size = 8: .Font.Bold = True
+        .BackColor = H(30, 42, 58)
+        .ForeColor = H(154, 176, 200)
+        .TextAlign = fmTextAlignCenter
+        .BorderStyle = fmBorderStyleNone
+        .Caption = vbCrLf & "Desfazer"
+        .ControlTipText = "Desfazer as corre" & ChrW(231) & ChrW(245) & "es aplicadas"
     End With
 
     With Me.btnCorrigir
         .Top = btnY: .Left = 152: .Width = btnW: .Height = btnH
-        .Font.Name = "Segoe UI": .Font.Size = 8
-        .BackColor = RGB(26, 58, 90)
-        .ForeColor = RGB(122, 184, 232)
-        .Caption = "Corrigir Erros"
+        .Font.Name = "Segoe UI": .Font.Size = 8: .Font.Bold = True
+        .BackColor = H(26, 58, 94)
+        .ForeColor = H(106, 172, 232)
+        .TextAlign = fmTextAlignCenter
+        .BorderStyle = fmBorderStyleNone
+        .Caption = vbCrLf & "Corrigir Erros"
+        .ControlTipText = "Aplicar todas as corre" & ChrW(231) & ChrW(245) & "es cr" & ChrW(237) & "ticas automaticamente"
     End With
 End Sub
 
 Private Sub UserForm_Activate()
     On Error Resume Next
 
-    ' 1. Atualização Visual das Labels
+    ' 1. Atualizaï¿½ï¿½o Visual das Labels
     AtualizarStatus Me.lblBrancoOver, "Brancos com Overprint: ", relatorio.QtdBrancoOver, True
     AtualizarStatus Me.lblPretoSujo, "Pretos Compostos/Sujos: ", relatorio.QtdPretoSujo, True
     AtualizarStatus Me.lblRGB, "Cores RGB (Vetor): ", relatorio.QtdRGB, True
@@ -181,7 +268,7 @@ Private Sub UserForm_Activate()
     AtualizarStatus Me.lblPantone, "Cores Pantone: ", relatorio.QtdPantone, False
     AtualizarStatus Me.lblTecnicas, "Cores Tecnicas (Faca/Vz): ", relatorio.QtdTecnicas, False
 
-    ' 2. Título Dinâmico
+    ' 2. Tï¿½tulo Dinï¿½mico
     Dim totalCritico As Integer
     totalCritico = relatorio.QtdBrancoOver + relatorio.QtdPretoSujo + relatorio.QtdBordaDura + _
                    relatorio.QtdLinhasFinas + relatorio.QtdImgBaixa + relatorio.QtdRGB + _
@@ -192,15 +279,15 @@ Private Sub UserForm_Activate()
         Me.lblStatusGeral.ForeColor = RGB(76, 175, 130)
         Me.lblStatusGeral.BackColor = RGB(26, 58, 42)
         Me.btnCorrigir.Enabled = False
-        Me.btnCorrigir.BackColor = RGB(34, 34, 34)
-        Me.btnCorrigir.ForeColor = RGB(68, 68, 68)
+        Me.btnCorrigir.BackColor = H(24, 31, 44)
+        Me.btnCorrigir.ForeColor = H(58, 78, 98)
     Else
         Me.lblStatusGeral.Caption = "REVISAR: " & totalCritico & " ITENS CRITICOS"
         Me.lblStatusGeral.ForeColor = RGB(224, 85, 85)
         Me.lblStatusGeral.BackColor = RGB(58, 26, 26)
         Me.btnCorrigir.Enabled = True
-        Me.btnCorrigir.BackColor = RGB(26, 58, 90)
-        Me.btnCorrigir.ForeColor = RGB(122, 184, 232)
+        Me.btnCorrigir.BackColor = H(26, 58, 94)
+        Me.btnCorrigir.ForeColor = H(106, 172, 232)
     End If
 
     ' 3. Lista de Pantones
@@ -229,7 +316,7 @@ Private Sub UserForm_Activate()
         Me.lblListaPantones.ForeColor = RGB(80, 80, 80)
     End If
 
-    ' 4. Lista de Cores Técnicas
+    ' 4. Lista de Cores Tï¿½cnicas
     If relatorio.QtdTecnicas > 0 Then
         Dim strTec As String
         strTec = Trim(relatorio.BibliotecasTecnicas)
