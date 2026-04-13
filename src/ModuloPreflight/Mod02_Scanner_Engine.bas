@@ -27,7 +27,6 @@ Public Function GetRelatorio() As RelatorioPreFlight
 End Function
 
 Public Sub ExecutarScanner()
-    Dim p As Page
     With relatorio
         .QtdBrancoOver = 0: .QtdPretoSujo = 0: .QtdRGB = 0: .QtdPantone = 0: .BibliotecasPantone = ""
         .QtdBordaDura = 0: .QtdRegistro = 0: .QtdTecnicas = 0: .BibliotecasTecnicas = ""
