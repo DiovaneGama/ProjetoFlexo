@@ -3,8 +3,8 @@ Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} frmPreFlight
    Caption         =   "Preflight"
    ClientHeight    =   9564.001
    ClientLeft      =   120
-   ClientTop       =   465
-   ClientWidth     =   4530
+   ClientTop       =   468
+   ClientWidth     =   4536
    OleObjectBlob   =   "frmPreFlight.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 ' ==============================================================================
 ' REF. API OFICIAL CORELDRAW OBJECT MODEL - Consulte sempre a documentacao:
 ' https://community.coreldraw.com/sdk/api/draw/27
