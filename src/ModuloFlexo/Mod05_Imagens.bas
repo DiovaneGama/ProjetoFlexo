@@ -12,6 +12,15 @@ Attribute VB_Name = "Mod05_Imagens"
 ' ============================================================
 Option Explicit
 
+' cdrImageMode (Bitmap.Mode) — usado para leitura
+Private Const MODO_CMYK       As Long = 5
+Private Const MODO_GRAYSCALE  As Long = 2
+Private Const MODO_PB         As Long = 0
+
+' Limiar e alvo de resolucao
+Private Const DPI_MINIMO      As Long = 599   ' abaixo disso = problema
+Private Const DPI_ALVO        As Long = 600   ' resolucao padrao de saida
+
 Public Sub PadronizarImagensCMYK600()
 
     Dim resposta As VbMsgBoxResult
@@ -68,7 +77,7 @@ Public Sub PadronizarImagensCMYK600()
         On Error Resume Next
         modoAtual = img.Bitmap.Mode
 
-        If modoAtual <> 5 And modoAtual <> 2 And modoAtual <> 0 Then
+        If modoAtual <> MODO_CMYK And modoAtual <> MODO_GRAYSCALE And modoAtual <> MODO_PB Then
             ' ConvertTo usa cdrImageType: cdrCMYKColorImage = 5
             img.Bitmap.ConvertTo cdrCMYKColorImage
             okConvert = (Err.Number = 0)
@@ -77,11 +86,11 @@ Public Sub PadronizarImagensCMYK600()
 
         ' Passo 2: resamplear para 600 DPI IN-PLACE
         resX = img.Bitmap.ResolutionX
-        If resX < 599 Then
-            pxW = CLng(img.Bitmap.Width * (600 / resX))
-            pxH = CLng(img.Bitmap.Height * (600 / img.Bitmap.ResolutionY))
+        If resX < DPI_MINIMO Then
+            pxW = CLng(img.Bitmap.Width * (DPI_ALVO / resX))
+            pxH = CLng(img.Bitmap.Height * (DPI_ALVO / img.Bitmap.ResolutionY))
             Err.Clear
-            img.Bitmap.Resample pxW, pxH, False, 600, 600
+            img.Bitmap.Resample pxW, pxH, False, DPI_ALVO, DPI_ALVO
             okResample = (Err.Number = 0)
             Err.Clear
         End If
@@ -124,7 +133,7 @@ Private Sub CrawlerPadronizar(s As Shape, ByRef sacola As ShapeRange)
 
         ' Problema: nao e CMYK(5), Grayscale(2) ou BlackWhite(0)
         '           OU resolucao abaixo de 599 DPI
-        If (modo <> 5 And modo <> 2 And modo <> 0) Or dX < 599 Then
+        If (modo <> MODO_CMYK And modo <> MODO_GRAYSCALE And modo <> MODO_PB) Or dX < DPI_MINIMO Then
             sacola.Add s
         End If
     End If
