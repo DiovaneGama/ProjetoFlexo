@@ -1,0 +1,119 @@
+============================================================
+  GUIA DE ATUALIZACAO AUTOMATICA — Console Flexo
+  Estrategia: Pasta de Rede + Agendador de Tarefas Windows
+  Data: 2026-04-13
+============================================================
+
+
+VISAO GERAL
+-----------
+O sistema de atualizacao substitui o ConsoleFlexo.gms automaticamente
+em cada maquina da rede no logon do Windows, sem qualquer intervencao
+do usuario. O operador nunca precisa reimportar macros manualmente.
+
+
+ARQUIVOS ENVOLVIDOS
+-------------------
+deploy\AtualizarConsoleFlexo.ps1   Script que roda a cada logon
+deploy\InstalarTarefa.ps1          Script de instalacao (uma vez por maquina)
+
+
+ESTRUTURA DE PASTAS NA REDE
+----------------------------
+Crie uma pasta compartilhada acessivel por todas as maquinas:
+
+  \\servidor\ConsoleFlexo\
+      ConsoleFlexo.gms       <- arquivo mestre (voce substitui aqui)
+
+Permissoes recomendadas:
+  Operadores  -> Leitura
+  TI / Admin  -> Leitura e Escrita
+
+
+INSTALACAO EM CADA MAQUINA (fazer uma unica vez, como Administrador)
+---------------------------------------------------------------------
+1. Abra o script AtualizarConsoleFlexo.ps1 em um editor de texto
+   e ajuste a linha:
+     $ORIGEM = "\\servidor\ConsoleFlexo\ConsoleFlexo.gms"
+   Substitua "servidor" pelo nome real do servidor ou IP da rede.
+
+2. Copie os dois arquivos para a maquina de destino (qualquer pasta).
+
+3. Clique com o botao direito em InstalarTarefa.ps1
+   -> "Executar como Administrador"
+
+4. O script ira:
+   - Copiar AtualizarConsoleFlexo.ps1 para C:\ProgramData\ConsoleFlexo\
+   - Registrar a tarefa "ConsoleFlexo - Atualizacao Automatica"
+     no Agendador de Tarefas do Windows
+
+5. Para confirmar: abra o Agendador de Tarefas e verifique se a tarefa
+   aparece em "Biblioteca do Agendador de Tarefas".
+
+Pronto. Nao e necessario repetir esse processo salvo reinstalacao
+do Windows ou troca de maquina.
+
+
+COMO DISTRIBUIR UMA NOVA VERSAO
+--------------------------------
+1. Exporte o ConsoleFlexo.gms atualizado do CorelDRAW
+2. Substitua o arquivo em \\servidor\ConsoleFlexo\ConsoleFlexo.gms
+3. No proximo logon de cada maquina, o script detecta a diferenca
+   automaticamente via hash MD5 e copia o arquivo novo.
+   O usuario nao ve nada -- tudo ocorre em segundo plano.
+
+
+COMPORTAMENTO DO SCRIPT
+------------------------
+Cenario                          Resultado
+---------------------------------+----------------------------------
+Rede disponivel, versao nova      Copia o .gms e registra no log
+Rede disponivel, versao igual     Nao copia (sem carga desnecessaria)
+Rede indisponivel                 Ignora silenciosamente, sem erro
+CorelDRAW aberto no logon         Adiar para o proximo logon
+CorelDRAW nao instalado           Registra erro no log e encerra
+
+
+LOG DE ATUALIZACAO
+------------------
+Cada maquina gera um log em:
+  %APPDATA%\ConsoleFlexo\atualizacao.log
+
+Exemplo de entradas:
+  2026-04-13 08:01 | SUCESSO: ConsoleFlexo.gms atualizado de \\servidor\...
+  2026-04-14 08:00 | OK: ConsoleFlexo ja esta atualizado.
+  2026-04-15 08:02 | AVISO: Pasta de rede inacessivel. Sem atualizacao.
+
+Use esse log para auditar quais maquinas receberam a atualizacao.
+
+
+VERSOES DO CORELDRAW SUPORTADAS
+---------------------------------
+O script detecta automaticamente a versao instalada buscando a pasta:
+  %APPDATA%\Corel\CorelDRAW Graphics Suite {ano}\Draw\GMS\
+
+Caso haja mais de uma versao instalada, usa a mais recente.
+
+
+RESOLUCAO DE PROBLEMAS
+-----------------------
+Problema: Script nao executa (politica de execucao bloqueada)
+Solucao:  O InstalarTarefa.ps1 ja passa -ExecutionPolicy Bypass
+          na chamada da tarefa. Se o problema persistir, execute
+          no PowerShell como admin:
+            Set-ExecutionPolicy RemoteSigned -Scope LocalMachine
+
+Problema: Tarefa existe mas nao dispara
+Solucao:  Verifique se o usuario tem permissao de Leitura na pasta
+          \\servidor\ConsoleFlexo\ e se o caminho esta correto
+          no script AtualizarConsoleFlexo.ps1
+
+Problema: CorelDRAW nao carrega as macros atualizadas
+Solucao:  O CorelDRAW carrega o .gms na inicializacao. Certifique-se
+          de que o CorelDRAW nao estava aberto antes do logon.
+          Reinicie o CorelDRAW apos o primeiro logon pos-atualizacao.
+
+
+============================================================
+  Console Flexo v2.x | CorelDRAW 2026 | Abril 2026
+============================================================
