@@ -224,7 +224,7 @@ Private Sub UserForm_Initialize()
         .TextAlign = fmTextAlignCenter
         .WordWrap = False
         .BorderStyle = fmBorderStyleNone
-        .Caption = "Atualizar"
+        .Caption = vbCrLf & "Atualizar"
         .ControlTipText = "Executar nova varredura PreFlight na p" & ChrW(225) & "gina ativa"
     End With
 
@@ -236,7 +236,7 @@ Private Sub UserForm_Initialize()
         .TextAlign = fmTextAlignCenter
         .WordWrap = False
         .BorderStyle = fmBorderStyleNone
-        .Caption = "Desfazer"
+        .Caption = vbCrLf & "Desfazer"
         .ControlTipText = "Desfazer as corre" & ChrW(231) & ChrW(245) & "es aplicadas"
     End With
 
@@ -248,7 +248,7 @@ Private Sub UserForm_Initialize()
         .TextAlign = fmTextAlignCenter
         .WordWrap = False
         .BorderStyle = fmBorderStyleNone
-        .Caption = "Corrigir Erros"
+        .Caption = vbCrLf & "Corrigir Erros"
         .ControlTipText = "Aplicar todas as corre" & ChrW(231) & ChrW(245) & "es cr" & ChrW(237) & "ticas automaticamente"
     End With
 End Sub
