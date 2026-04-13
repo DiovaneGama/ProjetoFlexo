@@ -212,7 +212,7 @@ Private Sub UserForm_Initialize()
     Me.lblTecnicas.Width = Me.Width - 16
 
     ' BOT�ES
-    Dim btnH As Integer: btnH = 22
+    Dim btnH As Integer: btnH = 30
     Dim btnY As Integer: btnY = Me.Height - 75
     Dim btnW As Integer: btnW = 70
 
