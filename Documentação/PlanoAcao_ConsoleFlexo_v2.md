@@ -57,23 +57,29 @@
 
 ---
 
-## Roadmap Futuro — Cronograma (Maio–Junho 2026)
+## Roadmap Futuro — Boas Práticas Flexo (FIRST/FTA + ISO 12647-6)
 
-| Dia | Data | ID | Item | Entrega |
-|-----|------|----|------|---------|
-| D1 | 05 mai (ter) | **M2** | Relatório por página | Campo `Pagina` na struct + exibição no PreFlight |
-| D3 | 07 mai (qui) | **M2** | Testes e ajustes | Re-executar T43–T50 + validar campo Pagina |
-| D5 | 12 mai (ter) | **M1** | Cores técnicas configurável (UI) | Form ou InputBox de configuração |
-| D7 | 14 mai (qui) | **M1** | Persistência (arquivo INI) | Gravar/ler lista de cores técnicas entre sessões |
-| D9 | 16 mai (sex) | **M1** | Testes e ajustes | Validar persistência entre sessões CorelDRAW |
+| ID | Área | Funcionalidade | Descrição |
+|----|------|----------------|-----------|
+| **C1** | Cores | TAC — Total Area Coverage | Detectar e alertar objetos com soma CMYK acima do limite (ex: 280%) — padrão FIRST/ISO 12647-6 |
+| **C2** | Cores | Mínimo de Ponto (Min Dot) | Verificar se gradientes e tons planos possuem valores abaixo do mínimo imprimível da gráfica (ex: <2%) |
+| **V1** | Vetores | Fonte Mínima | Detectar textos com corpo abaixo do mínimo para flexo (ex: positivo <6pt, negativo <8pt) |
+| **I1** | Imagens | DPI Efetivo | Calcular DPI real considerando escala do objeto — uma imagem 300 DPI escalada 200% vira 150 DPI efetivo |
+| **D1** | Montagem | Sangria (Bleed) | Verificar se os elementos de arte sangram corretamente além do TrimBox (mínimo 3mm) |
+| **D2** | Montagem | Camadas Técnicas | Validar presença e nomenclatura correta das camadas obrigatórias (Branco, Verniz, Corte, Vinco) |
+| **D3** | PreFlight | Relatório por Página | Exibir resultados do Scanner separados por página do documento |
 
 ## Análise de Viabilidade — Roadmap Futuro
 
-| ID | Funcionalidade | Viabilidade | Esforço | Observação |
-|----|----------------|:-----------:|:-------:|------------|
-| M2 | Relatório por página | Alta | Médio | PreFlight já tem estrutura; adicionar campo `Pagina` no tipo |
-| M1 | Cores técnicas configurável | Média | Alto | Requer UI + persistência via arquivo INI |
-| FM2 | Persistência de estado | Baixa | Alto | Adiado para Agosto 2026 — complexidade alta, risco de corrupção de estado |
+| ID | Viabilidade | Esforço | Risco | Observação |
+|----|:-----------:|:-------:|:-----:|------------|
+| C1 | Alta | Baixo | Nenhum | Soma simples de CMYK por objeto no Scanner |
+| C2 | Alta | Baixo | Nenhum | Já temos estrutura de varredura de gradientes |
+| V1 | Alta | Médio | Baixo | API CorelDRAW expõe tamanho de fonte via TextRange |
+| I1 | Alta | Médio | Baixo | Requer cruzar ResolutionX com SizeWidth/OriginalWidth |
+| D1 | Média | Médio | Médio | Depende de TrimBox estar aplicado corretamente |
+| D2 | Alta | Baixo | Nenhum | Extensão natural do Mod06_PadronizarLayers |
+| D3 | Alta | Médio | Baixo | PreFlight já tem estrutura — adicionar campo Pagina |
 
 ---
 
