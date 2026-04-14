@@ -59,22 +59,57 @@
 
 ## Roadmap Futuro — Boas Práticas Flexo (FIRST/FTA + ISO 12647-6)
 
-| ID | Área | Funcionalidade | Descrição |
-|----|------|----------------|-----------|
-| **C1** | Cores | TAC — Total Area Coverage | Detectar e alertar objetos com soma CMYK acima do limite (ex: 280%) — padrão FIRST/ISO 12647-6 |
-| **C2** | Cores | Mínimo de Ponto (Min Dot) | Verificar se gradientes e tons planos possuem valores abaixo do mínimo imprimível da gráfica (ex: <2%) |
-| **V1** | Vetores | Fonte Mínima | Detectar textos com corpo abaixo do mínimo para flexo (ex: positivo <6pt, negativo <8pt) |
-| **I1** | Imagens | DPI Efetivo | Calcular DPI real considerando escala do objeto — uma imagem 300 DPI escalada 200% vira 150 DPI efetivo |
-| **D1** | Montagem | Sangria (Bleed) | Verificar se os elementos de arte sangram corretamente além do TrimBox (mínimo 3mm) |
-| **D2** | Montagem | Camadas Técnicas | Validar presença e nomenclatura correta das camadas obrigatórias (Branco, Verniz, Corte, Vinco) |
-| **D3** | PreFlight | Relatório por Página | Exibir resultados do Scanner separados por página do documento |
+### Regras de Negócio
+
+**C1 — TAC (Total Area Coverage)**
+- Scanner detecta objetos cuja soma dos canais CMYK ultrapassa o limite configurado (padrão: 280%)
+- Limite baseado em FIRST/ISO 12647-6 — acima disso a tinta não seca, mancha e cola na bobina
+- Exibe `QtdTAC` no relatório do PreFlight com contagem de objetos infratores
+- Não há correção automática — operador deve ajustar manualmente os valores de cor
+
+**C2 — Mínimo de Ponto (Min Dot)**
+- Scanner detecta canais com valor entre 0,1% e 1,9% (abaixo do mínimo imprimível mas não zero)
+- Valor zero é intencional e não deve ser sinalizado
+- O tratamento de correção já existe no Console Flexo:
+  - **Gradientes:** usar o botão **"Mínimas Degradê"** para aplicar o ponto mínimo
+  - **Tons planos:** usar o botão **"Limpar Cores"** para remover sujeira de canal
+- Scanner exibe `QtdMinDot` no relatório como alerta — sem correção automática neste módulo
+
+**V1 — Fonte Mínima**
+- Scanner detecta textos com corpo abaixo do mínimo imprimível em flexo:
+  - Positivo (texto escuro em fundo claro): mínimo **6pt**
+  - Negativo (texto claro em fundo escuro): mínimo **8pt**
+- Abaixo desses limites as letras fecham ou somem na impressão
+- Exibe `QtdFontesPequenas` no relatório
+
+**I1 — DPI Efetivo**
+- Scanner calcula o DPI real da imagem considerando a escala aplicada no CorelDRAW
+- Ex: imagem 300 DPI escalada a 200% = 150 DPI efetivo — hoje o scanner lê apenas o DPI original
+- Substitui ou complementa o campo `QtdImgBaixa` com o valor efetivo real
+
+**D1 — Sangria (Bleed)**
+- Verifica se os elementos de arte ultrapassam o TrimBox pelo mínimo exigido (3mm)
+- Sangria insuficiente gera borda branca após o corte da embalagem
+- Depende de TrimBox estar corretamente aplicado via botão **"Aplicar Trimbox"**
+
+**D2 — Camadas Técnicas**
+- Valida presença e nomenclatura das camadas de acabamento obrigatórias: Branco, Verniz, Corte, Vinco
+- Extensão natural do `Mod06_PadronizarLayers` — apenas verificação, sem criação automática
+- Exibe aviso no PreFlight se camada esperada estiver ausente
+
+**D3 — Relatório por Página**
+- Scanner exibe resultados separados por página do documento
+- Útil para documentos com múltiplas variações de arte no mesmo arquivo
+- Requer adição do campo `Pagina` na struct `RelatorioPreFlight`
+
+---
 
 ## Análise de Viabilidade — Roadmap Futuro
 
 | ID | Viabilidade | Esforço | Risco | Observação |
 |----|:-----------:|:-------:|:-----:|------------|
 | C1 | Alta | Baixo | Nenhum | Soma simples de CMYK por objeto no Scanner |
-| C2 | Alta | Baixo | Nenhum | Já temos estrutura de varredura de gradientes |
+| C2 | Alta | Baixo | Nenhum | Correção já existe — apenas alerta no Scanner |
 | V1 | Alta | Médio | Baixo | API CorelDRAW expõe tamanho de fonte via TextRange |
 | I1 | Alta | Médio | Baixo | Requer cruzar ResolutionX com SizeWidth/OriginalWidth |
 | D1 | Média | Médio | Médio | Depende de TrimBox estar aplicado corretamente |
