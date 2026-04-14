@@ -42,39 +42,18 @@
 
 ---
 
-## Roadmap v1.1 — Cronograma (cadência a cada 2 dias)
+## Roadmap v1.1 — CONCLUÍDO ✓
 
-**Início:** 14 de abril de 2026
+**Concluído em:** 14 de abril de 2026
 
-| Dia | Data | ID | Item | Entrega | Testes de Regressão |
-|-----|------|----|------|---------|---------------------|
-| D1 | 14 abr (seg) | **FM3** | Centralizar botões | `ObterTodosBotoes()` em frmFlexo.frm | T01–T09, T07 |
-| D3 | 16 abr (qua) | **F9** | Constantes nomeadas | Constantes em Mod05_Imagens.bas | T35–T36 |
-| D5 | 18 abr (sex) | **P1** | On Error do Scanner | Error handling pontual em CrawlerMergulhoProfundo | T43–T47 |
-| D7 | 22 abr (ter) | **P7** | Encapsular relatório | `relatorio` privado + `GetRelatorio()` | T43–T50 |
-| D9 | 24 abr (qui) | **F2** | Unificar borda dura | `Mod06_Utils.bas` + refatorar Scanner e Cores | T19–T22, T43–T49 |
-| D11 | 26 abr (sab) | — | **Homologação v1.1** | Bateria completa dos 50 testes | T01–T50 |
-
-> Os dias D2, D4, D6, D8, D10 são reservados para testes manuais no CorelDRAW e ajustes.
-
-### Sequência recomendada
-
-```
-FM3 → F9 → P1 → P7 → F2
-(fácil → fácil → médio → médio → difícil)
-```
-
----
-
-## Análise de Viabilidade — v1.1
-
-| ID | Item | Viabilidade | Esforço | Risco | Arquivos afetados |
-|----|------|:-----------:|:-------:|:-----:|-------------------|
-| FM3 | Centralizar botões | Alta | Baixo | Baixo | `frmFlexo.frm` |
-| F9 | Constantes nomeadas | Alta | Baixo | Nenhum | `Mod05_Imagens.bas` |
-| P1 | On Error do Scanner | Alta | Baixo | Baixo | `Mod02_Scanner_Engine.bas` |
-| P7 | Encapsular relatório | Média | Médio | Médio | `Mod02_Scanner_Engine.bas`, `frmPreFlight.frm` |
-| F2 | Unificar borda dura | Média | Alto | Médio | `Mod02_Scanner_Engine.bas`, `Mod02_Cores.bas`, novo `Mod06_Utils.bas` |
+| ID | Item | Status |
+|----|------|--------|
+| FM3 | Centralizar botões — `ObterTodosBotoes()` em frmFlexo.frm | Concluído |
+| F9 | Constantes nomeadas em Mod05_Imagens.bas | Concluído |
+| P1 | On Error pontual em CrawlerMergulhoProfundo | Concluído |
+| P7 | `relatorio` privado + `GetRelatorio()` | Concluído |
+| F2 | Unificar borda dura em Mod08_Utils | Concluído |
+| — | **Homologação v1.1** | **Pendente** |
 
 ---
 
@@ -98,18 +77,21 @@ FM3 → F9 → P1 → P7 → F2
 
 ---
 
-## Critérios de Aceite por Item
+## Critérios de Aceite — Homologação v1.1
 
-| Item | Testes de regressão obrigatórios |
-|------|----------------------------------|
-| **F2** Unificar borda dura | T19–T22, T43–T49, T46 |
-| **FM3** Centralizar botões | T01–T09, T07 |
-| **P7** Encapsular relatório | T43–T50 |
-| **P1** On Error do Scanner | T43, T44, T45, T47 |
-| **F9** Constantes nomeadas | T35–T36 |
-| **M2** Relatório por página | T45 + validar campo Pagina no relatório |
+> Todos os itens do Roadmap v1.1 foram implementados. A bateria completa de 50 testes
+> deve ser executada para homologar a versão antes de avançar para o Roadmap Futuro.
 
-> **Critério geral:** nenhum dos 50 testes aprovados pode regredir após qualquer mudança do roadmap.
+| Bloco | Testes | Cobertura |
+|-------|--------|-----------|
+| Interface | T01–T09 | FM3 |
+| Cores | T10–T25 | F2, F9 |
+| Vetores | T26–T34 | — |
+| Bitmaps | T35–T36 | F9 |
+| Montagem | T37–T42 | — |
+| PreFlight | T43–T50 | P1, P7, F2 |
+
+> **Critério geral:** nenhum dos 50 testes aprovados pode regredir.
 
 ---
 
