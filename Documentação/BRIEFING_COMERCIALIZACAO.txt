@@ -1,0 +1,207 @@
+============================================================
+  BRIEFING — Console Flexo
+  Para uso no Claude.ai — Estrategia de Comercializacao
+  Data: 2026-04-13
+============================================================
+
+INSTRUCAO PARA O CHAT
+----------------------
+Leia este briefing e os PDFs anexados (Manual_ConsoleFlexo_v2.pdf,
+ConsoleFlexo_Documentacao_Lancamento.pdf, PlanoAcao_ConsoleFlexo_v2.pdf)
+e me ajude a definir a melhor estrategia de comercializacao para esse
+produto. Quero monetizar esse conjunto de ferramentas para o mercado
+brasileiro de flexografia. Me ajude a pensar em: modelo de negocio,
+precificacao, posicionamento, canal de venda e diferenciais competitivos.
+
+
+============================================================
+  1. O QUE E O CONSOLE FLEXO
+============================================================
+
+Console Flexo e um conjunto de ferramentas de pre-impressao flexografica
+desenvolvido como plugin para CorelDRAW (VBA/GMS), voltado para
+operadores de arte-finalista e graficas que produzem embalagens
+flexograficas.
+
+O produto automatiza e padroniza tarefas criticas de preparacao de
+arquivos que hoje sao feitas manualmente, com alto risco de erro humano
+e retrabalho.
+
+Plataforma: CorelDRAW 2026 (VBA/GMS)
+Estado atual: v2.0 lancada e homologada (50/50 testes aprovados)
+Proximo release: v1.1 (abril/maio 2026)
+
+
+============================================================
+  2. PROBLEMA QUE RESOLVE
+============================================================
+
+Na flexografia, um arquivo mal preparado gera:
+- Quebra de chapa (prejuizo direto de material e tempo de maquina)
+- Reimpressao de tiragem (custo altissimo para a grafica e o cliente)
+- Reclamacao e perda de cliente
+
+Os erros mais comuns — e que o Console Flexo detecta e corrige
+automaticamente — sao:
+
+  - Branco em Overprint (imprime transparente, some na impressao)
+  - Preto Composto / Preto Sujo (registro visivelmente errado)
+  - Cores RGB no arquivo (imprevisiveis na impressao CMYK)
+  - Cores Spot nao convertidas
+  - Gradientes com borda dura (hard edge — quebra visivel na chapa)
+  - Linhas e contornos finos abaixo de 0,1mm (risco de quebra)
+  - Imagens abaixo de 300 DPI
+  - Fontes nao convertidas em curvas
+  - Objetos bloqueados que impedem correcao
+  - Layers fora de padrao
+
+
+============================================================
+  3. FUNCIONALIDADES DO PRODUTO (v2.0)
+============================================================
+
+MODULO FLEXO — Console principal com 18 botoes em 4 secoes:
+
+  CORES
+    - Corrigir Branco Overprint (automatico)
+    - Detectar / Corrigir Preto Composto
+    - Converter Spot para CMYK
+    - Converter RGB para CMYK
+    - Mudar para Cor de Registro
+    - Converter para Pantone
+    - Selecionar objetos pela mesma cor (preenchimento ou contorno)
+    - Corrigir Borda Dura em Gradientes (ponto minimo configuravel 2% ou 3%)
+    - Limpar Sujeira de Cores
+
+  VETORES
+    - Converter Textos em Curvas
+    - Inspetor de Linhas Finas (destaca objetos abaixo de 0,1mm)
+    - Corrigir Contornos Finos (padroniza para 0,2mm — exceto brancos intencionais)
+    - Desbloquear Objetos (recursivo em grupos e PowerClips)
+    - Inspetor de Nos (detecta excesso de nos — lixo de rastreio automatico)
+    - Reduzir Nos Seguro (AutoReduce sem deformar logotipos)
+
+  BITMAPS
+    - Padronizar Imagens CMYK 600 DPI
+
+  MONTAGEM
+    - Inserir Textos Camerom (rotacionados, coloridos automaticamente)
+    - Ajustar TrimBox e Borda (banda larga 7mm ou estreita 5mm)
+    - Inserir Micropontos (Step & Repeat de marca de registro)
+
+MODULO PREFLIGHT — Scanner automatico com relatorio visual:
+
+  Detecta e quantifica:
+    - Branco Overprint, Preto Sujo, RGB, Pantone, Cor de Registro
+    - Cores Tecnicas (verniz, relevo, corte, vinco, etc)
+    - Borda Dura em Gradientes
+    - Linhas Finas (abaixo de 0,1mm)
+    - Imagens baixa resolucao e imagens RGB
+    - Fontes vivas (nao convertidas)
+    - Objetos bloqueados e invisiveis
+    - Gradientes bloqueados
+
+  Botao "Corrigir Erros": aplica correcoes automaticas em lote
+  com um unico clique, agrupadas em Undo.
+
+
+============================================================
+  4. DIFERENCIAIS TECNICOS
+============================================================
+
+- Baseado nos padroes FIRST (Flexographic Image Reproduction
+  Specifications & Tolerances) da FTA e ISO 12647-6
+- Excecoes inteligentes: contornos finos brancos intencionais
+  (trapping tecnico) nao sao sinalizados como erro
+- Deteccao de contorno convertido em objeto (Ctrl+Shift+Q)
+  que ferramentas genericas nao identificam
+- Suporte a objetos dentro de grupos e PowerClips (varredura recursiva)
+- Interface com frames colapsaveis, hover visual e Reset de estado
+- Sistema de Undo unico para cada operacao (BeginCommandGroup)
+- Modo silencioso para correcoes em lote sem dialogs
+- Atualizacao automatica via pasta de rede (sem acao do usuario)
+- Desenvolvido e testado em CorelDRAW 2026 (bateria de 50 testes)
+
+
+============================================================
+  5. PUBLICO-ALVO
+============================================================
+
+USUARIO DIRETO:
+  - Arte-finalistas / operadores de pre-impressao flexo
+  - Tecnicos de CTP (Computer-to-Plate) em graficas de embalagem
+  - Coordenadores de producao grafica
+
+EMPRESA COMPRADORA:
+  - Graficas flexograficas de embalagem (especialmente alimenticio,
+    higiene e limpeza, pet food)
+  - Empresas de pre-impressao / bureau de separacao de cores
+  - Graficas com maquinas de impressao flexo proprias
+
+PERFIL DO MERCADO BRASILEIRO:
+  - Forte concentracao no interior de SP, RS, SC, PR e MG
+  - Maioria sao empresas de medio porte (20 a 200 funcionarios)
+  - Geralmente usam CorelDRAW como ferramenta principal de arte
+  - Alta sensibilidade a custo de retrabalho e refugo de chapa
+  - Pouca oferta de ferramentas especializadas em portugues
+
+
+============================================================
+  6. ESTADO DO PRODUTO
+============================================================
+
+v2.0 (lancada abril 2026)
+  - 50 testes homologados, 0 reprovados
+  - Modulo Flexo + Modulo PreFlight completos
+  - Atualizacao automatica via rede implementada
+
+v1.1 (prevista abril/maio 2026)
+  - Melhorias de robustez e encapsulamento interno
+  - Sem novas funcionalidades visiveis ao usuario
+
+Roadmap Futuro (maio/junho 2026)
+  - Relatorio por pagina
+  - Cores tecnicas configuravel pelo usuario (persistencia via INI)
+
+
+============================================================
+  7. MODELO ATUAL DE DISTRIBUICAO
+============================================================
+
+- Arquivo .gms instalado manualmente (ou via script automatico)
+  na pasta GMS do CorelDRAW de cada maquina
+- Atualizacoes distribuidas via pasta de rede compartilhada
+- Sem sistema de licenciamento ou ativacao implementado ainda
+- Sem canal de venda definido
+
+
+============================================================
+  8. DUVIDAS QUE QUERO RESPONDER COM VOCE
+============================================================
+
+1. Qual modelo de negocio faz mais sentido para esse mercado?
+   (assinatura mensal, licenca por seat, licenca por empresa,
+   venda unica, freemium?)
+
+2. Qual faixa de preco e compativel com o mercado de graficas
+   brasileiras de medio porte?
+
+3. Como posicionar o produto — como ferramenta tecnica, como
+   reducao de custo de refugo, como conformidade com normas?
+
+4. Qual o melhor canal de venda? (venda direta, revendas,
+   associacoes do setor como ABFLEXO, feiras como Fispal?)
+
+5. Preciso de um sistema de licenciamento/ativacao antes de
+   comecar a vender? Como implementar isso em VBA/CorelDRAW?
+
+6. Faz sentido oferecer um periodo de trial ou versao gratuita
+   com funcionalidades limitadas?
+
+7. Quais sao os maiores riscos de mercado e como mitiga-los?
+
+
+============================================================
+  Console Flexo v2.0 | CorelDRAW 2026 | Abril 2026
+  Desenvolvido por: Diovane Gama
+============================================================
