@@ -48,7 +48,7 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
     txtCores.Outline.SetNoOutline
     txtCores.Rotate 90
     txtCores.LeftX = X - txtCores.SizeWidth - 0.1
-    txtCores.BottomY = Y + 5
+    txtCores.BottomY = Y + 10
     
     ColorirPalavrasDaLegenda txtCores
     
