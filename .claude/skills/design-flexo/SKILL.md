@@ -182,7 +182,6 @@ Todo botao de acao **deve ter** `ControlTipText` configurado. Nunca deixar em br
 ```
 src/
   ModuloFlexo/
-    Mod00_Versao.bas
     Mod01_Setup.bas
     Mod02_Cores.bas
     Mod03_Vetores.bas
@@ -190,6 +189,7 @@ src/
     Mod05_Imagens.bas
     Mod06_PadronizarLayers.bas
     Mod07_InserirMicropontos.bas
+    Mod08_Utils.bas
     frmFlexo.frm / .frx
   ModuloStepRepeat/
     Mod01_Config.bas
