@@ -1,7 +1,7 @@
 Attribute VB_Name = "Mod04_Montagem"
 ' ============================================================
-' MÓDULO: Mod04_Montagem (PREPARAÇÃO E TRIMBOX)
-' DESCRIÇÃO: Inserção de Dados e Cores com Pintura Automática
+' Mï¿½DULO: Mod04_Montagem (PREPARAï¿½ï¿½O E TRIMBOX)
+' DESCRIï¿½ï¿½O: Inserï¿½ï¿½o de Dados e Cores com Pintura Automï¿½tica
 ' ============================================================
 
 Option Explicit
@@ -11,7 +11,7 @@ Option Explicit
 ' ------------------------------------------------------------
 Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione a arte primeiro para ter uma referência de posicionamento.", vbExclamation, "Console Flexo"
+        MsgBox "Selecione a arte primeiro para ter uma referï¿½ncia de posicionamento.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
     If Trim(textoDados) = "" Or Trim(textoCores) = "" Then
@@ -19,7 +19,7 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
         Exit Sub
     End If
 
-    ' ? CORREÇÃO: agrupa todas as alterações em 1 único Undo
+    ' ? CORREï¿½ï¿½O: agrupa todas as alteraï¿½ï¿½es em 1 ï¿½nico Undo
     ActiveDocument.BeginCommandGroup "Inserir Textos Camerom"
     On Error GoTo FimErro
 
@@ -40,14 +40,14 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
     txtDados.Fill.ApplyUniformFill corReg
     txtDados.Outline.SetNoOutline
     txtDados.Rotate 90
-    txtDados.LeftX = X - txtDados.SizeWidth - 0.5
+    txtDados.LeftX = X - txtDados.SizeWidth - 0.1
     txtDados.TopY = (Y + H) - 5
-    
+
     Dim txtCores As Shape
     Set txtCores = ActiveLayer.CreateArtisticText(0, 0, textoCores, cdrLanguageNone, , "Arial", 5)
     txtCores.Outline.SetNoOutline
     txtCores.Rotate 90
-    txtCores.LeftX = X - txtCores.SizeWidth - 0.5
+    txtCores.LeftX = X - txtCores.SizeWidth - 0.1
     txtCores.BottomY = Y + 5
     
     ColorirPalavrasDaLegenda txtCores
@@ -60,7 +60,7 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
 
     ActiveDocument.EndCommandGroup
 
-    MsgBox "Informações do Camerom ancoradas e coloridas com sucesso!", vbInformation, "Console Flexo"
+    MsgBox "Informaï¿½ï¿½es do Camerom ancoradas e coloridas com sucesso!", vbInformation, "Console Flexo"
     Exit Sub
 
 FimErro:
@@ -72,7 +72,7 @@ FimErro:
 End Sub
 
 ' ------------------------------------------------------------
-' FUNÇÃO INTELIGENTE: PINTA AS PALAVRAS DO TEXTO COM SUAS CORES
+' FUNï¿½ï¿½O INTELIGENTE: PINTA AS PALAVRAS DO TEXTO COM SUAS CORES
 ' ------------------------------------------------------------
 Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
     Dim W As TextRange
@@ -81,7 +81,7 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
     Dim pularProxima As Boolean: pularProxima = False
     Dim corAplicada As Boolean
     
-    ' 0. Cria as cores puras na memória
+    ' 0. Cria as cores puras na memï¿½ria
     Dim colCiano As New Color: colCiano.CMYKAssign 100, 0, 0, 0
     Dim colMagenta As New Color: colMagenta.CMYKAssign 0, 100, 0, 0
     Dim colAmarelo As New Color: colAmarelo.CMYKAssign 0, 0, 100, 0
@@ -113,17 +113,17 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
             W.Fill.ApplyUniformFill colPreto
             corAplicada = True
             
-        ' 2. TRATAMENTO PANTONE (NOVA ESTRATÉGIA BLINDADA)
+        ' 2. TRATAMENTO PANTONE (NOVA ESTRATï¿½GIA BLINDADA)
         ElseIf InStr(txt, "P") > 0 Then
             Dim numPantone As String: numPantone = ""
             Dim j As Integer
             
-            ' Extrai os números da palavra
+            ' Extrai os nï¿½meros da palavra
             For j = 1 To Len(txt)
                 If IsNumeric(Mid(txt, j, 1)) Then numPantone = numPantone & Mid(txt, j, 1)
             Next j
             
-            ' Se o número estiver na próxima palavra (Ex: "P 485")
+            ' Se o nï¿½mero estiver na prï¿½xima palavra (Ex: "P 485")
             If numPantone = "" And i < txtShape.Text.Story.Words.Count Then
                 Dim proxTxt As String
                 proxTxt = UCase(Trim(txtShape.Text.Story.Words(i + 1).Text))
@@ -137,7 +137,7 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
                 Dim idCor As Long: idCor = 0
                 Dim pal As Palette
                 
-                ' ESTRATÉGIA A: Busca em TODAS as paletas abertas (Incluindo Paleta do Documento)
+                ' ESTRATï¿½GIA A: Busca em TODAS as paletas abertas (Incluindo Paleta do Documento)
                 For Each pal In Palettes
                     idCor = pal.FindColor("PANTONE " & numPantone & " C")
                     If idCor = 0 Then idCor = pal.FindColor("PANTONE " & numPantone & "C")
@@ -149,12 +149,12 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
                     End If
                 Next pal
                 
-                ' ESTRATÉGIA B: Se não achou em nenhuma aberta, tenta forçar a biblioteca oficial
+                ' ESTRATï¿½GIA B: Se nï¿½o achou em nenhuma aberta, tenta forï¿½ar a biblioteca oficial
                 If idCor = 0 Then
                     Dim palPantone As Palette
                     On Error Resume Next
                     Set palPantone = Palettes.OpenFixed(14) ' Plus Solid Coated
-                    If palPantone Is Nothing Then Set palPantone = Palettes.OpenFixed(7) ' Solid Coated Clássica
+                    If palPantone Is Nothing Then Set palPantone = Palettes.OpenFixed(7) ' Solid Coated Clï¿½ssica
                     On Error GoTo 0
                     
                     If Not palPantone Is Nothing Then
@@ -170,8 +170,8 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
                     If pularProxima Then txtShape.Text.Story.Words(i + 1).Fill.ApplyUniformFill C
                     corAplicada = True
                 Else
-                    ' ESTRATÉGIA C (Trava de Segurança): Se o Corel não tiver essa cor de jeito nenhum,
-                    ' pinta de Laranja para tirar do "Registro" e não sujar as outras chapas do cliente.
+                    ' ESTRATï¿½GIA C (Trava de Seguranï¿½a): Se o Corel nï¿½o tiver essa cor de jeito nenhum,
+                    ' pinta de Laranja para tirar do "Registro" e nï¿½o sujar as outras chapas do cliente.
                     C.CMYKAssign 0, 70, 80, 0
                     W.Fill.ApplyUniformFill C
                     If pularProxima Then txtShape.Text.Story.Words(i + 1).Fill.ApplyUniformFill C
@@ -180,7 +180,7 @@ Private Sub ColorirPalavrasDaLegenda(txtShape As Shape)
             End If
         End If
         
-        ' 3. REGRA DE OURO: O que sobrar (Dados do cliente, traços, etc) ganha Cor de Registro!
+        ' 3. REGRA DE OURO: O que sobrar (Dados do cliente, traï¿½os, etc) ganha Cor de Registro!
         If Not corAplicada Then
             W.Fill.ApplyUniformFill colReg
         End If
@@ -191,7 +191,7 @@ End Sub
 
 Public Sub AjustarTrimBoxEBorda()
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione a arte que definirá o tamanho final do TrimBox.", vbExclamation, "Console Flexo"
+        MsgBox "Selecione a arte que definirï¿½ o tamanho final do TrimBox.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
 
@@ -201,7 +201,7 @@ Public Sub AjustarTrimBoxEBorda()
     Dim respBanda As VbMsgBoxResult
     respBanda = MsgBox("Qual o tipo de banda do arquivo?" & vbCrLf & vbCrLf & _
                        "[ SIM ]  ?  Banda Larga  (7mm de offset)" & vbCrLf & _
-                       "[ NÃO ]  ?  Banda Estreita  (5mm de offset)", _
+                       "[ Nï¿½O ]  ?  Banda Estreita  (5mm de offset)", _
                        vbYesNoCancel + vbQuestion, "Tipo de Banda")
 
     If respBanda = vbCancel Then Exit Sub
@@ -215,7 +215,7 @@ Public Sub AjustarTrimBoxEBorda()
 
     Application.Optimization = True
 
-    ' *** ABRE O GRUPO DE COMANDOS — tudo vira 1 único Undo ***
+    ' *** ABRE O GRUPO DE COMANDOS ï¿½ tudo vira 1 ï¿½nico Undo ***
     ActiveDocument.BeginCommandGroup "Aplicar TrimBox"
 
     On Error GoTo ErroHandler
@@ -224,7 +224,7 @@ Public Sub AjustarTrimBoxEBorda()
     ActiveDocument.Unit = cdrMillimeter
 
     ' =====================================================
-    ' PRÉ-REQUISITO 1: GARANTIR QUE ESTÁ AGRUPADO
+    ' PRï¿½-REQUISITO 1: GARANTIR QUE ESTï¿½ AGRUPADO
     ' =====================================================
     Dim srSelecao As ShapeRange
     Set srSelecao = ActiveSelectionRange
@@ -265,7 +265,7 @@ Public Sub AjustarTrimBoxEBorda()
     rectBorda.Outline.SetProperties Width:=0.35, Color:=corReg
     rectBorda.AlignToPageCenter cdrAlignHCenter + cdrAlignVCenter
 
-    ' *** FECHA O GRUPO — 1 único Undo a partir daqui ***
+    ' *** FECHA O GRUPO ï¿½ 1 ï¿½nico Undo a partir daqui ***
     ActiveDocument.EndCommandGroup
 
     ActiveDocument.Unit = unOriginal
