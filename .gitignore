@@ -1,0 +1,12 @@
+# Backups automáticos do CorelDRAW
+Cópia_de_segurança_*
+Backup_*
+*_backup.*
+
+# Arquivos temporários do Windows
+Thumbs.db
+desktop.ini
+*.tmp
+
+# Configurações locais do Claude Code
+.claude/settings.local.json
