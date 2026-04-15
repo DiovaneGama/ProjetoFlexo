@@ -204,8 +204,8 @@ Public Sub InspecionarEspessuraMinima()
     ' Resultado
     If srFinos.Count > 0 Then
         srFinos.CreateSelection
-        MsgBox "Alerta Cr�tico FIRST! " & srFinos.Count & " objetos ou contornos possuem espessura f�sica menor que 0,1 mm." & vbCrLf & vbCrLf & _
-               "Eles foram selecionados para que voc� possa engross�-los, sob risco de quebra na chapa.", vbCritical, "Console Flexo"
+        MsgBox "Alerta! " & srFinos.Count & " Objetos ou Contornos possuem espessura m" & Chr(237) & "nima f" & Chr(237) & "sica menor ou igual a 0,1mm." & vbCrLf & vbCrLf & _
+               "Eles foram selecionados para que voc" & Chr(234) & " possa engross" & Chr(225) & "-los, sob risco de quebra na chapa.", vbCritical, "Console Flexo"
     Else
         MsgBox "Aprovado! Nenhuma linha ou objeto fino o suficiente para quebrar na chapa foi encontrado.", vbInformation, "Console Flexo"
     End If
@@ -224,8 +224,33 @@ Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeR
         ' 1. AVALIA��O DE CONTORNO VIVO
         If s.Outline.Type = cdrOutline Then
             outW = s.Outline.Width
-            ' Se tem contorno e � menor que o limite, j� falha na hora!
-            If outW > 0 And outW < limit Then sinalizar = True
+            ' Se tem contorno e e menor que o limite, verifica se e intencional
+            If outW > 0 And outW <= limit Then
+                Dim ehIntencionalE As Boolean: ehIntencionalE = False
+                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
+                If s.Outline.Color.Type = cdrColorCMYK Then
+                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                        If s.Fill.Type = cdrUniformFill Then
+                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                    ehIntencionalE = True
+                                End If
+                            End If
+                        End If
+                    End If
+                End If
+                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                If Not ehIntencionalE Then
+                    If s.Fill.Type = cdrUniformFill Then
+                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
+                            ehIntencionalE = True
+                        End If
+                    End If
+                End If
+                If Not ehIntencionalE Then sinalizar = True
+            End If
         End If
         
         ' 2. AVALIA��O DE OBJETO CONVERTIDO (Ctrl+Shift+Q)
@@ -268,6 +293,7 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
     Dim srCorrigidos As ShapeRange: Set srCorrigidos = CreateShapeRange
     Dim s As Shape
 
+    ' Scan sem alterar o documento -- unidade lida mas nao modificada aqui
     Dim unidadeOriginal As cdrUnit: unidadeOriginal = ActiveDocument.Unit
     ActiveDocument.Unit = cdrMillimeter
 
@@ -275,13 +301,16 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
         CrawlerBuscaContornos s, srProblemas
     Next s
 
+    ActiveDocument.Unit = unidadeOriginal
+
     If srProblemas.Count = 0 Then
-        ActiveDocument.Unit = unidadeOriginal
         If Not silencioso Then MsgBox "Nenhum contorno abaixo de 0,1mm encontrado.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
+    ' Abre o grupo ANTES de qualquer alteracao no documento para garantir Ctrl+Z unico
     If Not silencioso Then ActiveDocument.BeginCommandGroup "Console Flexo - Corrigir Contornos"
+    ActiveDocument.Unit = cdrMillimeter
     Application.Optimization = True
     On Error GoTo FimErro
 
@@ -293,8 +322,8 @@ Public Sub PadronizarContornosFinos(Optional silencioso As Boolean = False)
 
     If Not silencioso Then ActiveDocument.EndCommandGroup
     Application.Optimization = False
-    If Not silencioso Then Application.Refresh
     ActiveDocument.Unit = unidadeOriginal
+    If Not silencioso Then Application.Refresh
 
     If srCorrigidos.Count > 0 And Not silencioso Then
         srCorrigidos.CreateSelection
@@ -324,30 +353,29 @@ Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
             Dim espW As Double: espW = s.Outline.Width
             ' Se a espessura for maior que zero e menor ou igual a 0.101mm (Margem de erro do VBA)
             If espW > 0 And espW <= 0.101 Then
-                ' Excecoes de contorno intencional (range 0,001mm a 0,05mm)
+                ' Excecoes de contorno intencional (avaliadas em todo o range detectado)
                 Dim ehIntencional As Boolean: ehIntencional = False
-                If espW <= 0.05 Then
-                    ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
-                    If s.Outline.Color.Type = cdrColorCMYK Then
-                        If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
-                            s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
-                            If s.Fill.Type = cdrUniformFill Then
-                                If s.Fill.UniformColor.Type = cdrColorCMYK Then
-                                    If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
-                                        s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
-                                        ehIntencional = True
-                                    End If
+                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
+                ' (objeto de mascara interno -- espessura minima do Corel, nao gera problema de impressao)
+                If s.Outline.Color.Type = cdrColorCMYK Then
+                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                        If s.Fill.Type = cdrUniformFill Then
+                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                    ehIntencional = True
                                 End If
                             End If
                         End If
                     End If
-                    ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
-                    ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
-                    If Not ehIntencional Then
-                        If s.Fill.Type = cdrUniformFill Then
-                            If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
-                                ehIntencional = True
-                            End If
+                End If
+                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
+                If Not ehIntencional Then
+                    If s.Fill.Type = cdrUniformFill Then
+                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
+                            ehIntencional = True
                         End If
                     End If
                 End If

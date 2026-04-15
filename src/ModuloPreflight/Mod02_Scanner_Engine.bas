@@ -61,31 +61,29 @@ Private Sub CrawlerMergulhoProfundo(shps As shapes)
                         End Select
                         espMM = Round(s.Outline.Width * fator, 3)
 
-                        If espMM > 0 And espMM <= 0.1 Then
+                        If espMM > 0 And espMM <= 0.101 Then
                             Dim ehIntencional As Boolean: ehIntencional = False
-                            ' Excecoes de contorno intencional (range 0,001mm a 0,05mm)
-                            If espMM <= 0.05 Then
-                                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
-                                If s.Outline.Color.Type = cdrColorCMYK Then
-                                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
-                                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
-                                        If s.Fill.Type = cdrUniformFill Then
-                                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
-                                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
-                                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
-                                                    ehIntencional = True
-                                                End If
+                            ' Excecoes de contorno intencional (avaliadas em todo o range detectado)
+                            ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
+                            If s.Outline.Color.Type = cdrColorCMYK Then
+                                If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                                    s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                                    If s.Fill.Type = cdrUniformFill Then
+                                        If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                            If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                                s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                                ehIntencional = True
                                             End If
                                         End If
                                     End If
                                 End If
-                                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
-                                ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
-                                If Not ehIntencional Then
-                                    If s.Fill.Type = cdrUniformFill Then
-                                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
-                                            ehIntencional = True
-                                        End If
+                            End If
+                            ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                            ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
+                            If Not ehIntencional Then
+                                If s.Fill.Type = cdrUniformFill Then
+                                    If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
+                                        ehIntencional = True
                                     End If
                                 End If
                             End If
