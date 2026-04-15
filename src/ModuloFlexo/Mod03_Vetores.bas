@@ -62,12 +62,12 @@ End Sub
 Public Sub InspecionarNos()
     ' Trava: Verifica se o operador selecionou algo para inspecionar
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione os objetos ou o grupo que voc� deseja inspecionar primeiro!", vbExclamation, "Console Flexo"
+        MsgBox "Selecione os objetos ou o grupo que voc" & ChrW(234) & " deseja inspecionar primeiro!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
 
     Dim limiteNos As String
-    limiteNos = InputBox("Digite a quantidade m�xima de n�s permitida por objeto:" & vbCrLf & "(Acima de 1500 costuma ser lixo de Rastreio Autom�tico)", "Inspetor de N�s", "1500")
+    limiteNos = InputBox("Digite a quantidade m" & ChrW(225) & "xima de n" & ChrW(243) & "s permitida por objeto:" & vbCrLf & "(Acima de 1500 costuma ser lixo de Rastreio Autom" & ChrW(225) & "tico)", "Inspetor de N" & ChrW(243) & "s", "1500")
     If limiteNos = "" Or Not IsNumeric(limiteNos) Then Exit Sub
     
     Dim maxNos As Long: maxNos = CLng(limiteNos)
@@ -85,10 +85,10 @@ Public Sub InspecionarNos()
     If srNos.Count > 0 Then
         ' Seleciona APENAS os objetos defeituosos dentro do grupo que ele havia selecionado
         srNos.CreateSelection
-        MsgBox "Aten��o! " & srNos.Count & " objetos DENTRO DA SUA SELE��O possuem mais de " & maxNos & " n�s e foram isolados." & vbCrLf & vbCrLf & _
-               "Analise se � poss�vel utilizar o bot�o de Reduzir N�s sem deformar a arte.", vbExclamation, "Console Flexo"
+        MsgBox "Aten" & ChrW(231) & ChrW(227) & "o! " & srNos.Count & " objetos DENTRO DA SUA SELE" & ChrW(199) & ChrW(195) & "O possuem mais de " & maxNos & " n" & ChrW(243) & "s e foram isolados." & vbCrLf & vbCrLf & _
+               "Analise se " & ChrW(233) & " poss" & ChrW(237) & "vel utilizar o bot" & ChrW(227) & "o de Reduzir N" & ChrW(243) & "s sem deformar a arte.", vbExclamation, "Console Flexo"
     Else
-        MsgBox "Sele��o limpa! Nenhum objeto inspecionado possui excesso de n�s.", vbInformation, "Console Flexo"
+        MsgBox "Sele" & ChrW(231) & ChrW(227) & "o limpa! Nenhum objeto inspecionado possui excesso de n" & ChrW(243) & "s.", vbInformation, "Console Flexo"
     End If
 End Sub
 ' ============================================================
@@ -118,10 +118,10 @@ Public Sub ReduzirNosSeguro()
     nosRemovidos = totalNosAntes - totalNosDepois
     
     If nosRemovidos > 0 Then
-        MsgBox "Limpeza conclu�da! Foram removidos " & nosRemovidos & " n�s in�teis de " & curvasAfetadas & " curva(s)." & vbCrLf & vbCrLf & _
-               "DICA: D� um zoom e verifique visualmente se a arte original n�o sofreu deforma��es.", vbInformation, "Console Flexo"
+        MsgBox "Limpeza conclu" & ChrW(237) & "da! Foram removidos " & nosRemovidos & " n" & ChrW(243) & "s in" & ChrW(250) & "teis de " & curvasAfetadas & " curva(s)." & vbCrLf & vbCrLf & _
+               "DICA: D" & ChrW(234) & " um zoom e verifique visualmente se a arte original n" & ChrW(227) & "o sofreu deforma" & ChrW(231) & ChrW(245) & "es.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhum n� p�de ser removido. Os objetos selecionados j� est�o otimizados ou n�o s�o curvas.", vbInformation, "Console Flexo"
+        MsgBox "Nenhum n" & ChrW(243) & " p" & ChrW(244) & "de ser removido. Os objetos selecionados j" & ChrW(225) & " est" & ChrW(227) & "o otimizados ou n" & ChrW(227) & "o s" & ChrW(227) & "o curvas.", vbInformation, "Console Flexo"
     End If
 End Sub
 

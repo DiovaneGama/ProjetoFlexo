@@ -27,6 +27,11 @@ Public Function GetRelatorio() As RelatorioPreFlight
 End Function
 
 Public Sub ExecutarScanner()
+    If ActiveDocument Is Nothing Then
+        MsgBox "Nenhum documento aberto.", vbExclamation, "Console Flexo"
+        Exit Sub
+    End If
+
     With relatorio
         .QtdBrancoOver = 0: .QtdPretoSujo = 0: .QtdRGB = 0: .QtdPantone = 0: .BibliotecasPantone = ""
         .QtdBordaDura = 0: .QtdRegistro = 0: .QtdTecnicas = 0: .BibliotecasTecnicas = ""
@@ -264,7 +269,7 @@ Private Function BuscarIndicePaleta(paleta As Palette, nomeCor As String) As Lon
 End Function
 
 Public Sub ExecutarCorrecoes(ByVal minDot As Integer)
-    ActiveDocument.BeginCommandGroup "Corre��o Autom�tica PreFlight"
+    ActiveDocument.BeginCommandGroup "Corre" & ChrW(231) & ChrW(227) & "o Autom" & ChrW(225) & "tica PreFlight"
     On Error GoTo FimErro
 
     Call Mod02_Cores.CorrigirBrancoOverprint(silencioso:=True)

@@ -19,8 +19,8 @@ Public Sub ConverterRGB(Optional silencioso As Boolean = False)
     Else
         escolhaMetodo = MsgBox("Converter RGB para:" & vbCrLf & vbCrLf & _
                             "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
-                            "[ N�O ] -> CMY (Sem Preto - Ideal para Flexo)", _
-                            vbYesNoCancel + vbQuestion, "Convers�o RGB")
+                            "[ N" & ChrW(195) & "O ] -> CMY (Sem Preto - Ideal para Flexo)", _
+                            vbYesNoCancel + vbQuestion, "Convers" & ChrW(227) & "o RGB")
         If escolhaMetodo = vbCancel Then Exit Sub
     End If
     ChamarMotor "RGB", silencioso
@@ -30,8 +30,8 @@ End Sub
 Public Sub ConverterSpotParaCMYK()
     escolhaMetodo = MsgBox("Converter PANTONE/SPOT para:" & vbCrLf & vbCrLf & _
                         "[ SIM ] -> CMYK (Completo)" & vbCrLf & _
-                        "[ N�O ] -> CMY (Sem Preto - Evita sujar a cor)", _
-                        vbYesNoCancel + vbQuestion, "Convers�o Pantone")
+                        "[ N" & ChrW(195) & "O ] -> CMY (Sem Preto - Evita sujar a cor)", _
+                        vbYesNoCancel + vbQuestion, "Convers" & ChrW(227) & "o Pantone")
     If escolhaMetodo = vbCancel Then Exit Sub
     ChamarMotor "Spot"
     Finalizar "Cores Spot/Pantone convertidas"
@@ -74,7 +74,7 @@ Private Sub Finalizar(texto As String)
         srRes.CreateSelection
         MsgBox texto & " e selecionados: " & srRes.Count, vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhum objeto com esse crit�rio foi encontrado.", vbInformation, "Console Flexo"
+        MsgBox "Nenhum objeto com esse crit" & ChrW(233) & "rio foi encontrado.", vbInformation, "Console Flexo"
     End If
 End Sub
 
@@ -143,12 +143,17 @@ Private Sub ExecutarCrawler(s As Shape, tipoAcao As String)
                     End If
                 End If
             Case "PretoSujo"
+                ' Limiar alinhado com o Scanner: K > 85 com qualquer contamina��o CMY > 0
+                ' Exceto Preto Puro (K100) e Preto Rico (C100 M100 Y100 K100)
                 If s.Fill.Type = cdrUniformFill And s.Fill.UniformColor.Type = cdrColorCMYK Then
                     C = s.Fill.UniformColor.CMYKCyan: M = s.Fill.UniformColor.CMYKMagenta
                     Y = s.Fill.UniformColor.CMYKYellow: K = s.Fill.UniformColor.CMYKBlack
-                    If (C + M + Y) > 200 And K > 85 Then
+                    If (C + M + Y) > 0 And K > 85 Then
                         If Not (C = 0 And M = 0 And Y = 0 And K = 100) Then
-                            s.Fill.UniformColor.CMYKAssign 0, 0, 0, 100
+                            s.Fill.UniformColor.CMYKCyan = 0
+                            s.Fill.UniformColor.CMYKMagenta = 0
+                            s.Fill.UniformColor.CMYKYellow = 0
+                            s.Fill.UniformColor.CMYKBlack = 100
                             sofreuAlteracao = True
                         End If
                     End If
@@ -156,9 +161,12 @@ Private Sub ExecutarCrawler(s As Shape, tipoAcao As String)
                 If s.Outline.Type = cdrOutline And s.Outline.Color.Type = cdrColorCMYK Then
                     C = s.Outline.Color.CMYKCyan: M = s.Outline.Color.CMYKMagenta
                     Y = s.Outline.Color.CMYKYellow: K = s.Outline.Color.CMYKBlack
-                    If (C + M + Y) > 200 And K > 85 Then
+                    If (C + M + Y) > 0 And K > 85 Then
                         If Not (C = 0 And M = 0 And Y = 0 And K = 100) Then
-                            s.Outline.Color.CMYKAssign 0, 0, 0, 100
+                            s.Outline.Color.CMYKCyan = 0
+                            s.Outline.Color.CMYKMagenta = 0
+                            s.Outline.Color.CMYKYellow = 0
+                            s.Outline.Color.CMYKBlack = 100
                             sofreuAlteracao = True
                         End If
                     End If
@@ -185,7 +193,7 @@ Public Sub SelecionarMsmCor(modoBusca As Integer)
     Dim srCoresIguais As ShapeRange
     
     If ActiveSelection.Shapes.Count = 0 Then
-        MsgBox "Selecione um objeto de refer�ncia para eu saber qual cor procurar!", vbExclamation, "Console Flexo"
+        MsgBox "Selecione um objeto de refer" & ChrW(234) & "ncia para eu saber qual cor procurar!", vbExclamation, "Console Flexo"
         Exit Sub
     End If
     
@@ -197,7 +205,7 @@ Public Sub SelecionarMsmCor(modoBusca As Integer)
     If modoBusca = 2 Then temPre = False
     
     If Not temPre And Not temCon Then
-        MsgBox "O objeto de refer�ncia n�o possui a propriedade de cor que voc� quer buscar.", vbInformation, "Console Flexo"
+        MsgBox "O objeto de refer" & ChrW(234) & "ncia n" & ChrW(227) & "o possui a propriedade de cor que voc" & ChrW(234) & " quer buscar.", vbInformation, "Console Flexo"
         Exit Sub
     End If
     
@@ -367,7 +375,7 @@ Public Sub ConverterParaPantone()
     On Error GoTo 0
 
     If palPantone Is Nothing Then
-        MsgBox "Biblioteca PANTONE n�o encontrada.", vbCritical, "Erro de Paleta"
+        MsgBox "Biblioteca PANTONE n" & ChrW(227) & "o encontrada.", vbCritical, "Erro de Paleta"
         Exit Sub
     End If
 
@@ -385,7 +393,7 @@ Public Sub ConverterParaPantone()
     If alteracoes > 0 Then
         MsgBox "Sucesso! " & alteracoes & " propriedades convertidas para Pantone.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhuma convers�o feita.", vbInformation, "Console Flexo"
+        MsgBox "Nenhuma convers" & ChrW(227) & "o feita.", vbInformation, "Console Flexo"
     End If
     Exit Sub
 
@@ -437,8 +445,8 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
         ' Modo manual: obt�m o valor via InputBox (ignora o par�metro)
         Dim inputMin As String
         inputMin = InputBox("RESOLVER BORDA DURA (HARD EDGE)" & vbCrLf & vbCrLf & _
-                            "Digite a porcentagem m�nima de ponto a ser inserida nos valores zero do degrad�:" & vbCrLf & _
-                            "(Escolha 2 ou 3)", "Ponto M�nimo Flexo", "2")
+                            "Digite a porcentagem m" & ChrW(237) & "nima de ponto a ser inserida nos valores zero do degrad" & ChrW(234) & ":" & vbCrLf & _
+                            "(Escolha 2 ou 3)", "Ponto M" & ChrW(237) & "nimo Flexo", "2")
         If inputMin = "" Then Exit Sub  ' usuario cancelou
         If inputMin <> "2" And inputMin <> "3" Then
             MsgBox "Valor fora do intervalo!" & vbCrLf & _
@@ -456,7 +464,7 @@ Public Sub CorrigirBordaDuraGradientes(Optional minDot As Integer = 0, Optional 
     Next s
 
     If srProblemas.Count = 0 Then
-        If Not silencioso Then MsgBox "Nenhum preenchimento gradiente (degrad�) encontrado na p�gina.", vbInformation, "Console Flexo"
+        If Not silencioso Then MsgBox "Nenhum preenchimento gradiente (degrad" & ChrW(234) & ") encontrado na p" & ChrW(225) & "gina.", vbInformation, "Console Flexo"
         Exit Sub
     End If
 
@@ -661,9 +669,9 @@ ProximoObj:
     If Not silencioso Then
         If srCorrigidos.Count > 0 Then
             srCorrigidos.CreateSelection
-            MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra m�nima ajustada para " & minDotLong & "% e est�o selecionados.", vbInformation, "Console Flexo"
+            MsgBox "Sucesso! " & srCorrigidos.Count & " gradiente(s) tiveram sua quebra m" & ChrW(237) & "nima ajustada para " & minDotLong & "% e est" & ChrW(227) & "o selecionados.", vbInformation, "Console Flexo"
         Else
-            MsgBox "Varredura conclu�da. Todos os degrad�s j� possuem pontos m�nimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
+            MsgBox "Varredura conclu" & ChrW(237) & "da. Todos os degrad" & ChrW(234) & "s j" & ChrW(225) & " possuem pontos m" & ChrW(237) & "nimos suficientes (acima de " & minDotLong & "%).", vbInformation, "Console Flexo"
         End If
     End If
     Exit Sub
@@ -707,9 +715,9 @@ Public Sub LimparSujeiraCores()
 
     If srProblemas.Count > 0 Then
         srProblemas.CreateSelection
-        MsgBox "Faxina conclu�da! " & srProblemas.Count & " objeto(s) tiveram sujeiras de cor removidas e est�o selecionados.", vbInformation, "Console Flexo"
+        MsgBox "Faxina conclu" & ChrW(237) & "da! " & srProblemas.Count & " objeto(s) tiveram sujeiras de cor removidas e est" & ChrW(227) & "o selecionados.", vbInformation, "Console Flexo"
     Else
-        MsgBox "Nenhuma sujeira encontrada. As cores j� est�o limpas!", vbInformation, "Console Flexo"
+        MsgBox "Nenhuma sujeira encontrada. As cores j" & ChrW(225) & " est" & ChrW(227) & "o limpas!", vbInformation, "Console Flexo"
     End If
     Exit Sub
 

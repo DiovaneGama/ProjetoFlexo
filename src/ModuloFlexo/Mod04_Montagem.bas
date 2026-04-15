@@ -11,7 +11,7 @@ Option Explicit
 ' ------------------------------------------------------------
 Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione a arte primeiro para ter uma refer�ncia de posicionamento.", vbExclamation, "Console Flexo"
+        MsgBox "Selecione a arte primeiro para ter uma refer" & ChrW(234) & "ncia de posicionamento.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
     If Trim(textoDados) = "" Or Trim(textoCores) = "" Then
@@ -60,7 +60,7 @@ Public Sub InserirTextosCamerom(textoDados As String, textoCores As String)
 
     ActiveDocument.EndCommandGroup
 
-    MsgBox "Informa��es do Camerom ancoradas e coloridas com sucesso!", vbInformation, "Console Flexo"
+    MsgBox "Informa" & ChrW(231) & ChrW(245) & "es do Camerom ancoradas e coloridas com sucesso!", vbInformation, "Console Flexo"
     Exit Sub
 
 FimErro:
@@ -191,7 +191,7 @@ End Sub
 
 Public Sub AjustarTrimBoxEBorda()
     If ActiveSelection.shapes.Count = 0 Then
-        MsgBox "Selecione a arte que definir� o tamanho final do TrimBox.", vbExclamation, "Console Flexo"
+        MsgBox "Selecione a arte que definir" & ChrW(225) & " o tamanho final do TrimBox.", vbExclamation, "Console Flexo"
         Exit Sub
     End If
 
@@ -201,7 +201,7 @@ Public Sub AjustarTrimBoxEBorda()
     Dim respBanda As VbMsgBoxResult
     respBanda = MsgBox("Qual o tipo de banda do arquivo?" & vbCrLf & vbCrLf & _
                        "[ SIM ]  ?  Banda Larga  (7mm de offset)" & vbCrLf & _
-                       "[ N�O ]  ?  Banda Estreita  (5mm de offset)", _
+                       "[ N" & ChrW(195) & "O ]  -  Banda Estreita  (5mm de offset)", _
                        vbYesNoCancel + vbQuestion, "Tipo de Banda")
 
     If respBanda = vbCancel Then Exit Sub

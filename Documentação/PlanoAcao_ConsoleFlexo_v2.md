@@ -23,6 +23,15 @@
 | T8 | Mod02_Cores | Erro 80004005 ao aplicar Tint em CMYK — On Error Resume Next cobrindo FASE 2 | Aplicado |
 | FP | Mod02_Scanner_Engine | Falso positivo de linha fina por imprecisão de ponto flutuante — Round(espMM,2) | Aplicado |
 
+## Correções Pós-Homologação — 15/04/2026
+
+| ID | Módulo | Descrição | Teste |
+|----|--------|-----------|-------|
+| H1 | Mod02_Cores | `CMYKAssign` não persistia em fill — substituído por atribuições individuais de canal (`CMYKCyan/Magenta/Yellow/Black =`) | T14b |
+| H2 | Mod02_Scanner_Engine | Guard `ActiveDocument Is Nothing` em `ExecutarScanner` — previne Erro 91 ao abrir PreFlight sem documento | T08 |
+| H3 | frmFlexo | Caption do botão "RGB p/ Pantone" corrigido para "Converter p/ Pantone" | T09 |
+| H4 | Todos os módulos | Acentuação corrigida em todos os MsgBox/InputBox/ControlTipText — chars U+FFFD substituídos por `ChrW()` | — |
+
 ---
 
 ## Novas Funcionalidades Implementadas
@@ -53,7 +62,7 @@
 | P1 | On Error pontual em CrawlerMergulhoProfundo | Concluído |
 | P7 | `relatorio` privado + `GetRelatorio()` | Concluído |
 | F2 | Unificar borda dura em Mod08_Utils | Concluído |
-| — | **Homologação v1.1** | **Pendente** |
+| — | **Homologação v1.1** | **Concluído ✓ — 15/04/2026** |
 
 ---
 

@@ -211,7 +211,7 @@ Private Sub AplicarTooltips()
     Me.btnCorrigirContornos.ControlTipText = "Esse bot" & ChrW(227) & "o corrige contornos abaixo de 0,1mm"
     Me.btnPadronizarImagens.ControlTipText = "Esse bot" & ChrW(227) & "o localiza e converte imagens para CMYK 600dpi"
     Me.btnInserirTextos.ControlTipText = "Esse bot" & ChrW(227) & "o insere os dados do camerom na arte"
-    Me.btnDesbloquear.ControlTipText = "Desbloqueia todos os objetos bloqueados da p�gina ativa"
+    Me.btnDesbloquear.ControlTipText = "Desbloqueia todos os objetos bloqueados da p" & ChrW(225) & "gina ativa"
     Me.btnTrimBox.ControlTipText = "Esse bot" & ChrW(227) & "o aplica o offset de cada lado da arte e cria o trimbox(Escolha entre 5mm e 7mm)"
     Me.btnMicropontos.ControlTipText = "Insere 4 micropontos ao redor do objeto selecionado (offset 1,5 mm)"
 End Sub
@@ -759,7 +759,7 @@ Private Function ObterCaptionOriginal(index As Integer) As String
         Case 2:  ObterCaptionOriginal = ChrW(9672) & "  Pantone p/ CMYK"
         Case 3:  ObterCaptionOriginal = ChrW(11041) & "  RGB p/ CMYK"
         Case 4:  ObterCaptionOriginal = ChrW(10011) & "  Cor de Registro"
-        Case 5:  ObterCaptionOriginal = ChrW(9673) & "  RGB p/ Pantone"
+        Case 5:  ObterCaptionOriginal = ChrW(9673) & "  Converter p/ Pantone"
         Case 6:  ObterCaptionOriginal = ChrW(9635) & "  Mesmo Preenchimento"
         Case 7:  ObterCaptionOriginal = ChrW(9634) & "  Mesmo Contorno"
         Case 8:  ObterCaptionOriginal = ChrW(9636) & "  Minimas Degrade"
