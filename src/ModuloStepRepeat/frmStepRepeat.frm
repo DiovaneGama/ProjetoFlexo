@@ -665,13 +665,13 @@ Private Sub RecalcularTudo()
     If lblPi314.Tag = "selected" Then piVal = PI_PADRAO Else piVal = PI_ALT
     
     Dim zVal As Double
-    zVal = val(txtZ.Text)
-    
+    zVal = ParseDecimal(txtZ.Text)
+
     Dim Desenvolvimento As Double
     Desenvolvimento = piVal * zVal
-    
+
     Dim altFaca As Double
-    altFaca = val(txtAlturaFaca.Text)
+    altFaca = ParseDecimal(txtAlturaFaca.Text)
     
     Dim reps As Long
     reps = val(txtRepeticoes.Text)
@@ -702,7 +702,7 @@ Private Sub RecalcularTudo()
     
     ' Gap Pistas
     Dim gapPistasVal As Double
-    gapPistasVal = val(txtGapPistas.Text)
+    gapPistasVal = ParseDecimal(txtGapPistas.Text)
     
     ' Atualizar labels de resultado
     Dim hasData As Boolean
@@ -741,15 +741,15 @@ End Sub
 ' ============================================================
 Private Sub ExecutarMontagemDoForm()
     ' Validacao de campos obrigatorios
-    If val(txtZ.Text) <= 0 Then
+    If ParseDecimal(txtZ.Text) <= 0 Then
         MsgBox "Informe o numero de dentes (Z).", vbExclamation, "Step & Repeat"
         txtZ.SetFocus: Exit Sub
     End If
-    If val(txtAlturaFaca.Text) <= 0 Then
+    If ParseDecimal(txtAlturaFaca.Text) <= 0 Then
         MsgBox "Informe a altura da faca.", vbExclamation, "Step & Repeat"
         txtAlturaFaca.SetFocus: Exit Sub
     End If
-    If val(txtLarguraFaca.Text) <= 0 Then
+    If ParseDecimal(txtLarguraFaca.Text) <= 0 Then
         MsgBox "Informe a largura da faca.", vbExclamation, "Step & Repeat"
         txtLarguraFaca.SetFocus: Exit Sub
     End If
@@ -757,7 +757,7 @@ Private Sub ExecutarMontagemDoForm()
         MsgBox "Informe o numero de repeticoes.", vbExclamation, "Step & Repeat"
         txtRepeticoes.SetFocus: Exit Sub
     End If
-    If val(txtPistas.Text) > 1 And val(txtGapPistas.Text) <= 0 Then
+    If val(txtPistas.Text) > 1 And ParseDecimal(txtGapPistas.Text) <= 0 Then
         MsgBox "Informe o gap entre pistas.", vbExclamation, "Step & Repeat"
         txtGapPistas.SetFocus: Exit Sub
     End If
@@ -770,22 +770,22 @@ Private Sub ExecutarMontagemDoForm()
     Dim cfg As TStepRepeatConfig
 
     cfg.BandaEstreita = True
-    cfg.Z = val(txtZ.Text)
-    
+    cfg.Z = ParseDecimal(txtZ.Text)
+
     If lblPi314.Tag = "selected" Then
         cfg.PiValue = PI_PADRAO
     Else
         cfg.PiValue = PI_ALT
     End If
-    
+
     cfg.Desenvolvimento = cfg.PiValue * cfg.Z
-    cfg.LarguraFaca = val(txtLarguraFaca.Text)
-    cfg.AlturaFaca = val(txtAlturaFaca.Text)
-    cfg.LarguraMaterial = val(txtLarguraMaterial.Text)
+    cfg.LarguraFaca = ParseDecimal(txtLarguraFaca.Text)
+    cfg.AlturaFaca = ParseDecimal(txtAlturaFaca.Text)
+    cfg.LarguraMaterial = ParseDecimal(txtLarguraMaterial.Text)
     cfg.Pistas = val(txtPistas.Text)
     If cfg.Pistas < 1 Then cfg.Pistas = 1
     cfg.Repeticoes = val(txtRepeticoes.Text)
-    cfg.GapPistas = val(txtGapPistas.Text)
+    cfg.GapPistas = ParseDecimal(txtGapPistas.Text)
     
     If lbl114.Tag = "selected" Then
         cfg.Foto114 = True

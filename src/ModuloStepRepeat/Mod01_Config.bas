@@ -85,6 +85,24 @@ Public Function TruncarDecimal(dVal As Double, iCasas As Integer) As Double
 End Function
 
 ' ============================================================
+' PARSE DECIMAL — aceita virgula ou ponto como separador
+' Val() nativo do VBA usa locale ingles e trunca em virgula.
+' Exemplo: ParseDecimal("54,27") retorna 54.27
+' ============================================================
+Public Function ParseDecimal(s As String) As Double
+    On Error Resume Next
+    Dim limpo As String
+    limpo = Trim(Replace(s, ",", "."))
+    If limpo = "" Then
+        ParseDecimal = 0
+    Else
+        ParseDecimal = CDbl(limpo)
+    End If
+    If Err.Number <> 0 Then ParseDecimal = 0
+    On Error GoTo 0
+End Function
+
+' ============================================================
 ' HELPER RGB (compativel com frmFlexo)
 ' ============================================================
 Public Function H(R As Long, G As Long, B As Long) As Long
