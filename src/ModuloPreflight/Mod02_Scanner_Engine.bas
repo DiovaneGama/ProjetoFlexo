@@ -46,81 +46,93 @@ Public Sub ExecutarScanner()
 End Sub
 
 Private Sub CrawlerMergulhoProfundo(shps As shapes)
-    Dim s As Shape
-    For Each s In shps.FindShapes(Recursive:=True)
-        On Error GoTo ErrShapeSkip
-        If s.Type <> cdrGuidelineShape Then
-            If Not s.Layer Is Nothing Then
-                If s.Layer.IsSpecialLayer = False And s.Layer.Printable = True Then
-                    If s.Locked Or (Not s.Layer.Editable) Then relatorio.QtdBloqueados = relatorio.QtdBloqueados + 1
-                    If (Not s.Visible) Or (Not s.Layer.Visible) Then relatorio.QtdInvisiveis = relatorio.QtdInvisiveis + 1
+    ' Iterativo: usa fila de colecoes Shapes para evitar Stack Overflow em PowerClips aninhados.
+    ' FindShapes(Recursive:=True) ja achata grupos -- so PowerClips precisam de fila manual.
+    Dim filaPC As New Collection
+    filaPC.Add shps
 
-                    If s.Outline.Type = cdrOutline Then
-                        Dim espMM As Double
-                        Dim fator As Double
-                        Select Case ActiveDocument.Unit
-                            Case cdrMillimeter: fator = 1
-                            Case cdrCentimeter: fator = 10
-                            Case cdrInch: fator = 25.4
-                            Case Else: fator = 1
-                        End Select
-                        espMM = Round(s.Outline.Width * fator, 3)
+    Do While filaPC.Count > 0
+        Dim nivelAtual As shapes
+        Set nivelAtual = filaPC.Item(1)
+        filaPC.Remove 1
 
-                        If espMM > 0 And espMM <= 0.101 Then
-                            Dim ehIntencional As Boolean: ehIntencional = False
-                            ' Excecoes de contorno intencional (avaliadas em todo o range detectado)
-                            ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
-                            If s.Outline.Color.Type = cdrColorCMYK Then
-                                If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
-                                    s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
-                                    If s.Fill.Type = cdrUniformFill Then
-                                        If s.Fill.UniformColor.Type = cdrColorCMYK Then
-                                            If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
-                                                s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
-                                                ehIntencional = True
+        Dim s As Shape
+        For Each s In nivelAtual.FindShapes(Recursive:=True)
+            On Error GoTo ErrShapeSkip
+            If s.Type <> cdrGuidelineShape Then
+                If Not s.Layer Is Nothing Then
+                    If s.Layer.IsSpecialLayer = False And s.Layer.Printable = True Then
+                        If s.Locked Or (Not s.Layer.Editable) Then relatorio.QtdBloqueados = relatorio.QtdBloqueados + 1
+                        If (Not s.Visible) Or (Not s.Layer.Visible) Then relatorio.QtdInvisiveis = relatorio.QtdInvisiveis + 1
+
+                        If s.Outline.Type = cdrOutline Then
+                            Dim espMM As Double
+                            Dim fator As Double
+                            Select Case ActiveDocument.Unit
+                                Case cdrMillimeter: fator = 1
+                                Case cdrCentimeter: fator = 10
+                                Case cdrInch: fator = 25.4
+                                Case Else: fator = 1
+                            End Select
+                            espMM = Round(s.Outline.Width * fator, 3)
+
+                            If espMM > 0 And espMM <= 0.101 Then
+                                Dim ehIntencional As Boolean: ehIntencional = False
+                                ' Excecoes de contorno intencional (avaliadas em todo o range detectado)
+                                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
+                                If s.Outline.Color.Type = cdrColorCMYK Then
+                                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
+                                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
+                                        If s.Fill.Type = cdrUniformFill Then
+                                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
+                                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
+                                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
+                                                    ehIntencional = True
+                                                End If
                                             End If
                                         End If
                                     End If
                                 End If
-                            End If
-                            ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
-                            ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
-                            If Not ehIntencional Then
-                                If s.Fill.Type = cdrUniformFill Then
-                                    If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
-                                        ehIntencional = True
+                                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                                ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
+                                If Not ehIntencional Then
+                                    If s.Fill.Type = cdrUniformFill Then
+                                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
+                                            ehIntencional = True
+                                        End If
                                     End If
                                 End If
+                                If Not ehIntencional Then relatorio.QtdLinhasFinas = relatorio.QtdLinhasFinas + 1
                             End If
-                            If Not ehIntencional Then relatorio.QtdLinhasFinas = relatorio.QtdLinhasFinas + 1
+
+                            AnalisarCor s.Outline.Color, s, True
                         End If
 
-                        AnalisarCor s.Outline.Color, s, True
-                    End If
-
-                    If s.Fill.Type = cdrUniformFill Then
-                        AnalisarCor s.Fill.UniformColor, s, False
-                    ElseIf s.Fill.Type = cdrFountainFill Then
-                        AnalisarGradiente s
-                    End If
-
-                    If s.Type = cdrBitmapShape Then
-                        If s.Bitmap.ResolutionX < 300 Or s.Bitmap.ResolutionY < 300 Then relatorio.QtdImgBaixa = relatorio.QtdImgBaixa + 1
-                        If s.Bitmap.Mode <> cdrCMYKColorImage And s.Bitmap.Mode <> cdrGrayscaleImage And s.Bitmap.Mode <> cdrBlackAndWhiteImage Then
-                            relatorio.QtdImgRGB = relatorio.QtdImgRGB + 1
+                        If s.Fill.Type = cdrUniformFill Then
+                            AnalisarCor s.Fill.UniformColor, s, False
+                        ElseIf s.Fill.Type = cdrFountainFill Then
+                            AnalisarGradiente s
                         End If
-                    End If
 
-                    If s.Type = cdrTextShape Then relatorio.QtdFontesVivas = relatorio.QtdFontesVivas + 1
-                    If Not s.PowerClip Is Nothing Then CrawlerMergulhoProfundo s.PowerClip.shapes
+                        If s.Type = cdrBitmapShape Then
+                            If s.Bitmap.ResolutionX < 300 Or s.Bitmap.ResolutionY < 300 Then relatorio.QtdImgBaixa = relatorio.QtdImgBaixa + 1
+                            If s.Bitmap.Mode <> cdrCMYKColorImage And s.Bitmap.Mode <> cdrGrayscaleImage And s.Bitmap.Mode <> cdrBlackAndWhiteImage Then
+                                relatorio.QtdImgRGB = relatorio.QtdImgRGB + 1
+                            End If
+                        End If
+
+                        If s.Type = cdrTextShape Then relatorio.QtdFontesVivas = relatorio.QtdFontesVivas + 1
+                        ' Enfileira PowerClip para proxima iteracao (evita recursao profunda)
+                        If Not s.PowerClip Is Nothing Then filaPC.Add s.PowerClip.shapes
+                    End If
                 End If
             End If
-        End If
-    Next s
+        Next s
+    Loop
     Exit Sub
 
 ErrShapeSkip:
-    Debug.Print "CrawlerMergulhoProfundo � shape ignorado (Err " & Err.Number & "): " & Err.Description
+    Debug.Print "CrawlerMergulhoProfundo - shape ignorado (Err " & Err.Number & "): " & Err.Description
     Resume Next
 End Sub
 

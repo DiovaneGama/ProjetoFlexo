@@ -227,25 +227,41 @@ Public Sub SelecionarMsmCor(modoBusca As Integer)
 End Sub
 
 Private Sub CrawlerBuscaCor(s As Shape, cFill As Color, cOut As Color, chkF As Boolean, chkO As Boolean, ByRef sacola As ShapeRange)
-    Dim subS As Shape
-    On Error Resume Next
-    If s.Type <> cdrGroupShape And s.Type <> cdrGuidelineShape Then
-        Dim ehIgual As Boolean: ehIgual = False
-        If chkF And s.Fill.Type = cdrUniformFill Then
-            If CompararCoresSeguro(s.Fill.UniformColor, cFill) Then ehIgual = True
+    ' Iterativo: usa pilha para evitar Stack Overflow em grupos/PowerClips profundos.
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Type <> cdrGroupShape And atual.Type <> cdrGuidelineShape Then
+            ' Filtra camadas: somente shapes em camadas imprimiveis, visiveis e nao-especiais
+            If Not atual.Layer Is Nothing Then
+                If atual.Layer.IsSpecialLayer = False And atual.Layer.Printable = True And atual.Layer.Visible = True Then
+                    Dim ehIgual As Boolean: ehIgual = False
+                    If chkF And atual.Fill.Type = cdrUniformFill Then
+                        If CompararCoresSeguro(atual.Fill.UniformColor, cFill) Then ehIgual = True
+                    End If
+                    If chkO And atual.Outline.Type = cdrOutline Then
+                        If CompararCoresSeguro(atual.Outline.Color, cOut) Then ehIgual = True
+                    End If
+                    If ehIgual Then sacola.Add atual
+                End If
+            End If
         End If
-        If chkO And s.Outline.Type = cdrOutline Then
-            If CompararCoresSeguro(s.Outline.Color, cOut) Then ehIgual = True
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
         End If
-        If ehIgual Then sacola.Add s
-    End If
-    On Error GoTo 0
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.Shapes: CrawlerBuscaCor subS, cFill, cOut, chkF, chkO, sacola: Next subS
-    End If
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.Shapes: CrawlerBuscaCor subS, cFill, cOut, chkF, chkO, sacola: Next subS
-    End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 
 Private Function CompararCoresSeguro(c1 As Color, c2 As Color) As Boolean

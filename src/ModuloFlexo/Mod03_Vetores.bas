@@ -43,17 +43,26 @@ FimErro:
 End Sub
 
 Private Sub CrawlerBuscaTexto(s As Shape, ByRef sacola As ShapeRange)
-    Dim subS As Shape
-    On Error Resume Next
-    If s.Type = cdrTextShape Then sacola.Add s
-    On Error GoTo 0
-    
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerBuscaTexto subS, sacola: Next subS
-    End If
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerBuscaTexto subS, sacola: Next subS
-    End If
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Type = cdrTextShape Then sacola.Add atual
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 
 ' ============================================================
@@ -129,55 +138,63 @@ End Sub
 ' O CRAWLER: Varredura Segura para Remo��o de N�s
 ' ------------------------------------------------------------
 Private Sub CrawlerReduzirNos(s As Shape, fator As Double, ByRef nosAntes As Long, ByRef nosDepois As Long, ByRef afetadas As Integer)
-    Dim subS As Shape
-    On Error Resume Next
-    
-    ' 1. Modifica o objeto se for Curva
-    If s.Type = cdrCurveShape Then
-        Dim antes As Long: antes = s.Curve.Nodes.Count
-        
-        ' Aplica a redu��o nativa do Corel
-        s.Curve.AutoReduceNodes fator
-        
-        Dim depois As Long: depois = s.Curve.Nodes.Count
-        
-        ' S� contabiliza se realmente conseguiu remover algum n�
-        If antes > depois Then
-            nosAntes = nosAntes + antes
-            nosDepois = nosDepois + depois
-            afetadas = afetadas + 1
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Type = cdrCurveShape Then
+            Dim antes As Long: antes = atual.Curve.Nodes.Count
+            atual.Curve.AutoReduceNodes fator
+            Dim depois As Long: depois = atual.Curve.Nodes.Count
+            If antes > depois Then
+                nosAntes = nosAntes + antes
+                nosDepois = nosDepois + depois
+                afetadas = afetadas + 1
+            End If
         End If
-    End If
-    On Error GoTo 0
-    
-    ' 2. Mergulha nos Grupos
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
-    End If
-    
-    ' 3. Mergulha nos PowerClips
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerReduzirNos subS, fator, nosAntes, nosDepois, afetadas: Next subS
-    End If
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 
 ' O CrawlerBuscaNos continua exatamente o mesmo que voc� j� tem a�!
 ' Ele vai mergulhar nos grupos e PowerClips da sele��o normalmente.
 
 Private Sub CrawlerBuscaNos(s As Shape, limite As Long, ByRef sacola As ShapeRange)
-    Dim subS As Shape
-    On Error Resume Next
-    If s.Type = cdrCurveShape Then
-        If s.Curve.Nodes.Count > limite Then sacola.Add s
-    End If
-    On Error GoTo 0
-    
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
-    End If
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerBuscaNos subS, limite, sacola: Next subS
-    End If
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Type = cdrCurveShape Then
+            If atual.Curve.Nodes.Count > limite Then sacola.Add atual
+        End If
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 
 ' ============================================================
@@ -212,78 +229,78 @@ Public Sub InspecionarEspessuraMinima()
 End Sub
 
 Private Sub CrawlerEspessura(s As Shape, limit As Double, ByRef sacola As ShapeRange)
-    Dim subS As Shape
-    On Error Resume Next
-    
-    If s.Type <> cdrGroupShape And s.Type <> cdrGuidelineShape Then
-        Dim W As Double: W = s.SizeWidth
-        Dim H As Double: H = s.SizeHeight
-        Dim outW As Double: outW = 0
-        Dim sinalizar As Boolean: sinalizar = False
-        
-        ' 1. AVALIA��O DE CONTORNO VIVO
-        If s.Outline.Type = cdrOutline Then
-            outW = s.Outline.Width
-            ' Se tem contorno e e menor que o limite, verifica se e intencional
-            If outW > 0 And outW <= limit Then
-                Dim ehIntencionalE As Boolean: ehIntencionalE = False
-                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
-                If s.Outline.Color.Type = cdrColorCMYK Then
-                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
-                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
-                        If s.Fill.Type = cdrUniformFill Then
-                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
-                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
-                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
-                                    ehIntencionalE = True
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Type <> cdrGroupShape And atual.Type <> cdrGuidelineShape Then
+            Dim outW As Double: outW = 0
+            Dim sinalizar As Boolean: sinalizar = False
+
+            ' 1. AVALIACAO DE CONTORNO VIVO
+            If atual.Outline.Type = cdrOutline Then
+                outW = atual.Outline.Width
+                If outW > 0 And outW <= limit Then
+                    Dim ehIntencionalE As Boolean: ehIntencionalE = False
+                    ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro (mascara interna)
+                    If atual.Outline.Color.Type = cdrColorCMYK Then
+                        If (atual.Outline.Color.CMYKCyan + atual.Outline.Color.CMYKMagenta + _
+                            atual.Outline.Color.CMYKYellow + atual.Outline.Color.CMYKBlack) = 0 Then
+                            If atual.Fill.Type = cdrUniformFill Then
+                                If atual.Fill.UniformColor.Type = cdrColorCMYK Then
+                                    If (atual.Fill.UniformColor.CMYKCyan + atual.Fill.UniformColor.CMYKMagenta + _
+                                        atual.Fill.UniformColor.CMYKYellow + atual.Fill.UniformColor.CMYKBlack) = 0 Then
+                                        ehIntencionalE = True
+                                    End If
                                 End If
                             End If
                         End If
                     End If
-                End If
-                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
-                If Not ehIntencionalE Then
-                    If s.Fill.Type = cdrUniformFill Then
-                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
-                            ehIntencionalE = True
+                    ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                    If Not ehIntencionalE Then
+                        If atual.Fill.Type = cdrUniformFill Then
+                            If Mod08_Utils.CompararCoresSeguro(atual.Outline.Color, atual.Fill.UniformColor) Then
+                                ehIntencionalE = True
+                            End If
                         End If
                     End If
-                End If
-                If Not ehIntencionalE Then sinalizar = True
-            End If
-        End If
-        
-        ' 2. AVALIA��O DE OBJETO CONVERTIDO (Ctrl+Shift+Q)
-        ' Objeto convertido nao tem contorno ativo -- dimensao fisica = espessura original
-        ' [T20] Usa GetBoundingBox que e mais confiavel que SizeWidth para objetos convertidos
-        If s.Type <> cdrBitmapShape And s.Type <> cdrTextShape Then
-            Dim semContorno As Boolean: semContorno = False
-            If s.Outline.Type <> cdrOutline Then
-                semContorno = True
-            ElseIf Round(outW, 3) <= 0 Then
-                semContorno = True
-            End If
-            If semContorno Then
-                ' Usa GetBoundingBox para obter dimensoes reais em mm
-                Dim bbX As Double, bbY As Double, bbW As Double, bbH As Double
-                s.GetBoundingBox bbX, bbY, bbW, bbH
-                If Round(bbW, 3) <= limit Or Round(bbH, 3) <= limit Then
-                    sinalizar = True
+                    If Not ehIntencionalE Then sinalizar = True
                 End If
             End If
+
+            ' 2. AVALIACAO DE OBJETO CONVERTIDO (Ctrl+Shift+Q)
+            ' [T20] Usa GetBoundingBox que e mais confiavel que SizeWidth para objetos convertidos
+            If atual.Type <> cdrBitmapShape And atual.Type <> cdrTextShape Then
+                Dim semContorno As Boolean: semContorno = False
+                If atual.Outline.Type <> cdrOutline Then
+                    semContorno = True
+                ElseIf Round(outW, 3) <= 0 Then
+                    semContorno = True
+                End If
+                If semContorno Then
+                    Dim bbX As Double, bbY As Double, bbW As Double, bbH As Double
+                    atual.GetBoundingBox bbX, bbY, bbW, bbH
+                    If Round(bbW, 3) <= limit Or Round(bbH, 3) <= limit Then sinalizar = True
+                End If
+            End If
+
+            If sinalizar Then sacola.Add atual
         End If
-        
-        If sinalizar Then sacola.Add s
-    End If
-    On Error GoTo 0
-    
-    ' Mergulhos
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerEspessura subS, limit, sacola: Next subS
-    End If
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerEspessura subS, limit, sacola: Next subS
-    End If
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 ' ============================================================
 ' FERRAMENTA: PADRONIZADOR DE CONTORNOS (0,2mm + Sele��o Final)
@@ -343,57 +360,59 @@ End Sub
 ' CRAWLER: CA�ADOR DE CONTORNOS (Ignora preenchimentos e tamanhos)
 ' ------------------------------------------------------------
 Private Sub CrawlerBuscaContornos(s As Shape, ByRef sacola As ShapeRange)
-    Dim subS As Shape
-    On Error Resume Next
-    
-    ' Ignora Bitmaps e Grupos na an�lise individual
-    If s.Type <> cdrBitmapShape And s.Type <> cdrGroupShape Then
-        ' Verifica se o objeto TEM um contorno aplicado
-        If s.Outline.Type = cdrOutline Then
-            Dim espW As Double: espW = s.Outline.Width
-            ' Se a espessura for maior que zero e menor ou igual a 0.101mm (Margem de erro do VBA)
-            If espW > 0 And espW <= 0.101 Then
-                ' Excecoes de contorno intencional (avaliadas em todo o range detectado)
-                Dim ehIntencional As Boolean: ehIntencional = False
-                ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
-                ' (objeto de mascara interno -- espessura minima do Corel, nao gera problema de impressao)
-                If s.Outline.Color.Type = cdrColorCMYK Then
-                    If (s.Outline.Color.CMYKCyan + s.Outline.Color.CMYKMagenta + _
-                        s.Outline.Color.CMYKYellow + s.Outline.Color.CMYKBlack) = 0 Then
-                        If s.Fill.Type = cdrUniformFill Then
-                            If s.Fill.UniformColor.Type = cdrColorCMYK Then
-                                If (s.Fill.UniformColor.CMYKCyan + s.Fill.UniformColor.CMYKMagenta + _
-                                    s.Fill.UniformColor.CMYKYellow + s.Fill.UniformColor.CMYKBlack) = 0 Then
-                                    ehIntencional = True
+    ' Iterativo: usa pilha para evitar Stack Overflow em grupos/PowerClips profundos.
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        ' Ignora Bitmaps e Grupos na analise individual
+        If atual.Type <> cdrBitmapShape And atual.Type <> cdrGroupShape Then
+            If atual.Outline.Type = cdrOutline Then
+                Dim espW As Double: espW = atual.Outline.Width
+                If espW > 0 And espW <= 0.101 Then
+                    Dim ehIntencional As Boolean: ehIntencional = False
+                    ' Excecao 1: contorno branco CMYK puro + fill branco CMYK puro
+                    If atual.Outline.Color.Type = cdrColorCMYK Then
+                        If (atual.Outline.Color.CMYKCyan + atual.Outline.Color.CMYKMagenta + _
+                            atual.Outline.Color.CMYKYellow + atual.Outline.Color.CMYKBlack) = 0 Then
+                            If atual.Fill.Type = cdrUniformFill Then
+                                If atual.Fill.UniformColor.Type = cdrColorCMYK Then
+                                    If (atual.Fill.UniformColor.CMYKCyan + atual.Fill.UniformColor.CMYKMagenta + _
+                                        atual.Fill.UniformColor.CMYKYellow + atual.Fill.UniformColor.CMYKBlack) = 0 Then
+                                        ehIntencional = True
+                                    End If
                                 End If
                             End If
                         End If
                     End If
-                End If
-                ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
-                ' (contorno invisivel -- funde com o fill, nao gera problema de impressao)
-                If Not ehIntencional Then
-                    If s.Fill.Type = cdrUniformFill Then
-                        If Mod08_Utils.CompararCoresSeguro(s.Outline.Color, s.Fill.UniformColor) Then
-                            ehIntencional = True
+                    ' Excecao 2: contorno com a mesma cor do preenchimento uniforme
+                    If Not ehIntencional Then
+                        If atual.Fill.Type = cdrUniformFill Then
+                            If Mod08_Utils.CompararCoresSeguro(atual.Outline.Color, atual.Fill.UniformColor) Then
+                                ehIntencional = True
+                            End If
                         End If
                     End If
+                    If Not ehIntencional Then sacola.Add atual
                 End If
-                If Not ehIntencional Then sacola.Add s
             End If
         End If
-    End If
-    
-    ' Mergulha em Grupos
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerBuscaContornos subS, sacola: Next subS
-    End If
-    
-    ' Mergulha em PowerClips
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerBuscaContornos subS, sacola: Next subS
-    End If
-    On Error GoTo 0
+        On Error GoTo 0
+
+        ' Empurra filhos de grupo e PowerClip na pilha
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
 
 ' ============================================================
@@ -417,17 +436,27 @@ Public Sub DesbloquearObjetos()
 End Sub
 
 Private Sub CrawlerDesbloquear(s As Shape, ByRef contador As Integer)
-    Dim subS As Shape
-    On Error Resume Next
-    If s.Locked Then
-        s.Locked = False
-        contador = contador + 1
-    End If
-    If s.Type = cdrGroupShape Then
-        For Each subS In s.shapes: CrawlerDesbloquear subS, contador: Next subS
-    End If
-    If Not s.PowerClip Is Nothing Then
-        For Each subS In s.PowerClip.shapes: CrawlerDesbloquear subS, contador: Next subS
-    End If
-    On Error GoTo 0
+    Dim pilha As New Collection
+    pilha.Add s
+
+    Do While pilha.Count > 0
+        Dim atual As Shape
+        Set atual = pilha.Item(pilha.Count)
+        pilha.Remove pilha.Count
+
+        On Error Resume Next
+        If atual.Locked Then
+            atual.Locked = False
+            contador = contador + 1
+        End If
+        On Error GoTo 0
+
+        Dim subS As Shape
+        If atual.Type = cdrGroupShape Then
+            For Each subS In atual.shapes: pilha.Add subS: Next subS
+        End If
+        If Not atual.PowerClip Is Nothing Then
+            For Each subS In atual.PowerClip.shapes: pilha.Add subS: Next subS
+        End If
+    Loop
 End Sub
